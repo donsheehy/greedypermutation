@@ -10,7 +10,7 @@ Welcome to greedypermutations's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+point
 
 Indices and tables
 ==================
