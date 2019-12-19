@@ -10,7 +10,8 @@ Welcome to greedypermutations's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-point
+   greedy
+   point
 
 Indices and tables
 ==================

@@ -1,8 +1,9 @@
 A Generic Point
 ===============
 
-We want a very generic point class that will provide everything needed to be used as part fo a metric space.
+We want a very generic point class that will provide everything needed to be used as part of a metric space.
 It must implement the following methods:
+
 - `dist(self, other)` This is distance function, i.e. the metric.
 - `fromstring` We will use this to parse data files from the command line.
 - `__eq__` We need to know if two points are the same point.
