@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-greedypermutation = {editable = true,version = "*"}
 
 [requires]
 python_version = "3.7"
