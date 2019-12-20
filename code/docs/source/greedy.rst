@@ -14,4 +14,4 @@ Given any choice of the first point, it is always possible to complete the order
 It also implies an algorithm.
 At step :math:`i`, set :math:`p_i` to be the farthest point to :math:`P_{i-1}` among all the remaining points.
 This is not very efficient.
-It would take :math:`(n-i+1)(i-1)` distance computations to determine the :math:`i`th point.
+It would take :math:`(n-i+1)(i-1)` distance computations to determine the :math:`i` th point.

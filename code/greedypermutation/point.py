@@ -23,17 +23,14 @@ class Point:
     def __hash__(self):
         return hash(self._p)
 
+    def __str__(self):
+        return " ".join(str(c) for c in self._p)
+
     def __iter__(self):
         return iter(self._p)
-
-    def __str__(self):
-        return "(" + ", ".join(str(c) for c in self._p) +  ")"
 
     def __len__(self):
         return len(self._p)
 
 if __name__ == '__main__':
-    p = Point([0,0])
-    q = Point.fromstring('3.3 4.4')
-    print(p.dist(q))
-    print(q)
+    pass

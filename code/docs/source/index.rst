@@ -12,6 +12,9 @@ Welcome to greedypermutations's documentation!
 
    greedy
    point
+   file_formats
+   cli
+   
 
 Indices and tables
 ==================
