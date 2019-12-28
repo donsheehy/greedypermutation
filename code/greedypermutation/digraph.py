@@ -1,4 +1,4 @@
-class Graph:
+class Digraph:
     def __init__(self, V = (), E = ()):
         self._nbrs = {}
         for v in V:
@@ -6,13 +6,11 @@ class Graph:
         for (u,v) in E:
             self.addedge(u,v)
 
-
     def addvertex(self, v):
         self._nbrs.setdefault(v, set())
 
     def addedge(self, u, v):
         self._nbrs[u].add(v)
-        self._nbrs[v].add(u)
 
     def vertices(self):
         return iter(self._nbrs)
@@ -20,9 +18,7 @@ class Graph:
     def edges(self):
         for u, nbrhood in self._nbrs.items():
             for v in nbrhood:
-                # Only yield one copy of each edge
-                if hash(u) < hash(v):
-                    yield frozenset([u,v])
+                yield (u,v)
 
     def nbrs(self, v):
         return self._nbrs[v]
