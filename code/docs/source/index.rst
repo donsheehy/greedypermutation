@@ -11,10 +11,12 @@ Welcome to greedypermutations's documentation!
    :caption: Contents:
 
    greedy
+   clarkson
+   clustergraph
    point
    file_formats
    cli
-   
+
 
 Indices and tables
 ==================

@@ -12,6 +12,12 @@ class Digraph:
     def addedge(self, u, v):
         self._nbrs[u].add(v)
 
+    def removeedge(self, u, v):
+        """ Remove the edge (u,v).
+        This will raise a KeyError if the edge (u,v) is not already in the graph.
+        """
+        self._nbrs[u].remove(v)
+
     def vertices(self):
         return iter(self._nbrs)
 

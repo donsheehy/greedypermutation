@@ -41,6 +41,18 @@ class TestDigraph(unittest.TestCase):
         G.addedge(1,4)
         self.assertEqual(len(G), 4)
 
+    def testremoveedge(self):
+        G = Digraph([1,2,3], [(1,2), (1,3), (2,1)])
+        G.removeedge(1,2)
+        self.assertTrue(G.hasedge(2,1))
+        self.assertTrue(G.hasedge(1,3))
+        self.assertFalse(G.hasedge(1,2))
+
+    def testremoveedge_not_an_edge(self):
+        G = Digraph([1,2,3], [(1,2), (1,3), (2,1)])
+        with self.assertRaises(KeyError):
+            G.removeedge(3,1)
+
     def testvertices(self):
         G = Digraph()
         G.addvertex('a')
