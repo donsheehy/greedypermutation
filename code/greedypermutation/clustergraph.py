@@ -3,7 +3,7 @@ from heapq import heappush, heappop, heapify
 
 class Cluster:
     def __init__(self, center):
-        self.points = set()
+        self.points = {center}
         self.center  = center
         self.radius = 0
 
@@ -20,21 +20,23 @@ class Cluster:
     def pop(self):
         """ Remove and return the farthest point in the cluster.
         """
+        if len(self) == 1:
+            return None
         p = max(self.points, key = self.dist)
-        self.points.remove(p)
         # This is linear time!  We should maybe use a heap here.
         # However, the pop is followed by an update that will iterate over all
         # the points anyway.
+        self.points.remove(p)
         self.updateradius()
         return p
 
     def rebalance(self, other):
         """ Move points from other to self.
         """
-        for p in other.points:
-            if self.dist(p) < other.dist(p):
-                other.points.remove(p)
-                self.addpoint(p)
+        pts_to_move = {p for p in other.points if self.dist(p) < other.dist(p)}
+        other.points -= pts_to_move
+        for p in pts_to_move:
+            self.addpoint(p)
         # The radius of self is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         other.updateradius()
@@ -44,7 +46,7 @@ class Cluster:
             max(self.radius, other.radius)
 
     def __len__(self):
-        return 1 + len(self.points)
+        return len(self.points)
 
     # def key(self):
     #     """ The distance to the farthest point.
@@ -62,13 +64,7 @@ class ClusterGraph(Graph):
         root = Cluster(next(P))
         for p in P:
             root.addpoint(p)
-        self._inserted = [root]
-
-    def addnextgreedypoint(self):
-        parent = heappop(self._inserted)
-        newcenter = cluster.pop()
-        self.addcluster(newcenter, parent)
-        heappush(self._inserted, parent)
+        self.addvertex(root)
 
     def addcluster(self, newcenter, parent):
         # Create the new cluster.

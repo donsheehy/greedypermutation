@@ -31,7 +31,7 @@ The interface to a Cluster is as follows.
 
 There are three public attributes:
 
-- `points` a set of points.
+- `points` an iterable collection of points.
 - `center` the center point.
 - `radius` the max distance between the center and a point in the cluster.
 
@@ -43,5 +43,4 @@ It supports the following methods.
 
 - `__init__(self, points)` It starts with an iterable of points.  The first point will be the center of the default cluster and all other points will be placed inside.
 - `addcluster(self, center)` Add a new cluster with the given center.  Update the clusters (by distance) and the edges of the graph.
-- `addnextgreedypoint` - Find the next point in the greedy permutation and add a new cluster centered there. *Maybe this belongs in `clarkson.py`.*
-- `closenbrs(self, u)` Iterates over the neighbors of `u` that are close enough to be real neighbors.  Any extra edges are removed.
+- `closenbrs(self, u)` Iterates over the neighbors of `u` that are close enough to be real neighbors.  Any extra edges are removed quietly behind the scenes.
