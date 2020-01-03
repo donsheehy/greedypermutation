@@ -1,11 +1,14 @@
-from metricspace import MetricSpace
-from point import Point
-from clustergraph import Cluster, ClusterGraph
+from .metricspace import MetricSpace
+from .point import Point
+from .clustergraph import Cluster, ClusterGraph
 
-def cgreedytree(X):
+def greedy(M, seed = None):
+    raise NotImplementedError
+
+def greedytree(X):
     """ Return a greedy tree of points in # XXX:
     """
-    G = ClsuterGraph(X)
+    G = ClusterGraph(X)
 
 # def addnextgreedypoint(self):
 #     parent = heappop(self._inserted)

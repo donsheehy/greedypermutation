@@ -69,5 +69,14 @@ class TestCluster(unittest.TestCase):
         self.assertEqual(C.pop(), d)
         self.assertEqual(C.pop(), None)
 
+class TestClusterGraph(unittest.TestCase):
+    def testbasicusage(self):
+        G = ClusterGraph([Point([i,i]) for i in range(100)])
+        root = next(G.vertices())
+        G.addcluster(Point([100,99]), root)
+        self.assertEqual(len(G), 2)
+        for v in G.vertices():
+            self.assertEqual(len(set(G.nbrs(v))), 1)
+
 if __name__ == '__main__':
     unittest.main()

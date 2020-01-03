@@ -59,7 +59,9 @@ class Cluster:
         return self.radius > other.radius
 
 class ClusterGraph(Graph):
+    # Initialize it as an empty graph.
     def __init__(self, points):
+        Graph.__init__(self)
         P = iter(points)
         root = Cluster(next(P))
         for p in P:
@@ -69,6 +71,8 @@ class ClusterGraph(Graph):
     def addcluster(self, newcenter, parent):
         # Create the new cluster.
         newcluster = Cluster(newcenter)
+        # Make the cluster a new vertex.
+        self.addvertex(newcluster)
         # Rebalence the new cluster.
         newcluster.rebalance(parent)
         for nbr in self.nbrs(parent):
@@ -76,8 +80,12 @@ class ClusterGraph(Graph):
 
         # Find potential new neighbors
         nbrs = self.nbrs(parent)
-        nbrs_of_nbrs = set.union(b for a in nbrs for b in self.nbrs(a))
-        potential_nbrs = nbrs | nbrs_of_nbrs
+        potential_nbrs = set(self.nbrs(parent))
+        # nbrs_of_nbrs = set()
+        for a in nbrs:
+            for b in self.nbrs(a):
+                potential_nbrs |= b
+        # potential_nbrs = nbrs | nbrs_of_nbrs
 
         # Add neighbors to the new cluster.
         for newnbr in potential_nbrs:
