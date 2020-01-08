@@ -1,10 +1,10 @@
 from context import greedypermutation
 import unittest
-from greedypermutation import MetricSpace
+from greedypermutation import MetricSpace, Point
 
-class TestPoint(unittest.TestCase):
+class TestMetricSpace(unittest.TestCase):
     def testinitmetricspace(self):
-        assert(False)
+        M =
 
 if __name__ == '__main__':
     unittest.main()
