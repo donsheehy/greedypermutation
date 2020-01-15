@@ -32,5 +32,8 @@ class Point:
     def __len__(self):
         return len(self._p)
 
+    def __repr__(self):
+        return str(self)
+
 if __name__ == '__main__':
     pass

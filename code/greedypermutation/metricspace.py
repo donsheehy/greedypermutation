@@ -1,6 +1,6 @@
 class MetricSpace:
     def __init__(self, points = ()):
-        self._points = list(points)
+        self._points = set(points)
 
     def add(self, point):
         self._points.append(point)

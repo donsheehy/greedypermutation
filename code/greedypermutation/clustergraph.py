@@ -1,24 +1,43 @@
 from .graph import Graph
-from heapq import heappush, heappop, heapify
+from .maxheap import MaxHeap
 
 class Cluster:
     def __init__(self, center):
+        """
+        Create a new cluster with the given `center`.
+
+        A new cluster only contains a single point, its center.
+        """
         self.points = {center}
         self.center  = center
         self.radius = 0
 
     def addpoint(self, p):
+        """
+        Add the point `p` to the cluster.
+        """
         self.points.add(p)
         self.radius = max(self.radius, self.dist(p))
 
     def dist(self, point):
+        """
+        Return the distance between the centers of `self` and `other`.  Note,
+        this allows `Cluster` to be treated like a point.
+        """
         return self.center.dist(point)
 
     def updateradius(self):
+        """
+        Set the radius of the cluster to be the farthest distance from a point
+        to the center.
+        """
         self.radius = max((self.dist(p) for p in self.points), default = 0)
 
     def pop(self):
-        """ Remove and return the farthest point in the cluster.
+        """
+        Remove and return the farthest point in the cluster.
+
+        Returns `None` if there there are no points other than the center.
         """
         if len(self) == 1:
             return None
@@ -31,7 +50,9 @@ class Cluster:
         return p
 
     def rebalance(self, other):
-        """ Move points from other to self.
+        """
+        Move points from the cluster `other` to the cluster `self` if they are
+        closer to the `self` center.
         """
         pts_to_move = {p for p in other.points if self.dist(p) < other.dist(p)}
         other.points -= pts_to_move
@@ -46,29 +67,52 @@ class Cluster:
             max(self.radius, other.radius)
 
     def __len__(self):
+        """
+        Return the total number of points in the cluster, including the center.
+        """
         return len(self.points)
 
-    # def key(self):
-    #     """ The distance to the farthest point.
-    #     """
-    #     return self.radius
-
-    def __lt__(self, other):
-        """We reverse the order so that the min heap will serve as a max heap.
+    def __gt__(self, other):
+        """
+        Clusters are ordered by their radii.
         """
         return self.radius > other.radius
 
 class ClusterGraph(Graph):
     # Initialize it as an empty graph.
-    def __init__(self, points):
+    def __init__(self, points, root = None):
+        """
+        Initialize a new ClusterGraph.
+
+        It starts with an iterable of points.  The first point will be the
+        center of the default cluster and all other points will be placed
+        inside.
+        """
+        # Initialize the `ClusterGraph` to be a `Graph`.
         Graph.__init__(self)
         P = iter(points)
-        root = Cluster(next(P))
+        # Make a cluster to start the graph.  Use the first point as the root
+        # if none is give.
+        root_cluster = Cluster(root or next(P))
+        # Add the points to the root cluster.
+        # It doesn't matter if the root point is also in the list of points.
+        # It will not be added twice.
         for p in P:
-            root.addpoint(p)
-        self.addvertex(root)
+            root_cluster.addpoint(p)
+        # Add the new cluster as the one vertex of the graph.
+        self.addvertex(root_cluster)
+        self.heap = MaxHeap([root_cluster])
 
     def addcluster(self, newcenter, parent):
+        """
+        Add a new cluster centered at `newcenter`.
+
+        The `parent` is a suffciently close cluster that is already in the
+        graph.
+        It is used to find nearby clusters to be the neighbors.
+        The clusters are rebalanced with points moving from nearby clusters into
+        the new cluster if it is closer.
+        """
         # Create the new cluster.
         newcluster = Cluster(newcenter)
         # Make the cluster a new vertex.
@@ -77,6 +121,7 @@ class ClusterGraph(Graph):
         newcluster.rebalance(parent)
         for nbr in self.nbrs(parent):
             newcluster.rebalance(nbr)
+            self.heap.reducekey(nbr)
 
         # Find potential new neighbors
         nbrs = self.nbrs(parent)
@@ -92,8 +137,12 @@ class ClusterGraph(Graph):
             if newcluster.iscloseenoughto(newnbr):
                 self.addedge(newcluster, newnbr)
 
+        # self.heap.insert(newcluster)
+        return newcluster
+
     def closenbrs(self, u):
         """ Return the neighbors of u in the cluster graph.
+
         The neighbors are autoamtically pruned to only include those that are
         sufficiently close with respect to their radii.
         """

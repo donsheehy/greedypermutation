@@ -19,15 +19,10 @@ Clusters A and B are neighbors if a point in A could be moved to the cluster of 
 Clusters
 --------
 
-The interface to a Cluster is as follows.
+The interface to a `Cluster` is as follows.
 
-- `__init__(self, center)` Create a new cluster with the given center.
-- `addpoint(self, p)` Add the point p to the cluster.
-- `updateradius(self)` Set the radius to be the distance to the farthest point from the center to a point in the cluster.
-- `dist(self, other)` Return the distance between the centers of `self` and `other`.  Note, this allows `Cluster` to be treated like a point.
-- `rebalance(self, other)` Move points from the cluster `other` to the cluster `self` if they are closer to the `self` center.
-- `pop(self)` Return and remove the farthest point from the center.  Returns `None` if there there are no points other than the center.
-- `__len__(self)` Return the total number of points in the cluster, including the center.
+.. autoclass:: greedypermutation.Cluster
+  :members:
 
 There are three public attributes:
 
@@ -39,8 +34,6 @@ The ClusterGraph
 ----------------
 
 A `ClusterGraph` is a `Graph`.
-It supports the following methods.
 
-- `__init__(self, points)` It starts with an iterable of points.  The first point will be the center of the default cluster and all other points will be placed inside.
-- `addcluster(self, center)` Add a new cluster with the given center.  Update the clusters (by distance) and the edges of the graph.
-- `closenbrs(self, u)` Iterates over the neighbors of `u` that are close enough to be real neighbors.  Any extra edges are removed quietly behind the scenes.
+.. autoclass:: greedypermutation.ClusterGraph
+  :members:

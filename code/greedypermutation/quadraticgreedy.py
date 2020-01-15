@@ -22,7 +22,7 @@ def greedytree(M, seed = None):
         seed_index = P.index(seed)
         P[0], P[seed_index] = P[seed_index], P[0]
     n = len(P)
-    yield P[0], 0
+    yield P[0], None
     pred = {p:0 for p in P}
     preddist = {p: M.dist(p, P[pred[p]]) for p in P}
     for i in range(1,n):

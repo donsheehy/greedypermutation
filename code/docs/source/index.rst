@@ -12,6 +12,7 @@ Welcome to greedypermutations's documentation!
 
    greedy
    clarkson
+   maxheap
    clustergraph
    point
    file_formats
