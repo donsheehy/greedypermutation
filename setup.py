@@ -11,7 +11,7 @@ setuptools.setup(
     description="A package for computing greedy permutations",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://donsheehy.net",
+    url="https://github.com/donsheehy/greedypermutation",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -10,5 +10,10 @@ If the new point is far away, we'd like to skip this check.
 The following approach attributed to Clarkson reduces these checks.
 It is incremental.
 After :math:`i` points are added, the *current radius* is the distance from the last point added to its nearest predecessor.
-The main idea is to maintain a graph whose vertex set is the current set fo inserted points.
+The main idea is to maintain a graph whose vertex set is the current set of inserted points.
+Each defines a cluster.
 Two vertices are neighbors in this graph if their distance is less than three times the current radius.
+After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
+This eliminates many checks.
+Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
+The implementation of this algorithm uses the `ClusterGraph` data structure.
