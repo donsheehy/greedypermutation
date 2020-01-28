@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Cluster Graph &mdash; greedypermutations 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="A Generic Point" href="point.html" />
+    <link rel="prev" title="MaxHeap" href="maxheap.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> greedypermutations
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="greedy.html">Greedy Permutations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clarkson.html">Clarkson’s Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maxheap.html">MaxHeap</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cluster Graph</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clusters">Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-clustergraph">The ClusterGraph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">greedypermutations</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Cluster Graph</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/clustergraph.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cluster-graph">
+<h1>Cluster Graph<a class="headerlink" href="#cluster-graph" title="Permalink to this headline">¶</a></h1>
+<p>The <strong>Cluster Graph</strong> is a data structure that maintains a neighborhood graph on a collection of clusters.
+Each vertex is associated with a cluster of points centered at a single point.
+Each cluster has a <em>cluster radius</em> equal to the largest distance from the center to a point in the cluster.
+The graph itself also has a <em>graph radius</em> that determines its edges.
+The graph radius is always at least as large as the largest cluster radius.
+Two clusters are neighbors in the cluster graph if the distance between their centers is less than three times the graph radius.</p>
+<p>The cluster graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the cluster graph).
+First, it limits which vertices might be considered to move into the new cluster.
+Only the vertices in a neighboring cluster will be checked.
+Second, it helps us quickly find the neighbors of the new cluster.
+These needs translate into the following two conditions.</p>
+<p>Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).</p>
+<div class="section" id="clusters">
+<h2>Clusters<a class="headerlink" href="#clusters" title="Permalink to this headline">¶</a></h2>
+<p>The interface to a <cite>Cluster</cite> is as follows.</p>
+<dl class="class">
+<dt id="greedypermutation.Cluster">
+<em class="property">class </em><code class="sig-name descname">Cluster</code><span class="sig-paren">(</span><em class="sig-param">center</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="greedypermutation.Cluster.addpoint">
+<code class="sig-name descname">addpoint</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.addpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the point <cite>p</cite> to the cluster.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="greedypermutation.Cluster.dist">
+<code class="sig-name descname">dist</code><span class="sig-paren">(</span><em class="sig-param">point</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the distance between the centers of <cite>self</cite> and <cite>other</cite>.  Note,
+this allows <cite>Cluster</cite> to be treated like a point.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="greedypermutation.Cluster.pop">
+<code class="sig-name descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove and return the farthest point in the cluster.</p>
+<p>Returns <cite>None</cite> if there there are no points other than the center.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="greedypermutation.Cluster.rebalance">
+<code class="sig-name descname">rebalance</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.rebalance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move points from the cluster <cite>other</cite> to the cluster <cite>self</cite> if they are
+closer to the <cite>self</cite> center.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="greedypermutation.Cluster.updateradius">
+<code class="sig-name descname">updateradius</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.updateradius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the radius of the cluster to be the farthest distance from a point
+to the center.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>There are three public attributes:</p>
+<ul class="simple">
+<li><p><cite>points</cite> an iterable collection of points.</p></li>
+<li><p><cite>center</cite> the center point.</p></li>
+<li><p><cite>radius</cite> the max distance between the center and a point in the cluster.</p></li>
+</ul>
+</div>
+<div class="section" id="the-clustergraph">
+<h2>The ClusterGraph<a class="headerlink" href="#the-clustergraph" title="Permalink to this headline">¶</a></h2>
+<p>A <cite>ClusterGraph</cite> is a <cite>Graph</cite>.</p>
+<dl class="class">
+<dt id="greedypermutation.ClusterGraph">
+<em class="property">class </em><code class="sig-name descname">ClusterGraph</code><span class="sig-paren">(</span><em class="sig-param">points</em>, <em class="sig-param">root=None</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="greedypermutation.ClusterGraph.addcluster">
+<code class="sig-name descname">addcluster</code><span class="sig-paren">(</span><em class="sig-param">newcenter</em>, <em class="sig-param">parent</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.addcluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new cluster centered at <cite>newcenter</cite>.</p>
+<p>The <cite>parent</cite> is a suffciently close cluster that is already in the
+graph.
+It is used to find nearby clusters to be the neighbors.
+The clusters are rebalanced with points moving from nearby clusters into
+the new cluster if it is closer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="greedypermutation.ClusterGraph.closenbrs">
+<code class="sig-name descname">closenbrs</code><span class="sig-paren">(</span><em class="sig-param">u</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.closenbrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the neighbors of u in the cluster graph.</p>
+<p>The neighbors are autoamtically pruned to only include those that are
+sufficiently close with respect to their radii.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="point.html" class="btn btn-neutral float-right" title="A Generic Point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="maxheap.html" class="btn btn-neutral float-left" title="MaxHeap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Don Sheehy
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
