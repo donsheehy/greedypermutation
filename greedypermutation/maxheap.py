@@ -40,7 +40,6 @@ class MaxHeap:
         self._downheap(0)
         return item
 
-
     def _downheap(self, i):
         L = self._items
         children = self._children(i)

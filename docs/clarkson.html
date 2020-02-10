@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -161,11 +161,32 @@ Adding a new point takes linear time and then updating the reverse nearest neigh
 Thus, the entire construction takes quadratic time.
 There is a clear opportunity for improvement in this algorithm; adding a new point requires checking points that are far away to see if their nearest neighbor has changed.
 If the new point is far away, we’d like to skip this check.</p>
-<p>The following approach attributed to Clarkson reduces these checks.
+<p>The following approach attributed to Clarkson reduces these checks (See <a class="bibtex reference internal" href="#clarkson97nearest" id="id1">[Cla97]</a>, <a class="bibtex reference internal" href="#clarkson99nearest" id="id2">[Cla99]</a>,  <a class="bibtex reference internal" href="#clarkson03nearest" id="id3">[Cla03]</a>).
+The variation we present resembles more closely the presentation in Har-Peled and Mendel <a class="bibtex reference internal" href="#har-peled06fast" id="id4">[HPM06]</a>.
 It is incremental.
 After <span class="math notranslate nohighlight">\(i\)</span> points are added, the <em>current radius</em> is the distance from the last point added to its nearest predecessor.
-The main idea is to maintain a graph whose vertex set is the current set fo inserted points.
-Two vertices are neighbors in this graph if their distance is less than three times the current radius.</p>
+The main idea is to maintain a graph whose vertex set is the current set of inserted points.
+Each defines a cluster.
+Two vertices are neighbors in this graph if their distance is less than three times the current radius.
+After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
+This eliminates many checks.
+Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
+The implementation of this algorithm uses the <cite>ClusterGraph</cite> data structure.</p>
+<p id="bibtex-bibliography-clarkson-0"><dl class="citation">
+<dt class="bibtex label" id="clarkson97nearest"><span class="brackets"><a class="fn-backref" href="#id1">Cla97</a></span></dt>
+<dd><p>Kenneth L. Clarkson. Nearest neighbor queries in metric spaces. In <em>STOC ‘97: Proceedings of the twenty-ninth annual ACM symposium on Theory of computing</em>. 1997.</p>
+</dd>
+<dt class="bibtex label" id="clarkson99nearest"><span class="brackets"><a class="fn-backref" href="#id2">Cla99</a></span></dt>
+<dd><p>Kenneth L. Clarkson. Nearest neighbor queries in metric spaces. <em>Discrete &amp; Computational Geometry</em>, 22(1):63–93, 1999.</p>
+</dd>
+<dt class="bibtex label" id="clarkson03nearest"><span class="brackets"><a class="fn-backref" href="#id3">Cla03</a></span></dt>
+<dd><p>Kenneth L. Clarkson. Nearest neighbor searching in metric spaces: experimental results for `sb(s)`. Preliminary version presented at ALENEX99, 2003.</p>
+</dd>
+<dt class="bibtex label" id="har-peled06fast"><span class="brackets"><a class="fn-backref" href="#id4">HPM06</a></span></dt>
+<dd><p>Sariel Har-Peled and Manor Mendel. Fast construction of nets in low dimensional metrics, and their applications. <em>SIAM Journal on Computing</em>, 35(5):1148–1184, 2006.</p>
+</dd>
+</dl>
+</p>
 </div>
 
 

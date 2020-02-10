@@ -7,7 +7,8 @@ Thus, the entire construction takes quadratic time.
 There is a clear opportunity for improvement in this algorithm; adding a new point requires checking points that are far away to see if their nearest neighbor has changed.
 If the new point is far away, we'd like to skip this check.
 
-The following approach attributed to Clarkson reduces these checks.
+The following approach attributed to Clarkson reduces these checks (See :cite:`clarkson97nearest`, :cite:`clarkson99nearest`,  :cite:`clarkson03nearest`).
+The variation we present resembles more closely the presentation in Har-Peled and Mendel :cite:`har-peled06fast`.
 It is incremental.
 After :math:`i` points are added, the *current radius* is the distance from the last point added to its nearest predecessor.
 The main idea is to maintain a graph whose vertex set is the current set of inserted points.
@@ -17,3 +18,7 @@ After each insertion, the only points that move (i.e., have new nearest neighbor
 This eliminates many checks.
 Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
 The implementation of this algorithm uses the `ClusterGraph` data structure.
+
+
+
+.. bibliography:: references.bib

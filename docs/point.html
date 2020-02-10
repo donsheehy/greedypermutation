@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -165,7 +165,8 @@ It must implement the following methods:</p>
 <li><p><cite>__hash__</cite> We will often want to store sets of points and thus Points must be hashable.</p></li>
 <li><p><cite>__str__</cite> It is often useful to print the points.</p></li>
 </ul>
-<p>These will be our basic requirements for a <cite>Point</cite> class.</p>
+<p>These will be our basic requirements for a <cite>Point</cite> class.
+If you want to define your own metric to use with this package, it need only implement these methods in order to work.</p>
 </div>
 
 

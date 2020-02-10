@@ -11,3 +11,4 @@ It must implement the following methods:
 - `__str__` It is often useful to print the points.
 
 These will be our basic requirements for a `Point` class.
+If you want to define your own metric to use with this package, it need only implement these methods in order to work.
