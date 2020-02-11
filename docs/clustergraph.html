@@ -171,7 +171,14 @@ First, it limits which vertices might be considered to move into the new cluster
 Only the vertices in a neighboring cluster will be checked.
 Second, it helps us quickly find the neighbors of the new cluster.
 These needs translate into the following two conditions.</p>
-<p>Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).</p>
+<ol class="arabic simple">
+<li><p>Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).</p></li>
+<li><p>If we add a point in A as the center of a new cluster.  It’s neighbors will be a subset of the neighbors of neighbors of A.</p></li>
+</ol>
+<p>These two conditions respectively suffice to guarantee that when a new cluster is created, we can find the points in the cluster and the neighbors.
+In practice, we may keep more neighbors, relying on distances to prune away edges that cannot indicate true neighbors according to the conditions above.
+Specifically, we keep neighbors <span class="math notranslate nohighlight">\(A\sim B\)</span> if the distance from <span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(B\)</span> is at most the sum of the radii plus the larger of the radii.
+It’s not hard to check that if this condition does not hold, then, <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> cannot be neighbors.</p>
 <div class="section" id="clusters">
 <h2>Clusters<a class="headerlink" href="#clusters" title="Permalink to this headline">¶</a></h2>
 <p>The interface to a <cite>Cluster</cite> is as follows.</p>

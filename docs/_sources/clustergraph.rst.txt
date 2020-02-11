@@ -14,7 +14,14 @@ Only the vertices in a neighboring cluster will be checked.
 Second, it helps us quickly find the neighbors of the new cluster.
 These needs translate into the following two conditions.
 
-Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).
+1. Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).
+
+2. If we add a point in A as the center of a new cluster.  It's neighbors will be a subset of the neighbors of neighbors of A.
+
+These two conditions respectively suffice to guarantee that when a new cluster is created, we can find the points in the cluster and the neighbors.
+In practice, we may keep more neighbors, relying on distances to prune away edges that cannot indicate true neighbors according to the conditions above.
+Specifically, we keep neighbors :math:`A\sim B` if the distance from :math:`A` to :math:`B` is at most the sum of the radii plus the larger of the radii.
+It's not hard to check that if this condition does not hold, then, :math:`A` and :math:`B` cannot be neighbors.
 
 Clusters
 --------
