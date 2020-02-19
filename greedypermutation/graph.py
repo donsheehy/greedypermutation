@@ -20,4 +20,5 @@ class Graph(Digraph):
         This will raise a KeyError if the edge (u,v) is not already in the graph.
         """
         self._nbrs[u].remove(v)
-        self._nbrs[v].remove(u)
+        if u is not v:
+            self._nbrs[v].remove(u)

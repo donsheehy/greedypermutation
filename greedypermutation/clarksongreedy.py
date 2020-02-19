@@ -16,22 +16,18 @@ def greedytree(M, seed = None):
     # Yield the first point.
     yield root.center, None
 
-    # Keep track of the number fo points yielded so far.
-    count = 0
     # Store the indices of the previous points
     index = {root : 0}
 
-    while H:
-        cluster = H.removemax()
+    for i in range(1, len(M)):
+        cluster = H.findmax()
         point = cluster.pop()
+
+
         yield point, index[cluster]
 
         newcluster = G.addcluster(point, cluster)
-        index[newcluster] = count + 1
-        count += 1
+        index[newcluster] = i
 
         # Update the heap
-        if newcluster.radius > 0:
-            H.insert(newcluster)
-        if cluster.radius > 0:
-            H.insert(cluster)
+        H.insert(newcluster)

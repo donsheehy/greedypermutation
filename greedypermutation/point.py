@@ -17,6 +17,9 @@ class Point:
         """
         return (sum((a-b)**2 for (a,b) in zip(self, other))) ** (0.5)
 
+    def __getitem__(self, index):
+        return self._p[index]
+
     def __eq__(self, other):
         return self._p == other._p
 

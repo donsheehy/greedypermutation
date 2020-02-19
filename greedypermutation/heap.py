@@ -9,6 +9,7 @@ class Heap:
 
     def insert(self, item):
         self._items.append(item)
+        self._itemmap[item] = len(self) - 1
         self._upheap(len(self) - 1)
 
     def _parent(self, i):

@@ -63,7 +63,7 @@ class Cluster:
         other.updateradius()
 
     def iscloseenoughto(self, other):
-        return other.dist(self.center) < self.radius + other.radius + \
+        return other.dist(self.center) <= self.radius + other.radius + \
             max(self.radius, other.radius)
 
     def __len__(self):
@@ -77,6 +77,9 @@ class Cluster:
         Clusters are ordered by their radii.
         """
         return self.radius > other.radius
+
+    def __repr__(self):
+        return str(self.center)
 
 class ClusterGraph(Graph):
     # Initialize it as an empty graph.
@@ -101,6 +104,7 @@ class ClusterGraph(Graph):
             root_cluster.addpoint(p)
         # Add the new cluster as the one vertex of the graph.
         self.addvertex(root_cluster)
+        self.addedge(root_cluster, root_cluster)
         self.heap = MaxHeap([root_cluster])
 
     def addcluster(self, newcenter, parent):
@@ -117,8 +121,9 @@ class ClusterGraph(Graph):
         newcluster = Cluster(newcenter)
         # Make the cluster a new vertex.
         self.addvertex(newcluster)
+        self.addedge(newcluster, newcluster)
+
         # Rebalence the new cluster.
-        newcluster.rebalance(parent)
         for nbr in self.nbrs(parent):
             newcluster.rebalance(nbr)
             self.heap.reducekey(nbr)
@@ -129,7 +134,7 @@ class ClusterGraph(Graph):
         # nbrs_of_nbrs = set()
         for a in nbrs:
             for b in self.nbrs(a):
-                potential_nbrs |= b
+                potential_nbrs.add(b)
         # potential_nbrs = nbrs | nbrs_of_nbrs
 
         # Add neighbors to the new cluster.
