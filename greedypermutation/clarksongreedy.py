@@ -23,7 +23,6 @@ def greedytree(M, seed = None):
         cluster = H.findmax()
         point = cluster.pop()
 
-
         yield point, index[cluster]
 
         newcluster = G.addcluster(point, cluster)
