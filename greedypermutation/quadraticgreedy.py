@@ -1,5 +1,3 @@
-from .metricspace import MetricSpace
-
 def greedy(M, seed = None):
     """ Return an iterator that yields the points of `M` ordered by a greedy
     permutation.

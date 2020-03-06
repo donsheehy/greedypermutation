@@ -8,6 +8,8 @@ class Point:
 
     @staticmethod
     def fromstring(s):
+        """Return a new point object from a string representation.
+        """
         return Point(x for x in s.split())
 
     def dist(self, other):
@@ -37,6 +39,3 @@ class Point:
 
     def __repr__(self):
         return str(self)
-
-if __name__ == '__main__':
-    pass

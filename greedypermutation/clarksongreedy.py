@@ -1,6 +1,5 @@
-from .metricspace import MetricSpace
-from .point import Point
-from .clustergraph import Cluster, ClusterGraph
+from greedypermutation.clustergraph import Cluster, ClusterGraph
+from greedypermutation.maxheap import MaxHeap
 
 def greedy(M, seed = None):
     for p, i in greedytree(M, seed):

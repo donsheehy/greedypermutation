@@ -1,5 +1,6 @@
-from .graph import Graph
-from .maxheap import MaxHeap
+from ds2.graph import Graph
+# from ds2.priorityqueue import PriorityQueue
+from greedypermutation.maxheap import MaxHeap
 
 class Cluster:
     def __init__(self, center):
@@ -72,7 +73,7 @@ class Cluster:
         """
         return len(self.points)
 
-    def __gt__(self, other):
+    def __lt__(self, other):
         """
         Clusters are ordered by their radii.
         """
@@ -105,7 +106,8 @@ class ClusterGraph(Graph):
         # Add the new cluster as the one vertex of the graph.
         self.addvertex(root_cluster)
         self.addedge(root_cluster, root_cluster)
-        self.heap = MaxHeap([root_cluster])
+        self.heap = MaxHeap([root_cluster], key = lambda c: c.radius)
+
 
     def addcluster(self, newcenter, parent):
         """
@@ -126,7 +128,7 @@ class ClusterGraph(Graph):
         # Rebalence the new cluster.
         for nbr in self.nbrs(parent):
             newcluster.rebalance(nbr)
-            self.heap.reducekey(nbr)
+            self.heap.changepriority(nbr)
 
         # Find potential new neighbors
         nbrs = self.nbrs(parent)
