@@ -7,9 +7,11 @@ verify_ssl = true
 sphinxcontrib-bibtex = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
+greedypermutation = {editable = true,path = "."}
 
 [packages]
 ds2 = "*"
+greedypermutation = {path = "."}
 
 [requires]
 python_version = "3.7"

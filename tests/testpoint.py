@@ -1,5 +1,4 @@
 import unittest
-from context import greedypermutation
 from greedypermutation import Point
 
 class TestPoint(unittest.TestCase):

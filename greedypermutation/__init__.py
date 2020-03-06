@@ -1,3 +1,3 @@
-from .point import Point
-from .metricspace import MetricSpace
-from .clustergraph import Cluster, ClusterGraph
+from greedypermutation.point import Point
+from greedypermutation.metricspace import MetricSpace
+from greedypermutation.clustergraph import Cluster, ClusterGraph

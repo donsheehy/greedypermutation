@@ -1,5 +1,4 @@
 import unittest
-from context import greedypermutation
 from greedypermutation import Point, Cluster, ClusterGraph
 
 class TestCluster(unittest.TestCase):
