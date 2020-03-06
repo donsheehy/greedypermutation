@@ -2,8 +2,6 @@ MaxHeap
 =======
 
 We provide a simple implementation of a list-based binary max-heap.
-In addition to the standard heap operations, the `MaxHeap` provides a `reducekey` method.
-Note that this is different from the `reducekey` method that one would normally implement for a min-heap.
+The implementation is built on the `PriorityQueue` class from the `ds2` package.
 
-
-.. autofunction:: greedypermutation.MaxHeap.reducekey
+For more information about `ds2`, see `<http://donsheehy.github.io/datastructures>`_
