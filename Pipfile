@@ -8,10 +8,12 @@ sphinxcontrib-bibtex = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 greedypermutation = {editable = true,path = "."}
+sphinx-click = "*"
 
 [packages]
 ds2 = "*"
 greedypermutation = {path = "."}
+click = "*"
 
 [requires]
 python_version = "3.7"

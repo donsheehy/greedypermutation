@@ -3,7 +3,7 @@ class MetricSpace:
         self._points = set(points)
 
     def add(self, point):
-        self._points.append(point)
+        self._points.add(point)
 
     def fromstrings(self, strings, parser):
         for s in strings:
