@@ -88,7 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="clustergraph.html">Cluster Graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#greedypermutation">greedypermutation</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -155,8 +158,47 @@
             
   <div class="section" id="command-line-interface">
 <h1>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
-<p>It is also possible to run the code straight from the command line.
-You can either specify an input file or redirect the data from stdin.</p>
+<p>It is also possible to run the code straight from the command line.</p>
+<div class="section" id="greedypermutation">
+<h2>greedypermutation<a class="headerlink" href="#greedypermutation" title="Permalink to this headline">¶</a></h2>
+<p>Compute a greedy permutation of the points in the <cite>pointsfile</cite>.</p>
+<p>The output will be saved to the file specified by <cite>outfile</cite>.</p>
+<p>By default it will run the Clarkson algorithm.
+If <cite>–algorithm quadratic</cite> is specified, then the quadratic algorithm will
+be used.</p>
+<p>The <cite>–tree</cite> and <a href="#id1"><span class="problematic" id="id2">`</span></a>–notree flags determine if the tree is included in the
+output.  This is managed by appending the index of the
+`</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>greedypermutation <span class="o">[</span>OPTIONS<span class="o">]</span> POINTSFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="option">
+<dt id="cmdoption-greedypermutation-outfile">
+<code class="sig-name descname">--outfile</code><code class="sig-prename descclassname"> &lt;outfile&gt;</code><a class="headerlink" href="#cmdoption-greedypermutation-outfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where to store the output.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-greedypermutation-algorithm">
+<code class="sig-name descname">--algorithm</code><code class="sig-prename descclassname"> &lt;algorithm&gt;</code><a class="headerlink" href="#cmdoption-greedypermutation-algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where to put the generated source code.</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-greedypermutation-tree">
+<code class="sig-name descname">--tree</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--notree</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-greedypermutation-tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include the entire tree in the output.</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="option">
+<dt id="cmdoption-greedypermutation-arg-pointsfile">
+<code class="sig-name descname">POINTSFILE</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-greedypermutation-arg-pointsfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
 </div>
 
 
