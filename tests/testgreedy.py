@@ -1,6 +1,11 @@
 import unittest
 from random import randrange
-from greedypermutation import Point, MetricSpace, quadraticgreedy, clarksongreedy
+from greedypermutation import (Point,
+                               MetricSpace,
+                               quadraticgreedy,
+                               clarksongreedy,
+                               heapgreedy,
+                               )
 
 class GreedyTests:
     def testgreedy(self):
@@ -48,11 +53,28 @@ class GreedyTests:
         for i in range(n-2):
             self.assertTrue(radii[i] >= radii[i+1], str([i, radii[i], radii[i+1]]))
 
-class TestQuadraticGreedy(unittest.TestCase, GreedyTests):
-    implementation = quadraticgreedy
+    def testgreedytree_otherexample(self):
+        greedytree = self.implementation.greedytree
+        P = [Point([c]) for c in [0, 100, 49, 25, 60, 12, 81]]
+        M = MetricSpace(P)
+        self.root = P[0]
+        from collections import defaultdict
+        self.ch = defaultdict(list)
+        for p, i in greedytree(M, self.root):
+            if i is not None:
+                self.ch[P[i]].append(p)
 
-class TestClarksonGreedy(unittest.TestCase, GreedyTests):
-    implementation = clarksongreedy
+
+
+def _test(impl):
+    class GreedyTestCase(unittest.TestCase, GreedyTests):
+        implementation = impl
+    return GreedyTestCase
+
+
+TestQuadraticGreedy = _test(quadraticgreedy)
+TestClarksonGreedy = _test(clarksongreedy)
+TestHeapGreedy = _test(heapgreedy)
 
 if __name__ == '__main__':
     unittest.main()

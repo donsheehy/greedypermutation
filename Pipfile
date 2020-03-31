@@ -7,12 +7,12 @@ verify_ssl = true
 sphinxcontrib-bibtex = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
-greedypermutation = {editable = true,path = "."}
 sphinx-click = "*"
+greedypermutation = {editable = true,path = "."}
+nose = "*"
 
 [packages]
 ds2 = "*"
-greedypermutation = {path = "."}
 click = "*"
 
 [requires]
