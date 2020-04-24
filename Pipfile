@@ -10,10 +10,12 @@ sphinx-rtd-theme = "*"
 sphinx-click = "*"
 greedypermutation = {editable = true,path = "."}
 nose = "*"
+ds2viz = "*"
 
 [packages]
 ds2 = "*"
 click = "*"
+greedypermutation = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"

@@ -1,14 +1,20 @@
 def greedy(M, seed = None):
-    """ Return an iterator that yields the points of `M` ordered by a greedy
+    """
+    Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
+
+    The optional `seed` parameter indicates the point that should appear first.
     """
     for p, i in greedytree(M, seed):
         yield p
 
 def greedytree(M, seed = None):
-    """ Return an iterator that yields `(point, index)` pairs, where `point`
+    """
+    Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
     nearest predecessor.
+
+    The optional `seed` parameter indicates the point that should appear first.
     """
     P = list(M)
 

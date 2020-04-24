@@ -1,6 +1,6 @@
 from ds2.graph import Graph
-# from ds2.priorityqueue import PriorityQueue
 from greedypermutation.maxheap import MaxHeap
+
 
 class Cluster:
     def __init__(self, center):
@@ -46,6 +46,7 @@ class Cluster:
         # This is linear time!  We should maybe use a heap here.
         # However, the pop is followed by an update that will iterate over all
         # the points anyway.
+        # For knn sampling, the pop might not require such an iteration.
         self.points.remove(p)
         self.updateradius()
         return p
@@ -55,23 +56,27 @@ class Cluster:
         Move points from the cluster `other` to the cluster `self` if they are
         closer to the `self` center.
         """
-        pts_to_move = {p for p in other.points if self.dist(p) < other.dist(p)}
-        other.points -= pts_to_move
-        for p in pts_to_move:
+        points_to_move = {p for p in other.points if self.dist(p) < other.dist(p)}
+        other.points -= points_to_move
+        for p in points_to_move:
             self.addpoint(p)
         # The radius of self is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         other.updateradius()
 
     def iscloseenoughto(self, other):
+        # return other.dist(self.center) <= self.radius + 2 * other.radius
         return other.dist(self.center) <= self.radius + other.radius + \
-            max(self.radius, other.radius)
+                max(self.radius, other.radius)
 
     def __len__(self):
         """
         Return the total number of points in the cluster, including the center.
         """
         return len(self.points)
+
+    def __contains__(self, point):
+        return point in self.points
 
     def __lt__(self, other):
         """
@@ -83,6 +88,8 @@ class Cluster:
         return str(self.center)
 
 class ClusterGraph(Graph):
+    Vertex = Cluster
+
     # Initialize it as an empty graph.
     def __init__(self, points, root = None):
         """
@@ -93,11 +100,11 @@ class ClusterGraph(Graph):
         inside.
         """
         # Initialize the `ClusterGraph` to be a `Graph`.
-        Graph.__init__(self)
+        super().__init__()
         P = iter(points)
         # Make a cluster to start the graph.  Use the first point as the root
         # if none is give.
-        root_cluster = Cluster(root or next(P))
+        root_cluster = self.Vertex(root or next(P))
         # Add the points to the root cluster.
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
@@ -120,7 +127,7 @@ class ClusterGraph(Graph):
         the new cluster if it is closer.
         """
         # Create the new cluster.
-        newcluster = Cluster(newcenter)
+        newcluster = self.Vertex(newcenter)
         # Make the cluster a new vertex.
         self.addvertex(newcluster)
         self.addedge(newcluster, newcluster)
@@ -130,34 +137,31 @@ class ClusterGraph(Graph):
             newcluster.rebalance(nbr)
             self.heap.changepriority(nbr)
 
-        # Find potential new neighbors
-        nbrs = self.nbrs(parent)
-        potential_nbrs = set(self.nbrs(parent))
-        # nbrs_of_nbrs = set()
-        for a in nbrs:
-            for b in self.nbrs(a):
-                potential_nbrs.add(b)
-        # potential_nbrs = nbrs | nbrs_of_nbrs
-
         # Add neighbors to the new cluster.
-        for newnbr in potential_nbrs:
+        for newnbr in self.nbrs_of_nbrs(parent):
             if newcluster.iscloseenoughto(newnbr):
                 self.addedge(newcluster, newnbr)
+            if newnbr.iscloseenoughto(newcluster):
+                self.addedge(newnbr, newcluster)
 
-        # self.heap.insert(newcluster)
+        # After all the radii are updated, prune edges that are too long.
+        for nbr in set(self.nbrs(parent)):
+            self.prunenbrs(nbr)
+
+        self.heap.insert(newcluster)
         return newcluster
 
-    def closenbrs(self, u):
-        """ Return the neighbors of u in the cluster graph.
+    def nbrs_of_nbrs(self, u):
+        return {b for a in self.nbrs(u) for b in self.nbrs(a)}
 
-        The neighbors are autoamtically pruned to only include those that are
-        sufficiently close with respect to their radii.
+    def prunenbrs(self, u):
+        """
+        Eliminate neighbors that are too far with respect to the current
+        radius.
         """
         nbrs_to_delete = set()
         for v in self.nbrs(u):
-            if u.iscloseenoughto(v):
-                yield v
-            else:
+            if not u.iscloseenoughto(v):
                 nbrs_to_delete.add(v)
 
         # Prune the excess edges.

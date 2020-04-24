@@ -1,5 +1,6 @@
 import unittest
-from random import randrange
+from random import randrange, seed
+from collections import defaultdict
 from greedypermutation import (Point,
                                MetricSpace,
                                quadraticgreedy,
@@ -41,11 +42,12 @@ class GreedyTests:
 
     def testgreedytree_bigexample(self):
         greedytree = self.implementation.greedytree
-        n = 500
-        coords = [(randrange(100), randrange(100), randrange(100)) for i in range(n)]
+        n = 600
+        coords = set()
+        while len(coords) < n:
+            coords.add((randrange(100), randrange(100), randrange(100)))
         P = [Point(c) for c in coords]
         M = MetricSpace(P)
-        n = len(M) # we might get duplicate points.
 
         GP = list(greedytree(M, P[0]))
         radii = [p.dist(GP[i][0]) for p,i in GP if i is not None]
@@ -53,18 +55,37 @@ class GreedyTests:
         for i in range(n-2):
             self.assertTrue(radii[i] >= radii[i+1], str([i, radii[i], radii[i+1]]))
 
-    def testgreedytree_otherexample(self):
+    def testgreedytree_example2(self):
         greedytree = self.implementation.greedytree
         P = [Point([c]) for c in [0, 100, 49, 25, 60, 12, 81]]
         M = MetricSpace(P)
-        self.root = P[0]
-        from collections import defaultdict
-        self.ch = defaultdict(list)
-        for p, i in greedytree(M, self.root):
+        root = P[0]
+        gt = list(greedytree(M, root))
+        gp = [p for p, i in gt]
+        ch = defaultdict(list)
+        for p, i in greedytree(M, root):
             if i is not None:
-                self.ch[P[i]].append(p)
+                ch[gp[i]].append(p)
+        self.assertEqual(gp, [P[i] for i in [0, 1, 2, 3, 6, 5, 4]])
 
+    def testgreedytree_example3(self):
+        greedytree = self.implementation.greedytree
+        P = [Point([c]) for c in [0, 1, 3, 5, 20, 30]]
+        M = MetricSpace(P)
+        gt = list(greedytree(M, P[0]))
+        gp = [p for p, i in gt]
+        ch = defaultdict(set)
+        for p, i in gt:
+            if i is not None:
+                ch[gp[i]].add(p)
 
+        self.assertEqual(gp, [P[0], P[5], P[4], P[3], P[2], P[1]])
+        self.assertEqual(ch[P[0]], {P[5], P[3], P[1]})
+        self.assertEqual(ch[P[1]], set())
+        self.assertEqual(ch[P[2]], set())
+        self.assertEqual(ch[P[3]], {P[2]})
+        self.assertEqual(ch[P[4]], set())
+        self.assertEqual(ch[P[5]], {P[4]})
 
 def _test(impl):
     class GreedyTestCase(unittest.TestCase, GreedyTests):
@@ -74,7 +95,7 @@ def _test(impl):
 
 TestQuadraticGreedy = _test(quadraticgreedy)
 TestClarksonGreedy = _test(clarksongreedy)
-TestHeapGreedy = _test(heapgreedy)
+# TestHeapGreedy = _test(heapgreedy)
 
 if __name__ == '__main__':
     unittest.main()

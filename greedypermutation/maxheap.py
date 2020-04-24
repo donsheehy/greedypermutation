@@ -1,4 +1,3 @@
-# from .heap import Heap
 from ds2.priorityqueue import PriorityQueue
 
 class MaxHeap(PriorityQueue):
