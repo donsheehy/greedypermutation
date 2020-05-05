@@ -49,18 +49,6 @@ class TestCluster(unittest.TestCase):
         self.assertEqual(A.dist(A.center), 0)
         self.assertEqual(A.dist(Point([7,15])), 13)
 
-    def testrebalance(self):
-        a, b = Point([-1]), Point([200])
-        A = Cluster(a)
-        B = Cluster(b)
-        for i in range(200):
-            B.addpoint(Point([i]))
-        self.assertEqual(len(A), 1)
-        self.assertEqual(len(B), 201)
-        A.rebalance(B)
-        self.assertEqual(len(B), 101)
-        self.assertEqual(len(A), 101)
-
     def testpop(self):
         a,b,c,d = Point([0,0]), Point([100, 0]), Point([0,50]), Point([25,25])
         C = Cluster(a)
@@ -82,12 +70,6 @@ class TestCluster(unittest.TestCase):
     #         C[0].addpoint(p)
     #     for i in range(len(S) - 2)
 
-
-
-
-
-
-
 class TestClusterGraph(unittest.TestCase):
     def testbasicusage(self):
         G = ClusterGraph([Point([i,i]) for i in range(100)])
@@ -96,6 +78,20 @@ class TestClusterGraph(unittest.TestCase):
         # self.assertEqual(len(G), 2)
         # for v in G.vertices():
         #     self.assertEqual(len(set(G.nbrs(v))), 1)
+
+    def testrebalance(self):
+        a, b = Point([-1]), Point([200])
+        G = ClusterGraph([a,b])
+        A = Cluster(a)
+        B = Cluster(b)
+        for i in range(200):
+            B.addpoint(Point([i]))
+        self.assertEqual(len(A), 1)
+        self.assertEqual(len(B), 201)
+        G.rebalance(A, B)
+        self.assertEqual(len(B), 101)
+        self.assertEqual(len(A), 101)
+
 
     def testneighborsofneighborscondition(self):
         """ This somewhat long test was written to expose a bug where

@@ -22,8 +22,8 @@ class Cluster:
 
     def dist(self, point):
         """
-        Return the distance between the centers of `self` and `other`.  Note,
-        this allows `Cluster` to be treated like a point.
+        Return the distance between the center of the cluster and `point`.
+        Note, this allows the cluster to be treated almost like a point.
         """
         return self.center.dist(point)
 
@@ -51,31 +51,22 @@ class Cluster:
         self.updateradius()
         return p
 
-    def rebalance(self, other):
-        """
-        Move points from the cluster `other` to the cluster `self` if they are
-        closer to the `self` center.
-        """
-        points_to_move = {p for p in other.points if self.dist(p) < other.dist(p)}
-        other.points -= points_to_move
-        for p in points_to_move:
-            self.addpoint(p)
-        # The radius of self is automatically updated by addpoint.
-        # The other radius needs to be manually updated.
-        other.updateradius()
-
-    def iscloseenoughto(self, other):
-        # return other.dist(self.center) <= self.radius + 2 * other.radius
-        return other.dist(self.center) <= self.radius + other.radius + \
-                max(self.radius, other.radius)
-
     def __len__(self):
         """
         Return the total number of points in the cluster, including the center.
         """
         return len(self.points)
 
+    def __iter__(self):
+        """
+        Return an iterator over the points in the cluster.
+        """
+        return iter(self.points)
+
     def __contains__(self, point):
+        """
+        Return True if and only if `point` is in the cluster.
+        """
         return point in self.points
 
     def __lt__(self, other):
@@ -91,17 +82,33 @@ class ClusterGraph(Graph):
     Vertex = Cluster
 
     # Initialize it as an empty graph.
-    def __init__(self, points, root = None):
+    def __init__(self, points, root = None, nbrconstant = 1, moveconstant = 1):
         """
         Initialize a new ClusterGraph.
 
         It starts with an iterable of points.  The first point will be the
         center of the default cluster and all other points will be placed
         inside.
+
+        There are two constants that can nbe set.
+        The first `nbrconstant`, which controls the distance between neighbors.
+        The second is `moveconstant` which determined when a point is moved
+        when a new cluster is formed.  The default value for both constants is
+        `1`.  This moves a point whenever it has a new nearest neighbor
+
+        The theoretical guarantees are only valid when
+        `moveconstant <= nbrconstant`.  As a result, setting these any other
+        way raises an exception.
         """
         # Initialize the `ClusterGraph` to be a `Graph`.
         super().__init__()
         P = iter(points)
+
+        if nbrconstant < moveconstant:
+            raise RuntimeError("The move constant must not be larger than the"
+                               "neighbor constant.")
+        self.nbrconstant = nbrconstant
+        self.moveconstant = moveconstant
         # Make a cluster to start the graph.  Use the first point as the root
         # if none is give.
         root_cluster = self.Vertex(root or next(P))
@@ -115,6 +122,9 @@ class ClusterGraph(Graph):
         self.addedge(root_cluster, root_cluster)
         self.heap = MaxHeap([root_cluster], key = lambda c: c.radius)
 
+    def iscloseenoughto(self, p, q):
+        return q.dist(p.center) <= p.radius + q.radius + \
+                      self.nbrconstant * max(p.radius, q.radius)
 
     def addcluster(self, newcenter, parent):
         """
@@ -132,17 +142,15 @@ class ClusterGraph(Graph):
         self.addvertex(newcluster)
         self.addedge(newcluster, newcluster)
 
-        # Rebalence the new cluster.
+        # Rebalance the new cluster.
         for nbr in self.nbrs(parent):
-            newcluster.rebalance(nbr)
+            self.rebalance(newcluster, nbr)
             self.heap.changepriority(nbr)
 
         # Add neighbors to the new cluster.
         for newnbr in self.nbrs_of_nbrs(parent):
-            if newcluster.iscloseenoughto(newnbr):
+            if self.iscloseenoughto(newcluster, newnbr):
                 self.addedge(newcluster, newnbr)
-            if newnbr.iscloseenoughto(newcluster):
-                self.addedge(newnbr, newcluster)
 
         # After all the radii are updated, prune edges that are too long.
         for nbr in set(self.nbrs(parent)):
@@ -150,6 +158,27 @@ class ClusterGraph(Graph):
 
         self.heap.insert(newcluster)
         return newcluster
+
+    def pop(self):
+        cluster = self.heap.findmax()
+        point = cluster.pop
+        self.heap.changepriority(cluster)
+        return point
+
+    def rebalance(self, a, b):
+        """
+        Move points from the cluster `b` to the cluster `a` if they are
+        sufficiently closer to `a.center`.
+        """
+        points_to_move = {p for p in b.points
+                            if a.dist(p) < self.moveconstant * b.dist(p)}
+        b.points -= points_to_move
+        for p in points_to_move:
+            a.addpoint(p)
+        # The radius of self is automatically updated by addpoint.
+        # The other radius needs to be manually updated.
+        b.updateradius()
+
 
     def nbrs_of_nbrs(self, u):
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}
@@ -161,7 +190,7 @@ class ClusterGraph(Graph):
         """
         nbrs_to_delete = set()
         for v in self.nbrs(u):
-            if not u.iscloseenoughto(v):
+            if not self.iscloseenoughto(u,v):
                 nbrs_to_delete.add(v)
 
         # Prune the excess edges.

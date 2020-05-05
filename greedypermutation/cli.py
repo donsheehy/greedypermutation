@@ -36,7 +36,7 @@ def cli(pointsfile, outfile, algorithm, tree):
     else:
         import greedypermutation.clarksongreedy as algo
     if tree:
-        for p, i in algo.greedytree(M):
+        for p, i in algo.greedy(M, tree = True):
             outfile.write(str(p) + ';' + str(i) + '\n')
     else:
         for p in algo.greedy(M):

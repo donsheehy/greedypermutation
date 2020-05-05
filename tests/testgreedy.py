@@ -5,7 +5,6 @@ from greedypermutation import (Point,
                                MetricSpace,
                                quadraticgreedy,
                                clarksongreedy,
-                               heapgreedy,
                                )
 
 class GreedyTests:
@@ -28,10 +27,10 @@ class GreedyTests:
             self.assertEqual(next(gp), P[i])
 
     def testgreedytree_randomexample(self):
-        greedytree = self.implementation.greedytree
+        greedy = self.implementation.greedy
         root = Point([0])
         P = MetricSpace([root] + [Point([x]) for x in [8,12, 100, 40, 70, 1, 72]])
-        gp = greedytree(P, root)
+        gp = greedy(P, root, tree = True)
         self.assertEqual(next(gp), (Point([0]), None))
         self.assertEqual(next(gp), (Point([100]), 0)) # radius = 100
         self.assertEqual(next(gp), (Point([40]), 0))
@@ -41,7 +40,7 @@ class GreedyTests:
         self.assertEqual(next(gp), (Point([72]), 3))
 
     def testgreedytree_bigexample(self):
-        greedytree = self.implementation.greedytree
+        greedy = self.implementation.greedy
         n = 600
         coords = set()
         while len(coords) < n:
@@ -49,30 +48,30 @@ class GreedyTests:
         P = [Point(c) for c in coords]
         M = MetricSpace(P)
 
-        GP = list(greedytree(M, P[0]))
+        GP = list(greedy(M, P[0], tree = True))
         radii = [p.dist(GP[i][0]) for p,i in GP if i is not None]
         # Check that the insertion radii are nonincreasing.
         for i in range(n-2):
             self.assertTrue(radii[i] >= radii[i+1], str([i, radii[i], radii[i+1]]))
 
     def testgreedytree_example2(self):
-        greedytree = self.implementation.greedytree
+        greedy = self.implementation.greedy
         P = [Point([c]) for c in [0, 100, 49, 25, 60, 12, 81]]
         M = MetricSpace(P)
         root = P[0]
-        gt = list(greedytree(M, root))
+        gt = list(greedy(M, root, tree = True))
         gp = [p for p, i in gt]
         ch = defaultdict(list)
-        for p, i in greedytree(M, root):
+        for p, i in greedy(M, root, tree = True):
             if i is not None:
                 ch[gp[i]].append(p)
         self.assertEqual(gp, [P[i] for i in [0, 1, 2, 3, 6, 5, 4]])
 
     def testgreedytree_example3(self):
-        greedytree = self.implementation.greedytree
+        greedy = self.implementation.greedy
         P = [Point([c]) for c in [0, 1, 3, 5, 20, 30]]
         M = MetricSpace(P)
-        gt = list(greedytree(M, P[0]))
+        gt = list(greedy(M, P[0], tree = True))
         gp = [p for p, i in gt]
         ch = defaultdict(set)
         for p, i in gt:
@@ -95,7 +94,6 @@ def _test(impl):
 
 TestQuadraticGreedy = _test(quadraticgreedy)
 TestClarksonGreedy = _test(clarksongreedy)
-# TestHeapGreedy = _test(heapgreedy)
 
 if __name__ == '__main__':
     unittest.main()

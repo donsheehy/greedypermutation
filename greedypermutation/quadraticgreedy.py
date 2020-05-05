@@ -1,14 +1,21 @@
-def greedy(M, seed = None):
+def greedy(M, seed = None, tree = False):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
 
     The optional `seed` parameter indicates the point that should appear first.
-    """
-    for p, i in greedytree(M, seed):
-        yield p
 
-def greedytree(M, seed = None):
+    The `tree` parameter is a flag to set whether or not to return also the
+    nearest predecessors in the pairing (thus giving the tree).  If set to
+    `True`, the result will iterate over `(point, index)` pairs.
+    """
+    if tree:
+        yield from _greedy(M, seed)
+    else:
+        for p, i in _greedy(M, seed):
+            yield p
+
+def _greedy(M, seed = None):
     """
     Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
