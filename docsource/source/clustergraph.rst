@@ -20,6 +20,18 @@ In practice, we may keep more neighbors, relying on distances to prune away edge
 Specifically, we keep edges :math:`A\to B` if the distance from :math:`A` to :math:`B` is at most the radius of :math:`A` plus the radius of :math:`b` plus the maximum of the two radii.
 It's not hard to check that if this condition does not hold, then, :math:`A` and :math:`B` cannot be neighbors.
 
+This condition can be relaxed, connecting even more neighbors.
+By setting the `nbrconstant`, one :math:`A\to B` if the distance from :math:`A` to :math:`B` is at most the radius of :math:`A` plus the radius of :math:`b` plus `nbrconstant` times the maximum of the two radii.
+The default setting is `1`.
+
+It is also possible to modify the cluster graph to only move points to a new cluster if their current cluster is no longer an approximate nearest neighbor.
+This is accomplished by setting the `moveconstant` when constructing the `ClusterGraph`.
+Setting this constant to `1/2` checks if the distance to the new cluster center would be at most 1/2 the distance to the current center.
+As a result, the points are all associated with clusters centered at 2-approximate nearest neighbors.
+The default setting is `1`, resulting in exact nearest neighbors.
+It is required that `moveconstant <= nbrconstant`.
+
+
 Clusters
 --------
 
