@@ -4,6 +4,7 @@
 *.fdb_latexmk
 *.aux
 *.pdf
+examples/*.svg
 
 .DS_Store
 

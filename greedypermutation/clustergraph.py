@@ -92,7 +92,7 @@ class ClusterGraph(Graph):
 
         There are two constants that can nbe set.
         The first `nbrconstant`, which controls the distance between neighbors.
-        The second is `moveconstant` which determined when a point is moved
+        The second is `moveconstant` which determines when a point is moved
         when a new cluster is formed.  The default value for both constants is
         `1`.  This moves a point whenever it has a new nearest neighbor
 

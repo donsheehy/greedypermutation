@@ -9,4 +9,9 @@
 ## Factor out all the metric space stuff
 
 
-## Provide a mechanism for importing metic for the CLI
+## Provide a mechanism for importing metric for the CLI
+
+## knnsample returns the tree
+
+This should help with testing.
+It should make it possible to quickly check that each point was really justified according to the greedy algorithm definition.
