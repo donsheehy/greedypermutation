@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Clarkson’s Algorithm &mdash; greedypermutations 0.0.1 documentation</title>
+  <title>One-Hop Greedy Permutations &mdash; greedypermutations 0.0.1 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Greedy kth Nearest Neighbor Sampling" href="knnsampling.html" />
-    <link rel="prev" title="Greedy Permutations" href="greedy.html" /> 
+    <link rel="next" title="A Generic Point" href="point.html" />
+    <link rel="prev" title="GreedyTree" href="greedytree.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,10 +84,12 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="greedy.html">Greedy Permutations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Clarkson’s Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clarkson.html">Clarkson’s Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="knnsampling.html">Greedy kth Nearest Neighbor Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maxheap.html">MaxHeap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustergraph.html">Cluster Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="greedytree.html">GreedyTree</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">One-Hop Greedy Permutations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
@@ -136,13 +138,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Clarkson’s Algorithm</li>
+      <li>One-Hop Greedy Permutations</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/clarkson.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/onehopgreedy.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -155,39 +157,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="clarkson-s-algorithm">
-<h1>Clarkson’s Algorithm<a class="headerlink" href="#clarkson-s-algorithm" title="Permalink to this headline">¶</a></h1>
-<p>The basic algorithm for computing a greedy permutation is to insert the points one at a time, keeping track of the reverse nearest neighbors of each point.
-Adding a new point takes linear time and then updating the reverse nearest neighbors takes linear time.
-Thus, the entire construction takes quadratic time.
-There is a clear opportunity for improvement in this algorithm; adding a new point requires checking points that are far away to see if their nearest neighbor has changed.
-If the new point is far away, we’d like to skip this check.</p>
-<p>The following approach attributed to Clarkson reduces these checks (See <a class="bibtex reference internal" href="#clarkson97nearest" id="id1">[Cla97]</a>, <a class="bibtex reference internal" href="#clarkson99nearest" id="id2">[Cla99]</a>,  <a class="bibtex reference internal" href="#clarkson03nearest" id="id3">[Cla03]</a>).
-The variation we present resembles more closely the presentation in Har-Peled and Mendel <a class="bibtex reference internal" href="#har-peled06fast" id="id4">[HPM06]</a>.
-It is incremental.
-After <span class="math notranslate nohighlight">\(i\)</span> points are added, the <em>current radius</em> is the distance from the last point added to its nearest predecessor.
-The main idea is to maintain a graph whose vertex set is the current set of inserted points.
-Each defines a cluster.
-Two vertices are neighbors in this graph if their distance is less than three times the current radius.
-After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
-This eliminates many checks.
-Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
-The implementation of this algorithm uses the <cite>ClusterGraph</cite> data structure.</p>
-<p id="bibtex-bibliography-clarkson-0"><dl class="citation">
-<dt class="bibtex label" id="clarkson97nearest"><span class="brackets"><a class="fn-backref" href="#id1">Cla97</a></span></dt>
-<dd><p>Kenneth L. Clarkson. Nearest neighbor queries in metric spaces. In <em>STOC ‘97: Proceedings of the twenty-ninth annual ACM symposium on Theory of computing</em>. 1997.</p>
-</dd>
-<dt class="bibtex label" id="clarkson99nearest"><span class="brackets"><a class="fn-backref" href="#id2">Cla99</a></span></dt>
-<dd><p>Kenneth L. Clarkson. Nearest neighbor queries in metric spaces. <em>Discrete &amp; Computational Geometry</em>, 22(1):63–93, 1999.</p>
-</dd>
-<dt class="bibtex label" id="clarkson03nearest"><span class="brackets"><a class="fn-backref" href="#id3">Cla03</a></span></dt>
-<dd><p>Kenneth L. Clarkson. Nearest neighbor searching in metric spaces: experimental results for `sb(s)`. Preliminary version presented at ALENEX99, 2003.</p>
-</dd>
-<dt class="bibtex label" id="har-peled06fast"><span class="brackets"><a class="fn-backref" href="#id4">HPM06</a></span></dt>
-<dd><p>Sariel Har-Peled and Manor Mendel. Fast construction of nets in low dimensional metrics, and their applications. <em>SIAM Journal on Computing</em>, 35(5):1148–1184, 2006.</p>
-</dd>
-</dl>
-</p>
+  <div class="section" id="one-hop-greedy-permutations">
+<h1>One-Hop Greedy Permutations<a class="headerlink" href="#one-hop-greedy-permutations" title="Permalink to this headline">¶</a></h1>
+<p>Rather than adding the farthest point at each step, the one-hop greedy permutation searches a neighborhood around the farthest point.
+It adds the point in this neighborhood that covers the most points that are not already covered.</p>
 </div>
 
 
@@ -198,10 +171,10 @@ The implementation of this algorithm uses the <cite>ClusterGraph</cite> data str
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="knnsampling.html" class="btn btn-neutral float-right" title="Greedy kth Nearest Neighbor Sampling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="point.html" class="btn btn-neutral float-right" title="A Generic Point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="greedy.html" class="btn btn-neutral float-left" title="Greedy Permutations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="greedytree.html" class="btn btn-neutral float-left" title="GreedyTree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

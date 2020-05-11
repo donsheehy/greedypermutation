@@ -84,8 +84,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="greedy.html">Greedy Permutations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clarkson.html">Clarkson’s Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="knnsampling.html">Greedy kth Nearest Neighbor Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maxheap.html">MaxHeap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustergraph.html">Cluster Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="greedytree.html">GreedyTree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onehopgreedy.html">One-Hop Greedy Permutations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
@@ -160,6 +163,7 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#U"><strong>U</strong></a>
@@ -210,18 +214,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="clustergraph.html#greedypermutation.Cluster.addpoint">addpoint() (Cluster method)</a>
 </li>
+      <li><a href="greedytree.html#greedypermutation.GreedyTree.ann">ann() (GreedyTree method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="clustergraph.html#greedypermutation.ClusterGraph.closenbrs">closenbrs() (ClusterGraph method)</a>
+      <li><a href="clustergraph.html#greedypermutation.Cluster">Cluster (class in greedypermutation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="clustergraph.html#greedypermutation.Cluster">Cluster (class in greedypermutation)</a>
-</li>
       <li><a href="clustergraph.html#greedypermutation.ClusterGraph">ClusterGraph (class in greedypermutation)</a>
 </li>
   </ul></td>
@@ -250,9 +254,21 @@
 </li>
         <li><a href="cli.html#cmdoption-greedypermutation-tree">--tree</a>
 </li>
-        <li><a href="cli.html#cmdoption-greedypermutation-arg-pointsfile">POINTSFILE</a>
+        <li><a href="cli.html#cmdoption-greedypermutation-arg-POINTSFILE">POINTSFILE</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="greedytree.html#greedypermutation.GreedyTree">GreedyTree (class in greedypermutation)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="greedytree.html#greedypermutation.GreedyTree.nn">nn() (GreedyTree method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -263,12 +279,14 @@
     POINTSFILE
 
       <ul>
-        <li><a href="cli.html#cmdoption-greedypermutation-arg-pointsfile">greedypermutation command line option</a>
+        <li><a href="cli.html#cmdoption-greedypermutation-arg-POINTSFILE">greedypermutation command line option</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="clustergraph.html#greedypermutation.Cluster.pop">pop() (Cluster method)</a>
+</li>
+      <li><a href="clustergraph.html#greedypermutation.ClusterGraph.prunenbrs">prunenbrs() (ClusterGraph method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -276,7 +294,11 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="clustergraph.html#greedypermutation.Cluster.rebalance">rebalance() (Cluster method)</a>
+      <li><a href="greedytree.html#greedypermutation.GreedyTree.rangecount">rangecount() (GreedyTree method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="clustergraph.html#greedypermutation.ClusterGraph.rebalance">rebalance() (ClusterGraph method)</a>
 </li>
   </ul></td>
 </tr></table>

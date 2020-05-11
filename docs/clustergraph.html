@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="A Generic Point" href="point.html" />
+    <link rel="next" title="GreedyTree" href="greedytree.html" />
     <link rel="prev" title="MaxHeap" href="maxheap.html" /> 
 </head>
 
@@ -85,12 +85,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="greedy.html">Greedy Permutations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clarkson.html">Clarkson’s Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="knnsampling.html">Greedy kth Nearest Neighbor Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maxheap.html">MaxHeap</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Cluster Graph</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#clusters">Clusters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-clustergraph">The ClusterGraph</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="greedytree.html">GreedyTree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onehopgreedy.html">One-Hop Greedy Permutations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
@@ -160,59 +163,58 @@
             
   <div class="section" id="cluster-graph">
 <h1>Cluster Graph<a class="headerlink" href="#cluster-graph" title="Permalink to this headline">¶</a></h1>
-<p>The <strong>Cluster Graph</strong> is a data structure that maintains a neighborhood graph on a collection of clusters.
+<p>The <strong>Cluster Graph</strong> is a data structure that maintains a neighborhood graph on a collection of clusters and edges between them.
 Each vertex is associated with a cluster of points centered at a single point.
-Each cluster has a <em>cluster radius</em> equal to the largest distance from the center to a point in the cluster.
-The graph itself also has a <em>graph radius</em> that determines its edges.
-The graph radius is always at least as large as the largest cluster radius.
-Two clusters are neighbors in the cluster graph if the distance between their centers is less than three times the graph radius.</p>
+Each cluster has a <em>cluster radius</em> equal to the largest distance from the center to a point in the cluster.</p>
 <p>The cluster graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the cluster graph).
 First, it limits which vertices might be considered to move into the new cluster.
 Only the vertices in a neighboring cluster will be checked.
 Second, it helps us quickly find the neighbors of the new cluster.
 These needs translate into the following two conditions.</p>
 <ol class="arabic simple">
-<li><p>Clusters A and B are neighbors if a point in A could be moved to the cluster of a point in B (or vice versa).</p></li>
-<li><p>If we add a point in A as the center of a new cluster.  It’s neighbors will be a subset of the neighbors of neighbors of A.</p></li>
+<li><p>There is an edge from Cluster A to Cluster B if a point in B could be moved to the cluster of a point in A or vice versa.</p></li>
+<li><p>If we add a point in A as the center of a new cluster.  Its neighbors will be a subset of the neighbors of neighbors of A.</p></li>
 </ol>
 <p>These two conditions respectively suffice to guarantee that when a new cluster is created, we can find the points in the cluster and the neighbors.
 In practice, we may keep more neighbors, relying on distances to prune away edges that cannot indicate true neighbors according to the conditions above.
-Specifically, we keep neighbors <span class="math notranslate nohighlight">\(A\sim B\)</span> if the distance from <span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(B\)</span> is at most the sum of the radii plus the larger of the radii.
+Specifically, we keep edges <span class="math notranslate nohighlight">\(A\to B\)</span> if the distance from <span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(B\)</span> is at most the radius of <span class="math notranslate nohighlight">\(A\)</span> plus the radius of <span class="math notranslate nohighlight">\(b\)</span> plus the maximum of the two radii.
 It’s not hard to check that if this condition does not hold, then, <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> cannot be neighbors.</p>
+<p>This condition can be relaxed, connecting even more neighbors.
+By setting the <cite>nbrconstant</cite>, one <span class="math notranslate nohighlight">\(A\to B\)</span> if the distance from <span class="math notranslate nohighlight">\(A\)</span> to <span class="math notranslate nohighlight">\(B\)</span> is at most the radius of <span class="math notranslate nohighlight">\(A\)</span> plus the radius of <span class="math notranslate nohighlight">\(b\)</span> plus <cite>nbrconstant</cite> times the maximum of the two radii.
+The default setting is <cite>1</cite>.</p>
+<p>It is also possible to modify the cluster graph to only move points to a new cluster if their current cluster is no longer an approximate nearest neighbor.
+This is accomplished by setting the <cite>moveconstant</cite> when constructing the <cite>ClusterGraph</cite>.
+Setting this constant to <cite>1/2</cite> checks if the distance to the new cluster center would be at most 1/2 the distance to the current center.
+As a result, the points are all associated with clusters centered at 2-approximate nearest neighbors.
+The default setting is <cite>1</cite>, resulting in exact nearest neighbors.
+It is required that <cite>moveconstant &lt;= nbrconstant</cite>.</p>
 <div class="section" id="clusters">
 <h2>Clusters<a class="headerlink" href="#clusters" title="Permalink to this headline">¶</a></h2>
 <p>The interface to a <cite>Cluster</cite> is as follows.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="greedypermutation.Cluster">
-<em class="property">class </em><code class="sig-name descname">Cluster</code><span class="sig-paren">(</span><em class="sig-param">center</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-name descname">Cluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="greedypermutation.Cluster.addpoint">
-<code class="sig-name descname">addpoint</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.addpoint" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addpoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.addpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the point <cite>p</cite> to the cluster.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="greedypermutation.Cluster.dist">
-<code class="sig-name descname">dist</code><span class="sig-paren">(</span><em class="sig-param">point</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the distance between the centers of <cite>self</cite> and <cite>other</cite>.  Note,
-this allows <cite>Cluster</cite> to be treated like a point.</p>
+<code class="sig-name descname">dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the distance between the center of the cluster and <cite>point</cite>.
+Note, this allows the cluster to be treated almost like a point.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="greedypermutation.Cluster.pop">
 <code class="sig-name descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.pop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove and return the farthest point in the cluster.</p>
 <p>Returns <cite>None</cite> if there there are no points other than the center.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="greedypermutation.Cluster.rebalance">
-<code class="sig-name descname">rebalance</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.rebalance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Move points from the cluster <cite>other</cite> to the cluster <cite>self</cite> if they are
-closer to the <cite>self</cite> center.</p>
-</dd></dl>
-
-<dl class="method">
+<dl class="py method">
 <dt id="greedypermutation.Cluster.updateradius">
 <code class="sig-name descname">updateradius</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.Cluster.updateradius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the radius of the cluster to be the farthest distance from a point
@@ -231,12 +233,12 @@ to the center.</p>
 <div class="section" id="the-clustergraph">
 <h2>The ClusterGraph<a class="headerlink" href="#the-clustergraph" title="Permalink to this headline">¶</a></h2>
 <p>A <cite>ClusterGraph</cite> is a <cite>Graph</cite>.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="greedypermutation.ClusterGraph">
-<em class="property">class </em><code class="sig-name descname">ClusterGraph</code><span class="sig-paren">(</span><em class="sig-param">points</em>, <em class="sig-param">root=None</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-name descname">ClusterGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nbrconstant</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">moveconstant</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="greedypermutation.ClusterGraph.addcluster">
-<code class="sig-name descname">addcluster</code><span class="sig-paren">(</span><em class="sig-param">newcenter</em>, <em class="sig-param">parent</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.addcluster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addcluster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newcenter</span></em>, <em class="sig-param"><span class="n">parent</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.addcluster" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new cluster centered at <cite>newcenter</cite>.</p>
 <p>The <cite>parent</cite> is a suffciently close cluster that is already in the
 graph.
@@ -245,12 +247,18 @@ The clusters are rebalanced with points moving from nearby clusters into
 the new cluster if it is closer.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="greedypermutation.ClusterGraph.closenbrs">
-<code class="sig-name descname">closenbrs</code><span class="sig-paren">(</span><em class="sig-param">u</em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.closenbrs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the neighbors of u in the cluster graph.</p>
-<p>The neighbors are autoamtically pruned to only include those that are
-sufficiently close with respect to their radii.</p>
+<dl class="py method">
+<dt id="greedypermutation.ClusterGraph.prunenbrs">
+<code class="sig-name descname">prunenbrs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">u</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.prunenbrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eliminate neighbors that are too far with respect to the current
+radius.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="greedypermutation.ClusterGraph.rebalance">
+<code class="sig-name descname">rebalance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#greedypermutation.ClusterGraph.rebalance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move points from the cluster <cite>b</cite> to the cluster <cite>a</cite> if they are
+sufficiently closer to <cite>a.center</cite>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -266,7 +274,7 @@ sufficiently close with respect to their radii.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="point.html" class="btn btn-neutral float-right" title="A Generic Point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="greedytree.html" class="btn btn-neutral float-right" title="GreedyTree" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="maxheap.html" class="btn btn-neutral float-left" title="MaxHeap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

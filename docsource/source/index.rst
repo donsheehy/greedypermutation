@@ -16,6 +16,7 @@ Welcome to greedypermutations's documentation!
    maxheap
    clustergraph
    greedytree
+   onehopgreedy
    point
    file_formats
    cli
