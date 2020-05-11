@@ -15,6 +15,7 @@ Welcome to greedypermutations's documentation!
    knnsampling
    maxheap
    clustergraph
+   greedytree
    point
    file_formats
    cli
