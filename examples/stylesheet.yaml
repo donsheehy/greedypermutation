@@ -1,0 +1,53 @@
+_point:
+  radius: 2
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 0
+
+_circle:
+  fill: null
+  # fill: [0.9, 0.9, 0.9]
+  stroke: [0.2,0.2,0.2]
+  stroke_width: 2
+
+sample:
+  radius: 5
+  fill: [0.6,0.6,1]
+  stroke: [0.3,0.3,1]
+  stroke_width: 0.5
+
+cover:
+  radius: 5
+  fill: null
+  stroke: [0,0,0]
+  stroke_width: 0.75
+
+cover_back:
+  radius: 5
+  fill: [1.0, .953, .5]
+  stroke_width: 0
+
+
+nbr:
+  radius: 5
+  fill: [0.6,0,0]
+  stroke: [0,0,0]
+  stroke_width: 0
+
+_path:
+  stroke: [0.5,1,0.5]
+  stroke_width: 2
+  fill: null
+
+_polygon:
+  fill: [1,1,1]
+  stroke: [0,0,0]
+  stroke_width: 2
+
+_text:
+  fontfamily: 'monospace'
+  fontsize: '32pt'
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 0
+  font_weight: 'normal'
