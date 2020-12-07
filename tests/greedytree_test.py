@@ -1,4 +1,5 @@
-from greedypermutation import Point, MetricSpace, GreedyTree
+from greedypermutation import Point, GreedyTree
+from metricspaces import MetricSpace
 import unittest
 
 

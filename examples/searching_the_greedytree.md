@@ -1,6 +1,6 @@
 ```python {cmd id="setup"}
 from random import randrange, seed
-from greedypermutation import MetricSpace, GreedyTree
+from greedypermutation import GreedyTree
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
 from greedypermutation.vizpoint import VizPoint as Point

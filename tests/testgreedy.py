@@ -2,10 +2,10 @@ import unittest
 from random import randrange, seed
 from collections import defaultdict
 from greedypermutation import (Point,
-                               MetricSpace,
                                quadraticgreedy,
                                clarksongreedy,
                                )
+from metricspaces import MetricSpace
 
 class GreedyTests:
     def testgreedy(self):

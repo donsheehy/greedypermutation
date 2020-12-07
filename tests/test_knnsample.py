@@ -1,9 +1,6 @@
 import unittest
-from greedypermutation import (Point,
-                               MetricSpace,
-                               knnsample,
-                               )
-
+from greedypermutation import Point, knnsample
+from metricspaces import MetricSpace
 
 class TestKNNSample(unittest.TestCase):
     def test_smallinstance(self):

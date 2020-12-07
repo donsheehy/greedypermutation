@@ -1,6 +1,7 @@
 import click
 import os
-from greedypermutation import MetricSpace, Point
+from greedypermutation import Point
+from metricspaces import MetricSpace
 
 @click.command()
 @click.argument('pointsfile', type = click.File('r'))
