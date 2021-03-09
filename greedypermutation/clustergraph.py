@@ -10,7 +10,7 @@ class Cluster:
         A new cluster only contains a single point, its center.
         """
         self.points = {center}
-        self.center  = center
+        self.center = center
         self.radius = 0
 
     def addpoint(self, p):
@@ -90,7 +90,7 @@ class ClusterGraph(Graph):
         center of the default cluster and all other points will be placed
         inside.
 
-        There are two constants that can nbe set.
+        There are two constants that can be set.
         The first `nbrconstant`, which controls the distance between neighbors.
         The second is `moveconstant` which determines when a point is moved
         when a new cluster is formed.  The default value for both constants is
@@ -175,10 +175,9 @@ class ClusterGraph(Graph):
         b.points -= points_to_move
         for p in points_to_move:
             a.addpoint(p)
-        # The radius of self is automatically updated by addpoint.
+        # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
-
 
     def nbrs_of_nbrs(self, u):
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}

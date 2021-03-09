@@ -1,6 +1,7 @@
 from collections import defaultdict
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
+from greedypermutation.knnheap import KNNHeap
 
 class Bunch:
     """
@@ -14,33 +15,47 @@ class Bunch:
     By storing iterators, the child lists of the tree are not duplicated.
     """
     def __init__(self, node):
-        self.point = node.point
-        self.children = iter(node.children)
+        self.node = node
+        self.index = 0
+        # self.point = node.point
+        # self.children = iter(node.children)
         self.weight = node.weight
-        self.radii = iter(node.radii)
-        self.radius = next(self.radii)
+        # self.radii = iter(node.radii)
+        # self.radius = next(self.radii)
+
+    @property
+    def point(self):
+        return self.node.point
 
     def radius(self):
-        return self.radius
+        return self.node.radii[self.index]
 
     def isempty(self):
         return self.weight == 1
 
     def pop(self):
-        try:
-            output = next(self.children)
-        except StopIteration:
+        if self.index < len(self.node.children):
+            child = self.node.children[self.index]
+            self.weight -= child.weight
+            self.index += 1
+            return Bunch(child)
+        else:
             return None
-        self.radius = next(self.radii)
-        self.weight -= output.weight
-        return Bunch(output)
 
     def __len__(self):
         return self.weight
 
+    def __iter__(self):
+        """
+        Iterate over all points in the bunch.
+        """
+        yield self.node.point
+        for i in range(self.index, len(self.node.children)):
+            yield from self.node.children[i]
+
 class Node:
     """
-    GreedyTree `Node`s store the follownig data.
+    GreedyTree `Node`s store the following data.
     - a `point`: the location of the node.
     - a `weight`: the number of points in the subtree rooted at the node.
     - `children`: An ordered list of `Node`s.
@@ -84,6 +99,20 @@ class Node:
                 farthest = max(farthest, c.farthest_descendant(point))
         return farthest
 
+    def __iter__(self):
+        """
+        Iterate over all points in the bunch.
+
+        Warning.  This iteration is destructive.
+        """
+        yield self.point
+        for child in self.children:
+            yield from child
+
+    def __len__(self):
+        return self.weight
+
+
 class GreedyTree:
     """
     The `GreedyTree` encodes a tree of points.
@@ -108,21 +137,24 @@ class GreedyTree:
         self.root.update()
 
     def heap(self):
+        """
+        Return a max heap over bunches ordered by radius initialized with
+        `root`.
+        """
         H = MaxHeap(key = Bunch.radius)
         H.insert(Bunch(self.root))
         return H
 
-    def ann(self, q, eps = 0):
+    def ann(self, q, eps = 1):
         """
-        Return a (1+eps)-approximate nearest neighbor to q.
+        Return a eps-approximate nearest neighbor to q.
         """
-
         H = self.heap()
         nbr, q_to_nbr = self.root, q.dist(self.root.point)
-        close_enough = eps / (1 + eps)
+        close_enough = (eps-1) / eps
 
         for child in H:
-            maxradius = child.radius
+            maxradius = child.radius()
 
             # If the nearest neighbor could be a child of child.
             # if not child.isempty() and \
@@ -134,7 +166,7 @@ class GreedyTree:
                     nbr, q_to_nbr = p, q_to_p
                 # If p is a sufficiently close ANN, return it.
                 if maxradius < close_enough * q_to_p:
-                    return nbr
+                    return nbr.point
                 H.insert(p)
                 H.insert(child) # Put the child back in the heap.
         return nbr.point
@@ -143,16 +175,12 @@ class GreedyTree:
         """
         Return the nearest neighbor of q in the GreedyTree.
         """
-        # return self.ann(q)
         H = self.heap()
         nbr, q_to_nbr = self.root, q.dist(self.root.point)
 
         for child in H:
-            maxradius = child.radius      # update the maximum radius
-
             # If the nearest neighbor could be a child of child.
-            # if not child.isempty() and \
-            if child.point.dist(q) < q_to_nbr + maxradius:
+            if child.point.dist(q) - child.radius() < q_to_nbr:
                 p = child.pop()
                 q_to_p = q.dist(p.point)
                 # If p is the new nearest neighbors, update (nbr, q_to_nbr).
@@ -169,10 +197,12 @@ class GreedyTree:
         """
         H = self.heap()
         for child in H:
-            maxradius = child.radius
-            if child.point.dist(center) + maxradius <= radius + slack:
+            distance_to_center = child.point.dist(center)
+            maxdistance = distance_to_center + child.radius()
+            mindistance = distance_to_center - child.radius()
+            if maxdistance <= radius + slack:
                 yield child
-            elif child.point.dist(center) <= radius + maxradius:
+            elif mindistance <= radius:
                 p = child.pop()
                 if p is not None:
                     H.insert(child)
@@ -189,36 +219,81 @@ class GreedyTree:
         return sum(bunch.weight for bunch in bunches)
 
     def range(self, center, radius, slack = 0):
+        """
+        Iterate over the points in `ball(center, radius)`.
+
+        If `slack` is nonzero, some points from `ball(center, radius + slack)`.
+        """
+        bunches = self._range(center, radius, slack)
+        for bunch in bunches:
+            yield from bunch
+
+    def range_simple(self, center, radius):
         H = self.heap()
+        viable = lambda b: center.dist(b.point) <= b.radius() + radius
 
-        for child in H:
-            maxradius = child.radius
-            if maxradius <= slack /2:
-                H.insert(child)
-                break
-            if child.isempty():
-                H.insert(child)
-            elif child.point.dist(center) <= radius + maxradius:
-                p = child.pop()
-                H.insert(p)
-                H.insert(child)
+        for bunch in H:
+            newbunch = bunch.pop()
+            if newbunch is None:
+                yield bunch.point
+            else:
+                if viable(bunch):
+                    H.insert(bunch)
+                if viable(newbunch):
+                    H.insert(newbunch)
 
-        return list((c.point, len(c))
-                    for c in H
-                    if c.point.dist(center) < radius + c.radius
-                   )
 
-    def __iter__(self):
+    def knn(self, k, q):
         H = self.heap()
-        yield self.root.point, None
+        # nbr, q_to_nbr = self.root, q.dist(self.root.point)
+        knndist = float('inf')
+        KNN = KNNHeap(k)
+        KNN.insert(self.root, q.dist(self.root.point) + self.root.radius)
 
-        for child in H:
-            if not child.isempty():
-                q = child.pop()
-                yield q.point, child.point
-                H.insert(child)
-                H.insert(q)
+        for bunch in H:
+            # Inside Split
+            if bunch in KNN:
+                newbunch = bunch.pop()
+                bunch_radius = min(oldradius, bunch.radius())
+                KNN.changepriority(bunch, )
+            # else:
 
+        return list(KNN)
+
+
+    def farthest(self, q):
+        H = self.heap()
+        viable = lambda b, d: q.dist(b.point) + b.radius() > d
+
+        farthest, dist_to_farthest = self.root.point, q.dist(self.root.point)
+        for bunch in H:
+            newbunch = bunch.pop()
+            dist_to_newbunch = q.dist(newbunch.point)
+            if dist_to_newbunch > dist_to_farthest:
+                dist_to_farthest = dist_to_newbunch
+                farthest = newbunch.point
+            if viable(newbunch, dist_to_farthest):
+                H.insert(newbunch)
+            if viable(bunch, dist_to_farthest):
+                H.insert(bunch)
+        return farthest, dist_to_farthest
+
+    def __iter__(self, greedy = True):
+        if greedy:
+            H = self.heap()
+            yield self.root.point, None
+
+            for child in H:
+                if not child.isempty():
+                    q = child.pop()
+                    yield q.point, child.point
+                    H.insert(child)
+                    H.insert(q)
+        else:
+            yield from self.root
 
     def __str__(self):
         return str(self.ch)
+
+    def __len__(self):
+        return len(self.root)
