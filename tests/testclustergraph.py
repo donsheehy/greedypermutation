@@ -1,5 +1,5 @@
 import unittest
-from greedypermutation import Point, Cluster, ClusterGraph
+from greedypermutation import Point, Cluster, NeighborGraph
 
 class L_inf(tuple):
     def dist(self, other):
@@ -70,9 +70,9 @@ class TestCluster(unittest.TestCase):
     #         C[0].addpoint(p)
     #     for i in range(len(S) - 2)
 
-class TestClusterGraph(unittest.TestCase):
+class TestNeighborGraph(unittest.TestCase):
     def testbasicusage(self):
-        G = ClusterGraph([Point([i,i]) for i in range(100)])
+        G = NeighborGraph([Point([i,i]) for i in range(100)])
         # root = next(G.vertices())
         # G.addcluster(Point([100,99]), root)
         # self.assertEqual(len(G), 2)
@@ -81,7 +81,7 @@ class TestClusterGraph(unittest.TestCase):
 
     def testrebalance(self):
         a, b = Point([-1]), Point([200])
-        G = ClusterGraph([a,b])
+        G = NeighborGraph([a,b])
         A = Cluster(a)
         B = Cluster(b)
         for i in range(200):
@@ -95,8 +95,8 @@ class TestClusterGraph(unittest.TestCase):
 
     def testneighborsofneighborscondition(self):
         """ This somewhat long test was written to expose a bug where
-        neighbors of the cluster graph were not properly discovered.
-        The construction highlights the need for the cluster graph to be
+        neighbors of the neighbor graph were not properly discovered.
+        The construction highlights the need for the neighbor graph to be
         undirected.
         """
         a =  L_inf([0, 2, 21, 11, 22, 19])
@@ -106,7 +106,7 @@ class TestClusterGraph(unittest.TestCase):
         c = L_inf([22, 20 , 21, 11, 0, 3])
         cc = L_inf([ 19, 17, 18, 8, 3, 0])
         P = [a,aa,b,bb,c,cc]
-        G = ClusterGraph(P)
+        G = NeighborGraph(P)
         self.assertEqual(len(G), 1)
         p = G.heap.findmax()
         self.assertEqual(p.center, a)

@@ -1,11 +1,11 @@
-Cluster Graph
+Neighbor Graph
 =============
 
-The **Cluster Graph** is a data structure that maintains a neighborhood graph on a collection of clusters and edges between them.
+The **Neighbor Graph** is a data structure that maintains a neighborhood graph on a collection of clusters and edges between them.
 Each vertex is associated with a cluster of points centered at a single point.
 Each cluster has a *cluster radius* equal to the largest distance from the center to a point in the cluster.
 
-The cluster graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the cluster graph).
+The neighbor graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the Neighbor Graph).
 First, it limits which vertices might be considered to move into the new cluster.
 Only the vertices in a neighboring cluster will be checked.
 Second, it helps us quickly find the neighbors of the new cluster.
@@ -24,8 +24,8 @@ This condition can be relaxed, connecting even more neighbors.
 By setting the `nbrconstant`, one :math:`A\to B` if the distance from :math:`A` to :math:`B` is at most the radius of :math:`A` plus the radius of :math:`b` plus `nbrconstant` times the maximum of the two radii.
 The default setting is `1`.
 
-It is also possible to modify the cluster graph to only move points to a new cluster if their current cluster is no longer an approximate nearest neighbor.
-This is accomplished by setting the `moveconstant` when constructing the `ClusterGraph`.
+It is also possible to modify the neighbor graph to only move points to a new cluster if their current cluster is no longer an approximate nearest neighbor.
+This is accomplished by setting the `moveconstant` when constructing the `NeighborGraph`.
 Setting this constant to `1/2` checks if the distance to the new cluster center would be at most 1/2 the distance to the current center.
 As a result, the points are all associated with clusters centered at 2-approximate nearest neighbors.
 The default setting is `1`, resulting in exact nearest neighbors.
@@ -46,10 +46,10 @@ There are three public attributes:
 - `center` the center point.
 - `radius` the max distance between the center and a point in the cluster.
 
-The ClusterGraph
+The NeighborGraph
 ----------------
 
-A `ClusterGraph` is a `Graph`.
+A `NeighborGraph` is a `Graph`.
 
-.. autoclass:: greedypermutation.ClusterGraph
+.. autoclass:: greedypermutation.NeighborGraph
   :members:

@@ -1,4 +1,4 @@
-from greedypermutation.clustergraph import Cluster, ClusterGraph
+from greedypermutation.neighborgraph import Cluster, NeighborGraph
 from greedypermutation import GreedyTree
 
 def onehopgreedy(M, seed = None, tree = False):
@@ -24,7 +24,7 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
     """
     # If no seed is provided, use the first point.
     T = GreedyTree(M)
-    G = ClusterGraph(M, seed or next(iter(M)))
+    G = NeighborGraph(M, seed or next(iter(M)))
     H = G.heap
     root = H.findmax()
     # Yield the first point.

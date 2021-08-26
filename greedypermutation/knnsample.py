@@ -1,9 +1,9 @@
 from collections import defaultdict
-from greedypermutation.clustergraph import ClusterGraph
+from greedypermutation.neighborgraph import NeighborGraph
 
 def knnsample(M, k, seed = None):
     # If no seed is provided, use the first point.
-    G = ClusterGraph(M, seed, 2, 1)
+    G = NeighborGraph(M, seed, 2, 1)
     markednbrs = defaultdict(set)
     H = G.heap
     root = H.findmax()

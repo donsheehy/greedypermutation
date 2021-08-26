@@ -78,13 +78,13 @@ class Cluster:
     def __repr__(self):
         return str(self.center)
 
-class ClusterGraph(Graph):
+class NeighborGraph(Graph):
     Vertex = Cluster
 
     # Initialize it as an empty graph.
     def __init__(self, points, root = None, nbrconstant = 1, moveconstant = 1):
         """
-        Initialize a new ClusterGraph.
+        Initialize a new NeighborGraph.
 
         It starts with an iterable of points.  The first point will be the
         center of the default cluster and all other points will be placed
@@ -100,7 +100,7 @@ class ClusterGraph(Graph):
         `moveconstant <= nbrconstant`.  As a result, setting these any other
         way raises an exception.
         """
-        # Initialize the `ClusterGraph` to be a `Graph`.
+        # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
         P = iter(points)
 

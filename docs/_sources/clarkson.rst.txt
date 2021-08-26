@@ -17,7 +17,7 @@ Two vertices are neighbors in this graph if their distance is less than three ti
 After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
 This eliminates many checks.
 Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
-The implementation of this algorithm uses the `ClusterGraph` data structure.
+The implementation of this algorithm uses the `NeighborGraph` data structure.
 
 
 
