@@ -12,11 +12,11 @@ def knnsample(M, k, seed = None):
     yield root.center
 
     for i in range(1, len(M)):
-        cluster = H.findmax()
-        point = cluster.pop()
-        radius = 2 * point.dist(cluster.center)
+        cell = H.findmax()
+        point = cell.pop()
+        radius = 2 * point.dist(cell.center)
 
-        nearbypts = {q for nbr in G.nbrs(cluster)
+        nearbypts = {q for nbr in G.nbrs(cell)
                        for q in nbr
                        if q.dist(point) <= radius
                     }
@@ -26,17 +26,17 @@ def knnsample(M, k, seed = None):
                           }
 
         # If there are fewer than k nearby points, we mark it.
-        # If there are at least k, we yield it and add the cluster.
+        # If there are at least k, we yield it and add the cell.
         if len(nearbypts) + len(nearbymarkedpts) < k:
             for p in nearbypts:
                 # This is overkill.  Should only add this if point is less than
                 # twice the distance to RNN(p)
                 markednbrs[p].add(point)
-            # In greedy, `addcluster` updates the heap after moving points.
+            # In greedy, `addcell` updates the heap after moving points.
             # Here, we have to do it manually.
-            H.changepriority(cluster)
+            H.changepriority(cell)
         else:
             if point in markednbrs:
                 del markednbrs[point]
-            newcluster = G.addcluster(point, cluster)
+            newcell = G.addcell(point, cell)
             yield point

@@ -1,4 +1,4 @@
-from greedypermutation.neighborgraph import Cluster, NeighborGraph
+from greedypermutation.neighborgraph import Cell, NeighborGraph
 
 def greedy(M, seed = None, tree = False, alpha = 1):
     """
@@ -38,8 +38,8 @@ def _greedy(M, seed = None, alpha = 1):
     index = {root : 0}
 
     for i in range(1, len(M)):
-        cluster = H.findmax()
-        point = cluster.pop()
-        newcluster = G.addcluster(point, cluster)
-        index[newcluster] = i
-        yield point, index[cluster]
+        cell = H.findmax()
+        point = cell.pop()
+        newcell = G.addcell(point, cell)
+        index[newcell] = i
+        yield point, index[cell]
