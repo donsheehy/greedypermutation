@@ -1,4 +1,4 @@
-from greedypermutation.clustergraph import Cluster, ClusterGraph
+from greedypermutation.neighborgraph import Cell, NeighborGraph
 
 def greedy(M, seed = None, tree = False, alpha = 1):
     """
@@ -8,7 +8,7 @@ def greedy(M, seed = None, tree = False, alpha = 1):
     The optional `seed` parameter indicates the point that should appear first.
 
     The optional `alpha` parameter sets the approximation in the
-    `ClusterGraph`.  Every point will have a parent that is a `1/alpha`
+    `NeighborGraph`.  Every point will have a parent that is a `1/alpha`
     approximate nearest neighbor.  The resulting greedy permutation will be a
     `1/alpha` approximation.
     """
@@ -27,7 +27,7 @@ def _greedy(M, seed = None, alpha = 1):
     The optional `seed` parameter indicates the point that should appear first.
     """
     # If no seed is provided, use the first point.
-    G = ClusterGraph(M, seed or next(iter(M)), alpha, alpha)
+    G = NeighborGraph(M, seed or next(iter(M)), alpha, alpha)
     H = G.heap
     root = H.findmax()
 
@@ -38,8 +38,8 @@ def _greedy(M, seed = None, alpha = 1):
     index = {root : 0}
 
     for i in range(1, len(M)):
-        cluster = H.findmax()
-        point = cluster.pop()
-        newcluster = G.addcluster(point, cluster)
-        index[newcluster] = i
-        yield point, index[cluster]
+        cell = H.findmax()
+        point = cell.pop()
+        newcell = G.addcell(point, cell)
+        index[newcell] = i
+        yield point, index[cell]

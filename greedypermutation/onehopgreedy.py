@@ -1,4 +1,4 @@
-from greedypermutation.clustergraph import Cluster, ClusterGraph
+from greedypermutation.neighborgraph import Cell, NeighborGraph
 from greedypermutation import GreedyTree
 
 def onehopgreedy(M, seed = None, tree = False):
@@ -24,7 +24,7 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
     """
     # If no seed is provided, use the first point.
     T = GreedyTree(M)
-    G = ClusterGraph(M, seed or next(iter(M)))
+    G = NeighborGraph(M, seed or next(iter(M)))
     H = G.heap
     root = H.findmax()
     # Yield the first point.
@@ -34,13 +34,13 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
     index = {root : 0}
 
     for i in range(1, len(M)):
-        cluster = H.findmax()
-        x = max(cluster, key = cluster.dist)
-        r = x.dist(cluster.center)
+        cell = H.findmax()
+        x = max(cell, key = cell.dist)
+        r = x.dist(cell.center)
         ra = r * alpha
         potentials = (
             (q,n)
-            for n in G.nbrs(cluster)
+            for n in G.nbrs(cell)
             for q in n
             if x.dist(q) < ra
         )
@@ -49,6 +49,6 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
             # TODO: replace with rangecount ?
             return len(T.range(q, ra, ra/10))
         point, parent = max(potentials, key = rangesample)
-        newcluster = G.addcluster(point, parent)
-        index[newcluster] = i
+        newcell = G.addcell(point, parent)
+        index[newcell] = i
         yield point, index[parent]

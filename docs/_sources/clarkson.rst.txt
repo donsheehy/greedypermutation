@@ -12,12 +12,12 @@ The variation we present resembles more closely the presentation in Har-Peled an
 It is incremental.
 After :math:`i` points are added, the *current radius* is the distance from the last point added to its nearest predecessor.
 The main idea is to maintain a graph whose vertex set is the current set of inserted points.
-Each defines a cluster.
+Each defines a cell.
 Two vertices are neighbors in this graph if their distance is less than three times the current radius.
-After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
+After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in cells adjacent to the cell of the new point.
 This eliminates many checks.
-Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
-The implementation of this algorithm uses the `ClusterGraph` data structure.
+Moreover, the neighbors of the new cell are also found among the neighbors of the cell of the new point.
+The implementation of this algorithm uses the `NeighborGraph` data structure.
 
 
 

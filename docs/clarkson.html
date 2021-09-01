@@ -87,7 +87,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Clarkson’s Algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="knnsampling.html">Greedy kth Nearest Neighbor Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maxheap.html">MaxHeap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="clustergraph.html">Cluster Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neighborgraph.html">Neighbor Graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point.html">A Generic Point</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_formats.html">File Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
@@ -167,12 +167,12 @@ The variation we present resembles more closely the presentation in Har-Peled an
 It is incremental.
 After <span class="math notranslate nohighlight">\(i\)</span> points are added, the <em>current radius</em> is the distance from the last point added to its nearest predecessor.
 The main idea is to maintain a graph whose vertex set is the current set of inserted points.
-Each defines a cluster.
+Each defines a cell.
 Two vertices are neighbors in this graph if their distance is less than three times the current radius.
-After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in clusters adjacent to the cluster of the new point.
+After each insertion, the only points that move (i.e., have new nearest neighbors) are those that are in cells adjacent to the cell of the new point.
 This eliminates many checks.
-Moreover, the neighbors of the new cluster are also found among the neighbors of the cluster of the new point.
-The implementation of this algorithm uses the <cite>ClusterGraph</cite> data structure.</p>
+Moreover, the neighbors of the new cell are also found among the neighbors of the cell of the new point.
+The implementation of this algorithm uses the <cite>neighborgraph</cite> data structure.</p>
 <p id="bibtex-bibliography-clarkson-0"><dl class="citation">
 <dt class="bibtex label" id="clarkson97nearest"><span class="brackets"><a class="fn-backref" href="#id1">Cla97</a></span></dt>
 <dd><p>Kenneth L. Clarkson. Nearest neighbor queries in metric spaces. In <em>STOC ‘97: Proceedings of the twenty-ninth annual ACM symposium on Theory of computing</em>. 1997.</p>
