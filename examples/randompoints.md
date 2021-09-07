@@ -1,6 +1,7 @@
 ```python {cmd id="setup"}
 from random import randrange, seed
 from ds2viz.canvas import svg_plus_pdf
+from metricspaces import MetricSpace
 from greedypermutation.knnsample import knnsample
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.vizpoint import VizPoint as Point
@@ -10,8 +11,8 @@ H = 200
 N = 100
 
 seed(0)
-P = {Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
-    {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)}
+P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
+    {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
 
 G = list(greedy(P))
 

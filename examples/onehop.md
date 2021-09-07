@@ -6,6 +6,7 @@ from ds2viz.styles import StyleSheet
 from greedypermutation.knnsample import knnsample
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.onehopgreedy import onehopgreedy
+from metricspaces import MetricSpace
 
 ss = StyleSheet.fromyaml('stylesheet.yaml')
 
@@ -46,7 +47,7 @@ N = 200
 k = 25
 margin = 20
 seed(0)
-P = list({Point(randrange(margin, W-margin), randrange(margin,H-margin)) for i in range(N)})
+P = MetricSpace(list({Point(randrange(margin, W-margin), randrange(margin,H-margin)) for i in range(N)})
 n = len(P)
 
 G = list(greedy(P))
