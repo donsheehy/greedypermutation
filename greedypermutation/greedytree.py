@@ -128,7 +128,7 @@ class GreedyTree:
         self.ch = defaultdict(list)
         self.scaling = scaling
         alpha = 1 - (1/scaling)
-        for p, i in greedy(M, seed, tree = True, alpha = alpha):
+        for p, i in greedy(M, seed, tree = True, nbrconstant= alpha, moveconstant= alpha):
             newnode = Node(p)
             P.append(newnode)
             if i is not None:

@@ -5,7 +5,7 @@ The **Neighbor Graph** is a data structure that maintains a neighborhood graph o
 Each vertex is associated with a cell of points centered at a single point.
 Each cell has a *cell radius* equal to the largest distance from the center to a point in the cell.
 
-The neighbor graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the neighbor graph).
+The neighbor graph provides for two needs that arise when adding a new point to a greedy permutation (i.e. a new vertex in the Neighbor Graph).
 First, it limits which vertices might be considered to move into the new cell.
 Only the vertices in a neighboring cell will be checked.
 Second, it helps us quickly find the neighbors of the new cell.

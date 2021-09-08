@@ -3,6 +3,7 @@
 ```python {cmd id="setup" hide}
 from random import randrange, seed
 from greedypermutation import GreedyTree
+from metricspaces import MetricSpace
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
 from greedypermutation.vizpoint import VizPoint as Point
@@ -13,8 +14,8 @@ H = 200
 N = 30
 
 seed(0)
-P = {Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
-    {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)}
+P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
+    {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
 
 T = GreedyTree(P)
 ```

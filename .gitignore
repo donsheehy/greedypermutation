@@ -137,3 +137,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Sid's local files
+./examples/time.py
+./examples/greedysketch.py
