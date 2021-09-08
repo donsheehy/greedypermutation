@@ -1,5 +1,6 @@
 import unittest
 from greedypermutation import Point, Cell, NeighborGraph
+from metricspaces import MetricSpace
 
 class L_inf(tuple):
     def dist(self, other):
@@ -7,15 +8,17 @@ class L_inf(tuple):
 
 class TestCell(unittest.TestCase):
     def testinit_with_center(self):
-        P = [Point([2*i,2*i]) for i in range(100)]
-        C = Cell(Point([99,99]))
-        for p in P:
+        M = MetricSpace([Point([2*i,2*i]) for i in range(100)])
+        MetricCell = Cell(MetricSpace())
+        C = MetricCell(Point([99,99]))
+        for p in M:
             C.addpoint(p)
         self.assertEqual(len(C), 101)
 
     def testaddpoint(self):
         a,b,c = Point([1,2]), Point([2,3]), Point([3,4])
-        C = Cell(a)
+        MetricCell = Cell(MetricSpace())
+        C = MetricCell(a)
         self.assertEqual(len(C), 1)
         C.addpoint(b)
         self.assertEqual(len(C), 2)
@@ -25,7 +28,8 @@ class TestCell(unittest.TestCase):
 
     def testaddpoint_duplicatepoint(self):
         a,b = Point([1,2]), Point([2,3])
-        C = Cell(a)
+        MetricCell = Cell(MetricSpace())       
+        C = MetricCell(a)
         self.assertEqual(len(C), 1)
         C.addpoint(b)
         self.assertEqual(len(C), 2)
@@ -39,19 +43,22 @@ class TestCell(unittest.TestCase):
         self.assertEqual(C.points, {a,b})
 
     def testupdateradius_empty_cell(self):
-        C = Cell(Point([1,2,3]))
+        MetricCell = Cell(MetricSpace())
+        C = MetricCell(Point([1,2,3]))
         C.updateradius()
         self.assertEqual(C.radius, 0)
 
     def testdist(self):
-        A = Cell(Point([2, 3]))
+        MetricCell = Cell(MetricSpace())
+        A = MetricCell(Point([2, 3]))
         self.assertEqual(A.dist(Point([7,3])), 5)
         self.assertEqual(A.dist(A.center), 0)
         self.assertEqual(A.dist(Point([7,15])), 13)
 
     def testpop(self):
         a,b,c,d = Point([0,0]), Point([100, 0]), Point([0,50]), Point([25,25])
-        C = Cell(a)
+        MetricCell = Cell(MetricSpace())
+        C = MetricCell(a)
         C.addpoint(b)
         C.addpoint(c)
         C.addpoint(d)
@@ -72,7 +79,7 @@ class TestCell(unittest.TestCase):
 
 class TestNeighborGraph(unittest.TestCase):
     def testbasicusage(self):
-        G = NeighborGraph([Point([i,i]) for i in range(100)])
+        G = NeighborGraph(MetricSpace([Point([i,i]) for i in range(100)]))
         # root = next(G.vertices())
         # G.addcell(Point([100,99]), root)
         # self.assertEqual(len(G), 2)
@@ -81,9 +88,10 @@ class TestNeighborGraph(unittest.TestCase):
 
     def testrebalance(self):
         a, b = Point([-1]), Point([200])
-        G = NeighborGraph([a,b])
-        A = Cell(a)
-        B = Cell(b)
+        G = NeighborGraph(MetricSpace([a,b]))
+        MetricCell = Cell(MetricSpace())
+        A = MetricCell(a)
+        B = MetricCell(b)
         for i in range(200):
             B.addpoint(Point([i]))
         self.assertEqual(len(A), 1)
@@ -106,7 +114,7 @@ class TestNeighborGraph(unittest.TestCase):
         c = L_inf([22, 20 , 21, 11, 0, 3])
         cc = L_inf([ 19, 17, 18, 8, 3, 0])
         P = [a,aa,b,bb,c,cc]
-        G = NeighborGraph(P)
+        G = NeighborGraph(MetricSpace(P))
         self.assertEqual(len(G), 1)
         p = G.heap.findmax()
         self.assertEqual(p.center, a)

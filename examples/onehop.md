@@ -47,12 +47,12 @@ N = 200
 k = 25
 margin = 20
 seed(0)
-P = MetricSpace(list({Point(randrange(margin, W-margin), randrange(margin,H-margin)) for i in range(N)})
+P = MetricSpace(list({Point(randrange(margin, W-margin), randrange(margin,H-margin)) for i in range(N)}))
 n = len(P)
 
 G = list(greedy(P))
 
-M = [Point(p.x, p.y, 'sample') for p in onehopgreedy(P)]
+M = [Point(p.x, p.y, '_circle') for p in onehopgreedy(P)]
 
 def drawsample(name, P, sample, k, radius):
   radius = distH(P, sample)

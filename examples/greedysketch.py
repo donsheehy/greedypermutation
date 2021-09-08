@@ -1,5 +1,4 @@
 from metricspaces import MetricSpace
-# from metricspaces import QuotientSpace
 from greedypermutation.clarksongreedy import greedy
 from random import randrange, seed
 from ds2viz.element import Circle, Line
@@ -36,30 +35,29 @@ def l_inf(p: Point, q: Point):
 def dist(p: Point, q: Point):
     return min(l_inf(p,q), l_inf(p, proj(p))+l_inf(q, proj(q)))
 
-M = 240
+M = 285
 N = 50
-n = {1,2,3,4,5,10}
+n = range(1,15)
 seed(0)
 
-# Create a random set of points without any duplicates and only 1 point on the diagonal, (0,0)
+# Create a random set of points without any duplicates and only 1 point on the diagonal, (M//2,M//2)
 points = []
 for i in range(N):
     x = randrange(5, M-5)
     points.append(Point(x, randrange(x,M-5)))
 points = [i for i in points if i.x != i.y]
-points.append(Point(0,0))
+points.append(Point(M//2,M//2))
 points = list(dict.fromkeys(points))
-# print(len(points))
-# print(points[:5])
 
-# X = MetricSpace(points = points, dist=l_inf)
+D = MetricSpace(points = points, dist = dist)
 
-X_Y = MetricSpace(points = points, dist = dist)
+G = list(greedy(M=D, seed=Point(M//2,M//2), tree=True, nbrconstant=2))
 
-G = list(greedy(M=X_Y, alpha=1, seed=Point(0,0), tree=True))
+print(G[:15])
+
 print("Point \t\t\t Parent \t\t Distance")
 for i in n:
-    print(str(G[i][0]) + "\t\t" + str(G[G[i][1]][0]) + "\t\t" + str(X_Y.dist(G[i][0], G[G[i][1]][0])))
+    print(str(G[i][0]) + "\t\t" + str(G[G[i][1]][0]) + "\t\t" + str(D.dist(G[i][0], G[G[i][1]][0])))
 
 # print(G)
 for i in n:
@@ -67,7 +65,11 @@ for i in n:
         for p in G[:i]:
             Point(p[0].x, M - p[0].y, 4).draw(canvas)
 
-        for p in X_Y:
+        for p in D:
             Point(p.x, M - p.y).draw(canvas)
 
         Line((0,M), (M,0)).draw(canvas)
+        Line((0,0), (M,0)).draw(canvas)
+        Line((M,0), (M,M)).draw(canvas)
+        Line((M,M), (0,M)).draw(canvas)
+        Line((0,M), (0,0)).draw(canvas)

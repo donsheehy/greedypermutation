@@ -2,7 +2,6 @@
 
 ```python {cmd id="setup" hide}
 from metricspaces import MetricSpace
-# from metricspaces import QuotientSpace
 from greedypermutation.clarksongreedy import greedy
 from random import randrange, seed
 from ds2viz.element import Circle, Line
@@ -39,12 +38,12 @@ def l_inf(p: Point, q: Point):
 def dist(p: Point, q: Point):
     return min(l_inf(p,q), l_inf(p, proj(p))+l_inf(q, proj(q)))
 
-M = 285
+M = 300
 N = 50
 n = {1,2,3,4,5,10}
 seed(0)
 
-# Create a random set of points without any duplicates and only 1 point on the diagonal, (0,0)
+# Create a random set of points without any duplicates and only 1 point on the diagonal, (M//2,M//2)
 points = []
 for i in range(N):
     x = randrange(5, M-5)
@@ -55,12 +54,12 @@ points = list(dict.fromkeys(points))
 
 D = MetricSpace(points = points, dist = dist)
 
-G = list(greedy(M=D, alpha=1, seed=Point(M//2,M//2), tree=True))
+G = list(greedy(M=D, nbrconstant=2, seed=Point(M//2,M//2), tree=True))
 ```
 
-This illustration shows how greedy permutations can be used to compute sketches of persistence diagrams.
+This example illustrates how greedy permutations can be used to compute sketches of persistence diagrams.
 
-Consider a sample diagram, $D$, with $50$ points shown below,
+Consider a sample persistence diagram, $D$, with $50$ points shown below,
 
 ```python {cmd continue="setup" output="html" hide}
 with svg_plus_pdf(M, M, 'pointset') as canvas:
@@ -78,7 +77,7 @@ Computing the greedy permutation on these points gives us a collection of greedy
 G = list(greedy(D))
 ```
 
-Sketches $D_i$ where $i \in \{1,2,3,4,5,10\}$ are shown below. $D_1$ always contains a single point, the diagonal. Points that are further away are added gradually and this gives an intuition why a sketch could be considered a good approximation of a persistence diagram at a particular scale.
+Sketches $D_i$, where $i \in \{1,2,3,4,5,10\}$, are shown below. $D_1$ always contains a single point, the diagonal. Points that are further away are added gradually and this gives an intuition why a sketch could be considered a good approximation of a persistence diagram at a particular scale.
 
 ```python {cmd continue="setup" output="html" hide}
 for i in n:

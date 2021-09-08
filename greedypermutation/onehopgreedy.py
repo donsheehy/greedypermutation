@@ -47,7 +47,7 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
         def rangesample(qn):
             q, n = qn
             # TODO: replace with rangecount ?
-            return len(T.range(q, ra, ra/10))
+            return len(list(T.range(q, ra, ra/10)))
         point, parent = max(potentials, key = rangesample)
         newcell = G.addcell(point, parent)
         index[newcell] = i
