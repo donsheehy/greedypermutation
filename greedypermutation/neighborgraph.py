@@ -1,94 +1,94 @@
 from ds2.graph import Graph
 from greedypermutation.maxheap import MaxHeap
 
+def Cell(M):
+    class MetricCell:
+        def __init__(self, center):
+            """
+            Create a new cell with the given `center`.
 
-class Cell:
-    def __init__(self, center):
-        """
-        Create a new cell with the given `center`.
+            A new cell only contains a single point, its center.
+            """
+            self.points = {center}
+            self.center = center
+            self.radius = 0
+            #self.dist = M.dist
 
-        A new cell only contains a single point, its center.
-        """
-        self.points = {center}
-        self.center = center
-        self.radius = 0
+        def addpoint(self, p):
+            """
+            Add the point `p` to the cell.
+            """
+            self.points.add(p)
+            self.radius = max(self.radius, self.dist(p))
 
-    def addpoint(self, p):
-        """
-        Add the point `p` to the cell.
-        """
-        self.points.add(p)
-        self.radius = max(self.radius, self.dist(p))
+        def dist(self, point):
+            """
+            Return the distance between the center of the cell and `point`.
+            Note, this allows the cell to be treated almost like a point.
+            """
+            return M.dist(self.center, point)
 
-    def dist(self, point):
-        """
-        Return the distance between the center of the cell and `point`.
-        Note, this allows the cell to be treated almost like a point.
-        """
-        return self.center.dist(point)
+        def updateradius(self):
+            """
+            Set the radius of the cell to be the farthest distance from a point
+            to the center.
+            """
+            self.radius = max((self.dist(p) for p in self.points), default = 0)
 
-    def updateradius(self):
-        """
-        Set the radius of the cell to be the farthest distance from a point
-        to the center.
-        """
-        self.radius = max((self.dist(p) for p in self.points), default = 0)
+        def pop(self):
+            """
+            Remove and return the farthest point in the cell.
 
-    def pop(self):
-        """
-        Remove and return the farthest point in the cell.
+            Returns `None` if there there are no points other than the center.
+            """
+            if len(self) == 1:
+                return None
+            p = max(self.points, key = self.dist)
+            # This is linear time!  We should maybe use a heap here.
+            # However, the pop is followed by an update that will iterate over all
+            # the points anyway.
+            # For knn sampling, the pop might not require such an iteration.
+            self.points.remove(p)
+            self.updateradius()
+            return p
 
-        Returns `None` if there there are no points other than the center.
-        """
-        if len(self) == 1:
-            return None
-        p = max(self.points, key = self.dist)
-        # This is linear time!  We should maybe use a heap here.
-        # However, the pop is followed by an update that will iterate over all
-        # the points anyway.
-        # For knn sampling, the pop might not require such an iteration.
-        self.points.remove(p)
-        self.updateradius()
-        return p
+        def __len__(self):
+            """
+            Return the total number of points in the cell, including the center.
+            """
+            return len(self.points)
 
-    def __len__(self):
-        """
-        Return the total number of points in the cell, including the center.
-        """
-        return len(self.points)
+        def __iter__(self):
+            """
+            Return an iterator over the points in the cell.
+            """
+            return iter(self.points)
 
-    def __iter__(self):
-        """
-        Return an iterator over the points in the cell.
-        """
-        return iter(self.points)
+        def __contains__(self, point):
+            """
+            Return True if and only if `point` is in the cell.
+            """
+            return point in self.points
 
-    def __contains__(self, point):
-        """
-        Return True if and only if `point` is in the cell.
-        """
-        return point in self.points
+        def __lt__(self, other):
+            """
+            Cells are ordered by their radii.
+            """
+            return self.radius > other.radius
 
-    def __lt__(self, other):
-        """
-        Cells are ordered by their radii.
-        """
-        return self.radius > other.radius
-
-    def __repr__(self):
-        return str(self.center)
+        def __repr__(self):
+            return str(self.center)
+    return MetricCell
 
 class NeighborGraph(Graph):
-    Vertex = Cell
-
     # Initialize it as an empty graph.
-    def __init__(self, points, root = None, nbrconstant = 1, moveconstant = 1):
+    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1):
         """
         Initialize a new NeighborGraph.
 
-        It starts with an iterable of points.  The first point will be the
-        center of the default cell and all other points will be placed
-        inside.
+        It starts with an iterable of points of a metric space. 
+        The first point will be the center of the default cell and all 
+        other points will be placed inside.
 
         There are two constants that can be set.
         The first `nbrconstant`, which controls the distance between neighbors.
@@ -102,7 +102,8 @@ class NeighborGraph(Graph):
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
-        P = iter(points)
+        self.Vertex = Cell(M)
+        P = iter(M)
 
         if nbrconstant < moveconstant:
             raise RuntimeError("The move constant must not be larger than the"
