@@ -46,7 +46,7 @@ def l_inf(p: Point, q: Point):
     return max(abs(p.x - q.x), abs(p.y - q.y))
 
 M = 1000
-N = 150000
+N = 200000
 n = 15
 # seed(0)
 
@@ -62,6 +62,6 @@ A = X[:N//2]
 B = X[N//2:]
 """
 
-print(timeit.timeit(stmt="naiveHD(A,B)", setup=setup, number = 100))
+print(timeit.timeit(stmt="naiveHD(A,B)", setup=setup, number = 10))
 
-print(timeit.timeit(stmt="greedyHD(A,B)", setup=setup, number=100))
+print(timeit.timeit(stmt="greedyHD(A,B)", setup=setup, number=10))

@@ -1,6 +1,6 @@
 from greedypermutation.neighborgraph import Cell, NeighborGraph
 
-def greedy(M, seed = None, tree = False, nbrconstant = 1, moveconstant=1):
+def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettransportplan=False):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
@@ -12,13 +12,19 @@ def greedy(M, seed = None, tree = False, nbrconstant = 1, moveconstant=1):
     point will have a parent that is a `1/alpha` approximate nearest neighbor.  The
     resulting greedy permutation will be a `1/alpha` approximation.
     """
-    if tree:
-        yield from _greedy(M, seed, nbrconstant = nbrconstant, moveconstant = moveconstant)
+    if tree and gettransportplan:
+        yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan)
+    elif tree:
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
+            yield p, i
+    elif gettransportplan:
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
+            yield p, t
     else:
-        for p, i in _greedy(M, seed, nbrconstant = nbrconstant, moveconstant = moveconstant):
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
             yield p
 
-def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1):
+def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=False):
     """
     Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
@@ -32,7 +38,7 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1):
     root = H.findmax()
 
     # Yield the first point.
-    yield root.center, None
+    yield root.center, None, {root.center: len(root)}
 
     # Store the indices of the previous points.
     index = {root : 0}
@@ -40,6 +46,6 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1):
     for i in range(1, len(M)):
         cell = H.findmax()
         point = cell.pop()
-        newcell = G.addcell(point, cell)
+        newcell, transportplan = G.addcell(point, cell, gettransportplan)
         index[newcell] = i
-        yield point, index[cell]
+        yield point, index[cell], transportplan
