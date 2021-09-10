@@ -1,3 +1,4 @@
+from typing import DefaultDict
 from ds2.graph import Graph
 from greedypermutation.maxheap import MaxHeap
 
@@ -127,7 +128,7 @@ class NeighborGraph(Graph):
         return q.dist(p.center) <= p.radius + q.radius + \
                       self.nbrconstant * max(p.radius, q.radius)
 
-    def addcell(self, newcenter, parent):
+    def addcell(self, newcenter, parent, gettransportplan=False):
         """
         Add a new cell centered at `newcenter`.
 
@@ -139,13 +140,25 @@ class NeighborGraph(Graph):
         """
         # Create the new cell.
         newcell = self.Vertex(newcenter)
+
+        #if gettransportplan:
+        # Create transportation plan for adding this cell
+        transportplan = DefaultDict(int)
+
+        if gettransportplan:
+            transportplan[newcenter] = 1
+            transportplan[parent.center] -= 1
+
         # Make the cell a new vertex.
         self.addvertex(newcell)
         self.addedge(newcell, newcell)
 
         # Rebalance the new cell.
         for nbr in self.nbrs(parent):
-            self.rebalance(newcell, nbr)
+            localtransport = self.rebalance(newcell, nbr)
+            if gettransportplan:
+                for i in localtransport:
+                    transportplan[i] += localtransport[i]
             self.heap.changepriority(nbr)
 
         # Add neighbors to the new cell.
@@ -158,7 +171,13 @@ class NeighborGraph(Graph):
             self.prunenbrs(nbr)
 
         self.heap.insert(newcell)
-        return newcell
+
+        # If gettransportplan=False then this method returns an empty transportplan
+        return newcell, transportplan
+        # if gettransportplan:
+        #     return newcell, transportplan
+        # else:
+        #     return newcell
 
     def pop(self):
         cell = self.heap.findmax()
@@ -171,14 +190,20 @@ class NeighborGraph(Graph):
         Move points from the cell `b` to the cell `a` if they are
         sufficiently closer to `a.center`.
         """
+        # Create a local transportation plan to store changes in point because
+        #  of this rebalance
+        #localtransport = DefaultDict(int)
+
         points_to_move = {p for p in b.points
                             if a.dist(p) < self.moveconstant * b.dist(p)}
+        #localtransport[a.center] = len(points_to_move)
         b.points -= points_to_move
         for p in points_to_move:
             a.addpoint(p)
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
+        return {a.center: len(points_to_move), b.center: -len(points_to_move)}
 
     def nbrs_of_nbrs(self, u):
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}
