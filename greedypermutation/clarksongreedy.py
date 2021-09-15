@@ -11,6 +11,9 @@ def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettra
     in the `NeighborGraph`. If both parameters are equal to 'alpha', then every
     point will have a parent that is a `1/alpha` approximate nearest neighbor.  The
     resulting greedy permutation will be a `1/alpha` approximation.
+
+    The `gettransportplan` parameter sets the corresponding flag in NeighborGraph which
+    when set returns a dictionary of mass moved in each step of the greedy permutation.
     """
     if tree and gettransportplan:
         yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan)
@@ -33,7 +36,7 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
     The optional `seed` parameter indicates the point that should appear first.
     """
     # If no seed is provided, use the first point.
-    G = NeighborGraph(M, seed or next(iter(M)), nbrconstant = nbrconstant, moveconstant = moveconstant)
+    G = NeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan)
     H = G.heap
     root = H.findmax()
 
@@ -46,6 +49,6 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
     for i in range(1, len(M)):
         cell = H.findmax()
         point = cell.pop()
-        newcell, transportplan = G.addcell(point, cell, gettransportplan)
+        newcell, transportplan = G.addcell(point, cell)
         index[newcell] = i
         yield point, index[cell], transportplan

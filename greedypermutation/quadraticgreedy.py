@@ -1,4 +1,7 @@
-def greedy(M, seed = None, tree = False):
+from typing import DefaultDict
+
+
+def greedy(M, seed = None, tree = False, gettransportplan=False):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
@@ -8,14 +11,23 @@ def greedy(M, seed = None, tree = False):
     The `tree` parameter is a flag to set whether or not to return also the
     nearest predecessors in the pairing (thus giving the tree).  If set to
     `True`, the result will iterate over `(point, index)` pairs.
+
+    When `gettransportplan` is set to True `_greedy` returns a dictionary of mass
+    moved in each step of the greedy permutation.
     """
-    if tree:
-        yield from _greedy(M, seed)
+    if tree and gettransportplan:
+        yield from _greedy(M, seed, gettransportplan)
+    elif tree:
+        for p, i, t in _greedy(M, seed, gettransportplan):
+            yield p, i
+    elif gettransportplan:
+        for p, i, t in _greedy(M, seed, gettransportplan):
+            yield p, t
     else:
-        for p, i in _greedy(M, seed):
+        for p, i, t in _greedy(M, seed, gettransportplan):
             yield p
 
-def _greedy(M, seed = None):
+def _greedy(M, seed = None, gettransportplan=False):
     """
     Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
@@ -33,19 +45,29 @@ def _greedy(M, seed = None):
         seed_index = P.index(seed)
         P[0], P[seed_index] = P[seed_index], P[0]
     n = len(P)
-    yield P[0], None
+    transportplan = DefaultDict(int)
+    if gettransportplan:
+        transportplan[P[0]] = len(P)
+    yield P[0], None, transportplan
     pred = {p:0 for p in P}
     preddist = {p: M.dist(p, P[pred[p]]) for p in P}
     for i in range(1,n):
+        transportplan = DefaultDict(int)
         farthest = i
         for j in range(i+1, n):
             if preddist[P[j]] > preddist[P[farthest]]:
                 farthest  = j
         P[i], P[farthest] = P[farthest], P[i]
+        if gettransportplan:
+            transportplan[P[pred[P[i]]]] -= 1
+            transportplan[P[i]] += 1
         # Update the predecessor distance if necessary.
         for j in range(i+1, n):
             newdistance = M.dist(P[i], P[j])
             if newdistance < preddist[P[j]]:
+                if gettransportplan:
+                    transportplan[P[pred[P[j]]]] -= 1
+                    transportplan[P[i]] += 1
                 pred[P[j]] = i
                 preddist[P[j]] = newdistance
-        yield P[i], pred[P[i]]
+        yield P[i], pred[P[i]], transportplan
