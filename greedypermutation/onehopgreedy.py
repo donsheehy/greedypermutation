@@ -49,6 +49,6 @@ def _onehopgreedy(M, seed = None, alpha = 1/3):
             # TODO: replace with rangecount ?
             return len(list(T.range(q, ra, ra/10)))
         point, parent = max(potentials, key = rangesample)
-        newcell = G.addcell(point, parent)
+        newcell, transportplan = G.addcell(point, parent)
         index[newcell] = i
         yield point, index[parent]

@@ -35,13 +35,15 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
 
     The optional `seed` parameter indicates the point that should appear first.
     """
+    if not M:
+        return
     # If no seed is provided, use the first point.
     G = NeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan)
     H = G.heap
     root = H.findmax()
 
     # Yield the first point.
-    yield root.center, None, {root.center: len(root)}
+    yield root.center, None, {root.center: G.cellmass(root)}
 
     # Store the indices of the previous points.
     index = {root : 0}

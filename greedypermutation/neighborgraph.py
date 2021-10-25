@@ -65,6 +65,8 @@ def Cell(M):
             """
             Return the total number of points in the cell, including the center.
             """
+            # Sid: Might be better to use `NeighborGraph.cellmass(cell)`
+            #  to account for multiplicity
             return len(self.points)
 
         def __iter__(self):
@@ -109,7 +111,7 @@ class NeighborGraph(Graph):
         `moveconstant <= nbrconstant`.  As a result, setting these any other
         way raises an exception.
 
-        gettransportplan is a flag that determines whether addcell()
+        `gettransportplan` is a flag that determines whether `addcell()`
         computes transportation plans or not.
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
@@ -251,3 +253,13 @@ class NeighborGraph(Graph):
         # Prune the excess edges.
         for v in nbrs_to_delete:
             self.removeedge(u,v)
+    
+    def cellmass(self, cell):
+        """
+        Method to compute the number of points with multiplicity in a cell.
+        Better to use this than `len(cell)`.
+        """
+        copies = 0
+        for p in cell:
+            copies += self.pointcopies[p]
+        return len(cell) + copies
