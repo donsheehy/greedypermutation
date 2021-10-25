@@ -38,5 +38,5 @@ def knnsample(M, k, seed = None):
         else:
             if point in markednbrs:
                 del markednbrs[point]
-            newcell = G.addcell(point, cell)
+            newcell, transportplan = G.addcell(point, cell)
             yield point

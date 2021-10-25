@@ -3,31 +3,10 @@
 ```python {cmd id="setup" hide}
 from metricspaces import MetricSpace
 from greedypermutation.clarksongreedy import greedy
+from greedypermutation.vizpoint import VizPoint as Point
 from random import randrange, seed
 from ds2viz.element import Circle, Line
 from ds2viz.canvas import svg_plus_pdf
-
-class Point(Circle):
-    def __init__(self, x, y, radius = 1):
-        super().__init__(radius)
-        self.x, self.y = x, y
-        self.align('center', (x,y))
-
-    def __iter__(self):
-        yield self.x
-        yield self.y
-
-    def __eq__(self, other):
-        return list(self) == list(other)
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-    
-    def __repr__(self) -> str:
-        return "("+str(self.x)+", "+str(self.y)+")"
-    
-    def __str__(self) -> str:
-        return "("+str(self.x)+", "+str(self.y)+")"
 
 def proj(p: Point):
     return Point((p.x+p.y)/2, (p.x+p.y)/2)
@@ -77,7 +56,7 @@ Computing the greedy permutation on these points gives us a collection of greedy
 G = list(greedy(D))
 ```
 
-Sketches $D_i$, where $i \in \{1,2,3,4,5,10\}$, are shown below. $D_1$ always contains a single point, the diagonal. Points that are further away are added gradually and this gives an intuition why a sketch could be considered a good approximation of a persistence diagram at a particular scale.
+Sketches $D_i$, where $i \in \{1,2,3,4,5,10\}$, are shown below. $D_1$ always contains a single point, the diagonal, with a multiplicity of $50$. Points that are further away are added gradually. The multiplicity of an added and this gives an intuition why a sketch could be considered a good approximation of a persistence diagram at a particular scale.
 
 ```python {cmd continue="setup" output="html" hide}
 for i in n:

@@ -7,27 +7,8 @@ This is an attempt to check if using a greedy ordering instead helps improve per
 
 from metricspaces import MetricSpace
 from greedypermutation.clarksongreedy import greedy
+from greedypermutation import Point
 from random import randrange, seed
-
-class Point():
-    def __init__(self, x, y):
-        self.x, self.y = x, y
-
-    def __iter__(self):
-        yield self.x
-        yield self.y
-
-    def __eq__(self, other):
-        return list(self) == list(other)
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-    
-    def __repr__(self) -> str:
-        return "("+str(self.x)+", "+str(self.y)+")"
-    
-    def __str__(self) -> str:
-        return "("+str(self.x)+", "+str(self.y)+")"
 
 def naiveDirectedHD(A: MetricSpace, B: MetricSpace, cmax: float = 0):
     """
@@ -62,17 +43,14 @@ def greedyHD(A: MetricSpace, B: MetricSpace):
     return naiveHD(A_g, B_g)
 
 def l_inf(p: Point, q: Point):
-    return max(abs(p.x - q.x), abs(p.y - q.y))
+    return max(abs(p[0] - q[0]), abs(p[1] - q[1]))
 
 M = 300
 N = 350
 seed(0)
 
-# Create a random set of points without any duplicates and only 1 point on the diagonal, (0,0)
-
-points = [Point(randrange(5, M-5), randrange(5,M-5)) for i in range(N)]
+points = [Point([randrange(5, M-5), randrange(5,M-5)]) for i in range(N)]
 points = list(dict.fromkeys(points))
-
 
 X = MetricSpace(points = points, dist=l_inf)
 A = X[:N//2]

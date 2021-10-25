@@ -1,3 +1,5 @@
+from collections import defaultdict
+from typing import DefaultDict
 from ds2.graph import Graph
 from greedypermutation.maxheap import MaxHeap
 
@@ -28,6 +30,13 @@ def Cell(M):
             """
             return M.dist(self.center, point)
 
+        def comparedist(self, point, other, alpha):
+            """
+            Return True iff `point` is closer to the center of this cell
+            than to the center of the `other` cell. `alpha` is the moveconstant.
+            """
+            return M.comparedist(point, self.center, other.center, alpha=alpha)
+
         def updateradius(self):
             """
             Set the radius of the cell to be the farthest distance from a point
@@ -56,6 +65,8 @@ def Cell(M):
             """
             Return the total number of points in the cell, including the center.
             """
+            # Sid: Might be better to use `NeighborGraph.cellmass(cell)`
+            #  to account for multiplicity
             return len(self.points)
 
         def __iter__(self):
@@ -82,7 +93,7 @@ def Cell(M):
 
 class NeighborGraph(Graph):
     # Initialize it as an empty graph.
-    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1):
+    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1, gettransportplan = False):
         """
         Initialize a new NeighborGraph.
 
@@ -99,6 +110,9 @@ class NeighborGraph(Graph):
         The theoretical guarantees are only valid when
         `moveconstant <= nbrconstant`.  As a result, setting these any other
         way raises an exception.
+
+        `gettransportplan` is a flag that determines whether `addcell()`
+        computes transportation plans or not.
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
@@ -110,14 +124,31 @@ class NeighborGraph(Graph):
                                "neighbor constant.")
         self.nbrconstant = nbrconstant
         self.moveconstant = moveconstant
+
+        # self.gettransportplan is a flag which determines whether the transportation
+        # plan is to be computed or not
+        self.gettransportplan = gettransportplan
+
+        # self.pointcopies is a dictionary which stores the number of copies (>1)
+        # of a point indexed by point. A default value of 1 is assumed and not stored. 
+        # So if `self.pointcopies[p]==x` then the input contained `x+1` instances of `p`
+        self.pointcopies = defaultdict(int)
+        
         # Make a cell to start the graph.  Use the first point as the root
         # if none is give.
         root_cell = self.Vertex(root or next(P))
+        
         # Add the points to the root cell.
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
         for p in P:
+            if p in root_cell:
+                self.pointcopies[p] += 1
             root_cell.addpoint(p)
+        # Once the above loop executes self.pointcopies[root] will be off by 1. 
+        # Need to rectify that
+        self.pointcopies[root] -= 1
+        
         # Add the new cell as the one vertex of the graph.
         self.addvertex(root_cell)
         self.addedge(root_cell, root_cell)
@@ -129,23 +160,41 @@ class NeighborGraph(Graph):
 
     def addcell(self, newcenter, parent):
         """
-        Add a new cell centered at `newcenter`.
+        Add a new cell centered at `newcenter` and also compute the mass moved by 
+        this change to the neighbor graph.
 
-        The `parent` is a suffciently close cell that is already in the
+        The `parent` is a sufficiently close cell that is already in the
         graph.
         It is used to find nearby cells to be the neighbors.
         The cells are rebalanced with points moving from nearby cells into
         the new cell if it is closer.
+
+        If self.gettransportplan=True this method also returns a dictionary
+        of the number of points gained and lost by every cell (indexed by center) 
+        in this change to the neighbor graph.
         """
         # Create the new cell.
         newcell = self.Vertex(newcenter)
+
+        #if gettransportplan:
+        # Create transportation plan for adding this cell
+        transportplan = DefaultDict(int)
+
+        if self.gettransportplan:
+            transportplan[newcenter] = 1
+            transportplan[parent.center] -= 1
+
         # Make the cell a new vertex.
         self.addvertex(newcell)
         self.addedge(newcell, newcell)
 
         # Rebalance the new cell.
         for nbr in self.nbrs(parent):
-            self.rebalance(newcell, nbr)
+            localtransport = self.rebalance(newcell, nbr)
+            # Add change caused by this rebalance to transportation plan if requested
+            if self.gettransportplan:
+                transportplan[newcenter] += localtransport
+                transportplan[nbr.center] -= localtransport
             self.heap.changepriority(nbr)
 
         # Add neighbors to the new cell.
@@ -158,7 +207,9 @@ class NeighborGraph(Graph):
             self.prunenbrs(nbr)
 
         self.heap.insert(newcell)
-        return newcell
+
+        # If self.gettransportplan=False this method returns an empty transportplan
+        return newcell, transportplan
 
     def pop(self):
         cell = self.heap.findmax()
@@ -168,17 +219,23 @@ class NeighborGraph(Graph):
 
     def rebalance(self, a, b):
         """
+        Returns the number of points moved from `b` to `a`.
+
         Move points from the cell `b` to the cell `a` if they are
         sufficiently closer to `a.center`.
         """
-        points_to_move = {p for p in b.points
-                            if a.dist(p) < self.moveconstant * b.dist(p)}
+        # points_to_move = {p for p in b.points
+        #                     if a.dist(p) < self.moveconstant * b.dist(p)}
+        points_to_move = {p for p in b.points if a.comparedist(p, b, self.moveconstant)}
         b.points -= points_to_move
+        copies_to_move = 0
         for p in points_to_move:
             a.addpoint(p)
+            copies_to_move += self.pointcopies[p]
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
+        return len(points_to_move) + copies_to_move
 
     def nbrs_of_nbrs(self, u):
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}
@@ -196,3 +253,13 @@ class NeighborGraph(Graph):
         # Prune the excess edges.
         for v in nbrs_to_delete:
             self.removeedge(u,v)
+    
+    def cellmass(self, cell):
+        """
+        Method to compute the number of points with multiplicity in a cell.
+        Better to use this than `len(cell)`.
+        """
+        copies = 0
+        for p in cell:
+            copies += self.pointcopies[p]
+        return len(cell) + copies
