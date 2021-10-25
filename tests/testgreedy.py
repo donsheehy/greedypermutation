@@ -39,6 +39,35 @@ class GreedyTests:
         self.assertEqual(next(gp), (Point([8]), 4))
         self.assertEqual(next(gp), (Point([72]), 3))
 
+    def testgreedytree_transportplan(self):
+        """
+        This test determines that greedy() computes the correct transportation plan
+        """
+        greedy = self.implementation.greedy
+        root = Point([0])
+        P = MetricSpace([root] + [Point([x]) for x in [9,3,5,18]])
+        #gp = greedy(P, root, tree=False, gettransportplan = True)
+        gp = greedy(P, root, tree=False, gettransportplan = True)
+
+        # A case-wise assertion was needed because the way clarksongreedy.greedy works,
+        # it looks into all neighbors which might have been changed when a new cell was 
+        # created. So the transportation plan has entries in the dictionary with 0 mass 
+        # moved. On the other hand quadraticgreedy.greedy stores points in the  
+        # transportation plan only if their reverse nearest neighbor changed. 
+        # So there are no 0 value keys here.
+        if self.implementation == clarksongreedy:
+            self.assertEqual(next(gp), (Point([0]), {Point([0]): 5}))
+            self.assertEqual(next(gp), (Point([18]), {Point([0]): -1, Point([18]): 1}))
+            self.assertEqual(next(gp), (Point([9]), {Point([9]):2, Point([0]): -2, Point([18]): 0}))
+            self.assertEqual(next(gp), (Point([5]), {Point([9]):-1, Point([0]): -1, Point([5]): 2}))
+            self.assertEqual(next(gp), (Point([3]), {Point([9]):0, Point([3]): 1, Point([5]): -1}))
+        else:
+            self.assertEqual(next(gp), (Point([0]), {Point([0]): 5}))
+            self.assertEqual(next(gp), (Point([18]), {Point([0]): -1, Point([18]): 1}))
+            self.assertEqual(next(gp), (Point([9]), {Point([9]):2, Point([0]): -2}))
+            self.assertEqual(next(gp), (Point([5]), {Point([9]):-1, Point([0]): -1, Point([5]): 2}))
+            self.assertEqual(next(gp), (Point([3]), {Point([3]): 1, Point([5]): -1}))
+
     def testgreedytree_bigexample(self):
         greedy = self.implementation.greedy
         n = 600
