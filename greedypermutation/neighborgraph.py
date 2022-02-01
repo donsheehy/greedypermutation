@@ -93,7 +93,7 @@ def Cell(M):
 
 class NeighborGraph(Graph):
     # Initialize it as an empty graph.
-    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1, gettransportplan = False):
+    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1, gettransportplan = False, mass= None):
         """
         Initialize a new NeighborGraph.
 
@@ -116,6 +116,10 @@ class NeighborGraph(Graph):
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
+        if mass is None:
+            mass = [1]*len(M)
+        elif len(mass) != len(M):
+            raise ValueError("`mass` must of same length as `M`")
         self.Vertex = Cell(M)
         P = iter(M)
 
@@ -141,13 +145,9 @@ class NeighborGraph(Graph):
         # Add the points to the root cell.
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
-        for p in P:
-            if p in root_cell:
-                self.pointcopies[p] += 1
+        for i, p in enumerate(P):
+            self.pointcopies[p] += mass[i]
             root_cell.addpoint(p)
-        # Once the above loop executes self.pointcopies[root] will be off by 1. 
-        # Need to rectify that
-        self.pointcopies[root] -= 1
         
         # Add the new cell as the one vertex of the graph.
         self.addvertex(root_cell)
@@ -181,8 +181,8 @@ class NeighborGraph(Graph):
         transportplan = DefaultDict(int)
 
         if self.gettransportplan:
-            transportplan[newcenter] = 1
-            transportplan[parent.center] -= 1
+            transportplan[newcenter] = self.pointcopies[newcenter]
+            transportplan[parent.center] -= self.pointcopies[newcenter]
 
         # Make the cell a new vertex.
         self.addvertex(newcell)
@@ -228,14 +228,14 @@ class NeighborGraph(Graph):
         #                     if a.dist(p) < self.moveconstant * b.dist(p)}
         points_to_move = {p for p in b.points if a.comparedist(p, b, self.moveconstant)}
         b.points -= points_to_move
-        copies_to_move = 0
+        mass_to_move = 0
         for p in points_to_move:
             a.addpoint(p)
-            copies_to_move += self.pointcopies[p]
+            mass_to_move += self.pointcopies[p]
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
-        return len(points_to_move) + copies_to_move
+        return mass_to_move
 
     def nbrs_of_nbrs(self, u):
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}
@@ -259,7 +259,7 @@ class NeighborGraph(Graph):
         Method to compute the number of points with multiplicity in a cell.
         Better to use this than `len(cell)`.
         """
-        copies = 0
+        mass = 0
         for p in cell:
-            copies += self.pointcopies[p]
-        return len(cell) + copies
+            mass += self.pointcopies[p]
+        return mass

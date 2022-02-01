@@ -1,6 +1,6 @@
 from greedypermutation.neighborgraph import Cell, NeighborGraph
 
-def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettransportplan=False):
+def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettransportplan=False, mass=None):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
@@ -16,18 +16,18 @@ def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettra
     when set returns a dictionary of mass moved in each step of the greedy permutation.
     """
     if tree and gettransportplan:
-        yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan)
+        yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass)
     elif tree:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
             yield p, i
     elif gettransportplan:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
             yield p, t
     else:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan):
+        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
             yield p
 
-def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=False):
+def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=False, mass=None):
     """
     Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
@@ -38,7 +38,7 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
     if not M:
         return
     # If no seed is provided, use the first point.
-    G = NeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan)
+    G = NeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan, mass)
     H = G.heap
     root = H.findmax()
 
