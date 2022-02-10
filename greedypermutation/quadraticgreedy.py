@@ -1,6 +1,4 @@
-from email.errors import NonPrintableDefect
-from typing import DefaultDict
-
+from collections import defaultdict
 
 def greedy(M, seed = None, tree = False, gettransportplan=False, mass=None):
     """
@@ -15,6 +13,9 @@ def greedy(M, seed = None, tree = False, gettransportplan=False, mass=None):
 
     When `gettransportplan` is set to True `_greedy` returns a dictionary of mass
     moved in each step of the greedy permutation.
+
+    The `mass` parameter should be a list containing multiplicity of corresponding points
+    in `M`. The default assumption is a multiplicity of 
     """
     if tree and gettransportplan:
         yield from _greedy(M, seed, gettransportplan, mass)
@@ -50,14 +51,14 @@ def _greedy(M, seed = None, gettransportplan=False, mass=None):
         seed_index = P.index(seed)
         P[0], P[seed_index] = P[seed_index], P[0]
     n = len(P)
-    transportplan = DefaultDict(int)
+    transportplan = defaultdict(int)
     if gettransportplan:
         transportplan[P[0]] = sum(mass)
     yield P[0], None, transportplan
     pred = {p:0 for p in P}
     preddist = {p: M.dist(p, P[pred[p]]) for p in P}
     for i in range(1,n):
-        transportplan = DefaultDict(int)
+        transportplan = defaultdict(int)
         farthest = i
         for j in range(i+1, n):
             if preddist[P[j]] > preddist[P[farthest]]:

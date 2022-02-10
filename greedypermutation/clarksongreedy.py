@@ -14,6 +14,9 @@ def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettra
 
     The `gettransportplan` parameter sets the corresponding flag in NeighborGraph which
     when set returns a dictionary of mass moved in each step of the greedy permutation.
+
+    The `mass` parameter should be a list containing multiplicity of corresponding points
+    in `M`. The default assumption is a multiplicity of 1.
     """
     if tree and gettransportplan:
         yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass)

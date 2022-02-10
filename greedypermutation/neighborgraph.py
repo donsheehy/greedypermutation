@@ -113,9 +113,15 @@ class NeighborGraph(Graph):
 
         `gettransportplan` is a flag that determines whether `addcell()`
         computes transportation plans or not.
+
+        `mass` can be used to pass multiplicities of points in `M`. It should
+        be a list corresponding to points in `M`. The default value is a mass
+        of 1 for each point.
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
+        
+        # Assuming default mass of 1.
         if mass is None:
             mass = [1]*len(M)
         elif len(mass) != len(M):
@@ -133,10 +139,9 @@ class NeighborGraph(Graph):
         # plan is to be computed or not
         self.gettransportplan = gettransportplan
 
-        # self.pointcopies is a dictionary which stores the number of copies (>1)
-        # of a point indexed by point. A default value of 1 is assumed and not stored. 
-        # So if `self.pointcopies[p]==x` then the input contained `x+1` instances of `p`
-        self.pointcopies = defaultdict(int)
+        # self.mass is a dictionary which stores the mass of a point indexed by point.
+        #  A default value of 1 is assumed.
+        self.mass = defaultdict(int)
         
         # Make a cell to start the graph.  Use the first point as the root
         # if none is give.
@@ -146,7 +151,7 @@ class NeighborGraph(Graph):
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
         for i, p in enumerate(P):
-            self.pointcopies[p] += mass[i]
+            self.mass[p] += mass[i]
             root_cell.addpoint(p)
         
         # Add the new cell as the one vertex of the graph.
@@ -181,8 +186,8 @@ class NeighborGraph(Graph):
         transportplan = DefaultDict(int)
 
         if self.gettransportplan:
-            transportplan[newcenter] = self.pointcopies[newcenter]
-            transportplan[parent.center] -= self.pointcopies[newcenter]
+            transportplan[newcenter] = self.mass[newcenter]
+            transportplan[parent.center] -= self.mass[newcenter]
 
         # Make the cell a new vertex.
         self.addvertex(newcell)
@@ -192,7 +197,7 @@ class NeighborGraph(Graph):
         for nbr in self.nbrs(parent):
             localtransport = self.rebalance(newcell, nbr)
             # Add change caused by this rebalance to transportation plan if requested
-            if self.gettransportplan:
+            if self.gettransportplan and localtransport:
                 transportplan[newcenter] += localtransport
                 transportplan[nbr.center] -= localtransport
             self.heap.changepriority(nbr)
@@ -231,7 +236,7 @@ class NeighborGraph(Graph):
         mass_to_move = 0
         for p in points_to_move:
             a.addpoint(p)
-            mass_to_move += self.pointcopies[p]
+            mass_to_move += self.mass[p]
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
@@ -261,5 +266,5 @@ class NeighborGraph(Graph):
         """
         mass = 0
         for p in cell:
-            mass += self.pointcopies[p]
+            mass += self.mass[p]
         return mass
