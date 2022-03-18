@@ -28,7 +28,7 @@ class TestCell(unittest.TestCase):
 
     def testaddpoint_duplicatepoint(self):
         a,b = Point([1,2]), Point([2,3])
-        MetricCell = Cell(MetricSpace())       
+        MetricCell = Cell(MetricSpace())
         C = MetricCell(a)
         self.assertEqual(len(C), 1)
         C.addpoint(b)
@@ -79,7 +79,8 @@ class TestCell(unittest.TestCase):
 
 class TestNeighborGraph(unittest.TestCase):
     def testbasicusage(self):
-        G = NeighborGraph(MetricSpace([Point([i,i]) for i in range(100)]))
+        M = MetricSpace(((i,i) for i in range(100)), pointclass=Point)
+        G = NeighborGraph(M)
         # root = next(G.vertices())
         # G.addcell(Point([100,99]), root)
         # self.assertEqual(len(G), 2)
@@ -142,6 +143,9 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertTrue(bb.dist(cc) < bb.dist(aa))
         # That means that we should have an edge from c to aa.
         self.assertTrue(V[aa] in G.nbrs(V[c]))
+
+    def testcellmass(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
