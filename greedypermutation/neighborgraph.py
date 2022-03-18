@@ -97,8 +97,8 @@ class NeighborGraph(Graph):
         """
         Initialize a new NeighborGraph.
 
-        It starts with an iterable of points of a metric space. 
-        The first point will be the center of the default cell and all 
+        It starts with an iterable of points of a metric space.
+        The first point will be the center of the default cell and all
         other points will be placed inside.
 
         There are two constants that can be set.
@@ -120,8 +120,12 @@ class NeighborGraph(Graph):
             mass = [1]*len(M)
         elif len(mass) != len(M):
             raise ValueError("`mass` must of same length as `M`")
+        self.mass = defaultdict(int)
+        for i, p in enumerate(M):
+            self.mass[p] += mass[i]
+
+        # Establish a class for the cells.
         self.Vertex = Cell(M)
-        P = iter(M)
 
         if nbrconstant < moveconstant:
             raise RuntimeError("The move constant must not be larger than the"
@@ -133,22 +137,18 @@ class NeighborGraph(Graph):
         # plan is to be computed or not
         self.gettransportplan = gettransportplan
 
-        # self.pointcopies is a dictionary which stores the number of copies (>1)
-        # of a point indexed by point. A default value of 1 is assumed and not stored. 
-        # So if `self.pointcopies[p]==x` then the input contained `x+1` instances of `p`
-        self.pointcopies = defaultdict(int)
-        
         # Make a cell to start the graph.  Use the first point as the root
         # if none is give.
-        root_cell = self.Vertex(root or next(P))
-        
+        P = iter(M)
+        root_center = root or next(P)
+        root_cell = self.Vertex(root_center)
+
         # Add the points to the root cell.
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
         for i, p in enumerate(P):
-            self.pointcopies[p] += mass[i]
             root_cell.addpoint(p)
-        
+
         # Add the new cell as the one vertex of the graph.
         self.addvertex(root_cell)
         self.addedge(root_cell, root_cell)
@@ -160,7 +160,7 @@ class NeighborGraph(Graph):
 
     def addcell(self, newcenter, parent):
         """
-        Add a new cell centered at `newcenter` and also compute the mass moved by 
+        Add a new cell centered at `newcenter` and also compute the mass moved by
         this change to the neighbor graph.
 
         The `parent` is a sufficiently close cell that is already in the
@@ -170,7 +170,7 @@ class NeighborGraph(Graph):
         the new cell if it is closer.
 
         If self.gettransportplan=True this method also returns a dictionary
-        of the number of points gained and lost by every cell (indexed by center) 
+        of the number of points gained and lost by every cell (indexed by center)
         in this change to the neighbor graph.
         """
         # Create the new cell.
@@ -181,8 +181,8 @@ class NeighborGraph(Graph):
         transportplan = DefaultDict(int)
 
         if self.gettransportplan:
-            transportplan[newcenter] = self.pointcopies[newcenter]
-            transportplan[parent.center] -= self.pointcopies[newcenter]
+            transportplan[newcenter] = self.mass[newcenter]
+            transportplan[parent.center] -= self.mass[newcenter]
 
         # Make the cell a new vertex.
         self.addvertex(newcell)
@@ -231,7 +231,7 @@ class NeighborGraph(Graph):
         mass_to_move = 0
         for p in points_to_move:
             a.addpoint(p)
-            mass_to_move += self.pointcopies[p]
+            mass_to_move += self.mass[p]
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
@@ -253,13 +253,10 @@ class NeighborGraph(Graph):
         # Prune the excess edges.
         for v in nbrs_to_delete:
             self.removeedge(u,v)
-    
+
     def cellmass(self, cell):
         """
         Method to compute the number of points with multiplicity in a cell.
         Better to use this than `len(cell)`.
         """
-        mass = 0
-        for p in cell:
-            mass += self.pointcopies[p]
-        return mass
+        return sum(self.mass[p] for p in cell)

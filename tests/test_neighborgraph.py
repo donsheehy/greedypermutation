@@ -145,7 +145,15 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertTrue(V[aa] in G.nbrs(V[c]))
 
     def testcellmass(self):
-        pass
+        P = [(i,i) for i in range(10)]
+        M = MetricSpace(P, pointclass=L_inf)
+        masslist = list(range(1,11))
+        G = NeighborGraph(M, mass=masslist)
+        root_cell = next(iter(G._nbrs))
+        self.assertEqual(G.cellmass(root_cell), 55)
+        new_cell, _ = G.addcell((9,9), root_cell)
+        self.assertEqual(G.cellmass(root_cell), 15)
+        self.assertEqual(G.cellmass(new_cell), 40)
 
 if __name__ == '__main__':
     unittest.main()
