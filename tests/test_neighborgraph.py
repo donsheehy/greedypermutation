@@ -55,28 +55,6 @@ class TestCell(unittest.TestCase):
         self.assertEqual(A.dist(A.center), 0)
         self.assertEqual(A.dist(Point([7,15])), 13)
 
-    def testpop(self):
-        a,b,c,d = Point([0,0]), Point([100, 0]), Point([0,50]), Point([25,25])
-        MetricCell = Cell(MetricSpace())
-        C = MetricCell(a)
-        C.addpoint(b)
-        C.addpoint(c)
-        C.addpoint(d)
-        self.assertEqual(C.pop(), b)
-        self.assertEqual(C.pop(), c)
-        self.assertEqual(C.pop(), d)
-        self.assertEqual(C.pop(), None)
-
-
-    # def testpop_nonuniformdistribution(self):
-    #     S = set(range(100)) | set(range(100, 200, 20))
-    #     P = [Point([c]) for c in S]
-    #     M = MetricSpace(P)
-    #     C = [Cell(P[0])]
-    #     for p in P:
-    #         C[0].addpoint(p)
-    #     for i in range(len(S) - 2)
-
 class TestNeighborGraph(unittest.TestCase):
     def testbasicusage(self):
         M = MetricSpace(((i,i) for i in range(100)), pointclass=Point)
@@ -147,13 +125,14 @@ class TestNeighborGraph(unittest.TestCase):
     def testcellmass(self):
         P = [(i,i) for i in range(10)]
         M = MetricSpace(P, pointclass=L_inf)
-        masslist = list(range(1,11))
-        G = NeighborGraph(M, mass=masslist)
+        masslist = list(range(2,12))
+        G = NeighborGraph(M, gettransportplan=True, mass=masslist)
         root_cell = next(iter(G._nbrs))
-        self.assertEqual(G.cellmass(root_cell), 55)
-        new_cell, _ = G.addcell((9,9), root_cell)
-        self.assertEqual(G.cellmass(root_cell), 15)
-        self.assertEqual(G.cellmass(new_cell), 40)
+        self.assertEqual(G.cellmass(root_cell), 65)
+        new_cell, update_plan = G.addcell((9,9), root_cell)
+        self.assertEqual(G.cellmass(root_cell), 20)
+        self.assertEqual(G.cellmass(new_cell), 45)
+        print(update_plan)
 
 if __name__ == '__main__':
     unittest.main()

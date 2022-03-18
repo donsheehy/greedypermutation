@@ -21,7 +21,10 @@ def Cell(M):
             Add the point `p` to the cell.
             """
             self.points.add(p)
-            self.radius = max(self.radius, self.dist(p))
+            d = self.dist(p)
+            if d > self.radius:
+                self.radius = d
+                self.farthest = p
 
         def dist(self, point):
             """
@@ -41,23 +44,41 @@ def Cell(M):
             """
             Set the radius of the cell to be the farthest distance from a point
             to the center.
+
+            Also, store the farthest point.
             """
-            self.radius = max((self.dist(p) for p in self.points), default = 0)
+            max_dist = 0
+            max_point = None
+            for p in self.points:
+                d = self.dist(p)
+                if d > max_dist:
+                    max_dist = d
+                    max_point = p
+            self.radius = max_dist
+            self.farthest = max_point
+
+            # self.radius = max((self.dist(p) for p in self.points), default = 0)
 
         def pop(self):
             """
-            Remove and return the farthest point in the cell.
+            Return the farthest point in the cell.
 
             Returns `None` if there there are no points other than the center.
             """
+            # return self.farthest
             if len(self) == 1:
                 return None
             p = max(self.points, key = self.dist)
+
+            # The following line seemed important.  Maybe it isn't.
+            # Rebalance handles this point.
+            # self.points.remove(p)
+
+
             # This is linear time!  We should maybe use a heap here.
             # However, the pop is followed by an update that will iterate over all
             # the points anyway.
             # For knn sampling, the pop might not require such an iteration.
-            self.points.remove(p)
             self.updateradius()
             return p
 
@@ -155,6 +176,9 @@ class NeighborGraph(Graph):
         self.heap = MaxHeap([root_cell], key = lambda c: c.radius)
 
     def iscloseenoughto(self, p, q):
+        """
+        Return True iff the cells `p` and `q` are close enough to be neighbors.
+        """
         return q.dist(p.center) <= p.radius + q.radius + \
                       self.nbrconstant * max(p.radius, q.radius)
 
@@ -180,10 +204,6 @@ class NeighborGraph(Graph):
         # Create transportation plan for adding this cell
         transportplan = DefaultDict(int)
 
-        if self.gettransportplan:
-            transportplan[newcenter] = self.mass[newcenter]
-            transportplan[parent.center] -= self.mass[newcenter]
-
         # Make the cell a new vertex.
         self.addvertex(newcell)
         self.addedge(newcell, newcell)
@@ -192,7 +212,7 @@ class NeighborGraph(Graph):
         for nbr in self.nbrs(parent):
             localtransport = self.rebalance(newcell, nbr)
             # Add change caused by this rebalance to transportation plan if requested
-            if self.gettransportplan:
+            if localtransport != 0 and self.gettransportplan:
                 transportplan[newcenter] += localtransport
                 transportplan[nbr.center] -= localtransport
             self.heap.changepriority(nbr)

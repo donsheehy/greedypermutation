@@ -1,5 +1,6 @@
 from email.errors import NonPrintableDefect
-from typing import DefaultDict
+from collections import defaultdict
+# from typing import DefaultDict
 
 
 def greedy(M, seed = None, tree = False, gettransportplan=False, mass=None):
@@ -39,8 +40,10 @@ def _greedy(M, seed = None, gettransportplan=False, mass=None):
     P = list(M)
 
     if mass is None:
-        mass = [1]*len(M)
-    elif len(mass) != len(M):
+        mass = {p:1 for p in M}
+    else:
+        mass = {p: mass[i] for i, p in enumerate(P)}
+    if len(mass) != len(M):
         raise ValueError("`mass` must of same length as `M`")
     # If no seed is provided, use the first point.
     if seed is None:
@@ -50,29 +53,27 @@ def _greedy(M, seed = None, gettransportplan=False, mass=None):
         seed_index = P.index(seed)
         P[0], P[seed_index] = P[seed_index], P[0]
     n = len(P)
-    transportplan = DefaultDict(int)
-    if gettransportplan:
-        transportplan[P[0]] = sum(mass)
-    yield P[0], None, transportplan
+    yield P[0], None, {P[0]: sum(mass.values())}
     pred = {p:0 for p in P}
     preddist = {p: M.dist(p, P[pred[p]]) for p in P}
     for i in range(1,n):
-        transportplan = DefaultDict(int)
+        # find the farthest point.
         farthest = i
         for j in range(i+1, n):
             if preddist[P[j]] > preddist[P[farthest]]:
                 farthest  = j
         P[i], P[farthest] = P[farthest], P[i]
-        if gettransportplan:
-            transportplan[P[pred[P[i]]]] -= mass[i]
-            transportplan[P[i]] += mass[i]
+        predecessor = pred[P[i]]
+
+        transportplan = defaultdict(int)
+        # transportplan[P[pred[P[i]]]] = mass[P[i]]
         # Update the predecessor distance if necessary.
-        for j in range(i+1, n):
+        for j in range(i, n):
             newdistance = M.dist(P[i], P[j])
             if newdistance < preddist[P[j]]:
-                if gettransportplan:
-                    transportplan[P[pred[P[j]]]] -= mass[j]
-                    transportplan[P[i]] += mass[j]
-                pred[P[j]] = i
-                preddist[P[j]] = newdistance
-        yield P[i], pred[P[i]], transportplan
+                transportplan[P[pred[P[j]]]] -= mass[P[j]]
+                transportplan[P[i]] += mass[P[j]]
+                if i != j:
+                    pred[P[j]] = i
+                    preddist[P[j]] = newdistance
+        yield P[i], predecessor, transportplan
