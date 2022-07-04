@@ -7,6 +7,9 @@ from greedypermutation import (Point,
                                )
 from metricspaces import MetricSpace
 
+def ell_1(a, b):
+    return abs(a-b)
+
 class GreedyTests:
     def testgreedy(self):
         greedy = self.implementation.greedy
@@ -14,6 +17,12 @@ class GreedyTests:
         M = MetricSpace(P)
         gp = list(greedy(M, P[0]))
         self.assertEqual(gp, [P[0], P[2], P[1]])
+
+    def testgreedy_implicit_MetricSpace(self):
+        greedy = self.implementation.greedy
+        M = MetricSpace([0,1,2], dist=ell_1)
+        gp = list(greedy(M, 0))
+        self.assertEqual(gp, [0,2,1])
 
     def testgreedy_exponential_example(self):
         greedy = self.implementation.greedy
@@ -44,7 +53,7 @@ class GreedyTests:
         This test determines that greedy() computes the correct transportation plan
         """
         greedy = self.implementation.greedy
-        M = MetricSpace([0,9,3,5,17], dist=lambda a,b:abs(a-b))
+        M = MetricSpace([0,9,3,5,17], dist=ell_1)
         gp = greedy(M, tree=False, gettransportplan = True)
 
         self.assertEqual(next(gp), (0, {0: 5}))
@@ -58,7 +67,7 @@ class GreedyTests:
         This test determines that greedy() computes the correct transportation plan
         """
         greedy = self.implementation.greedy
-        M = MetricSpace([0,9,3,5,17], dist=lambda a,b:abs(a-b))
+        M = MetricSpace([0,9,3,5,17], dist=ell_1)
         gp = greedy(M, tree=False, gettransportplan = True, mass = [1,2,3,4,5])
 
         self.assertEqual(next(gp), (0, {0: 15}))

@@ -2,6 +2,7 @@ from collections import defaultdict
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
 from greedypermutation.knnheap import KNNHeap
+from metricspaces import metric_class
 
 class Bunch:
     """
@@ -17,11 +18,7 @@ class Bunch:
     def __init__(self, node):
         self.node = node
         self.index = 0
-        # self.point = node.point
-        # self.children = iter(node.children)
         self.weight = node.weight
-        # self.radii = iter(node.radii)
-        # self.radius = next(self.radii)
 
     @property
     def point(self):
@@ -53,6 +50,7 @@ class Bunch:
         for i in range(self.index, len(self.node.children)):
             yield from self.node.children[i]
 
+@metric_class
 class Node:
     """
     GreedyTree `Node`s store the following data.
@@ -93,9 +91,10 @@ class Node:
 
         Attempt to improve efficiency by pruning children that are too close.
         """
-        farthest = self.point.dist(point)
+        dist = self.metric.dist
+        farthest = dist(self.point, point)
         for c in self.children:
-            if c.point.dist(point) + c.radius > farthest:
+            if dist(c.point, point) + c.radius > farthest:
                 farthest = max(farthest, c.farthest_descendant(point))
         return farthest
 
@@ -127,9 +126,11 @@ class GreedyTree:
         P = []
         self.ch = defaultdict(list)
         self.scaling = scaling
+        self.M = M
         alpha = 1 - (1/scaling)
+        NodeClass = Node(M)
         for p, i in greedy(M, seed, tree = True, nbrconstant= alpha, moveconstant= alpha):
-            newnode = Node(p)
+            newnode = NodeClass(p)
             P.append(newnode)
             if i is not None:
                 P[i].children.append(newnode)
@@ -149,8 +150,9 @@ class GreedyTree:
         """
         Return a eps-approximate nearest neighbor to q.
         """
+        dist = self.M.dist
         H = self.heap()
-        nbr, q_to_nbr = self.root, q.dist(self.root.point)
+        nbr, q_to_nbr = self.root, dist(q, self.root.point)
         close_enough = (eps-1) / eps
 
         for child in H:
@@ -158,9 +160,9 @@ class GreedyTree:
 
             # If the nearest neighbor could be a child of child.
             # if not child.isempty() and \
-            if child.point.dist(q) < q_to_nbr + maxradius:
+            if dist(child.point, q) < q_to_nbr + maxradius:
                 p = child.pop()
-                q_to_p = q.dist(p.point)
+                q_to_p = dist(q, p.point)
                 # If p is the new nearest neighbors, update (nbr, q_to_nbr).
                 if q_to_p < q_to_nbr:
                     nbr, q_to_nbr = p, q_to_p
@@ -175,14 +177,15 @@ class GreedyTree:
         """
         Return the nearest neighbor of q in the GreedyTree.
         """
+        dist = self.M.dist
         H = self.heap()
-        nbr, q_to_nbr = self.root, q.dist(self.root.point)
+        nbr, q_to_nbr = self.root, dist(q, self.root.point)
 
         for child in H:
             # If the nearest neighbor could be a child of child.
-            if child.point.dist(q) - child.radius() < q_to_nbr:
+            if dist(q, child.point) - child.radius() < q_to_nbr:
                 p = child.pop()
-                q_to_p = q.dist(p.point)
+                q_to_p = dist(q, p.point)
                 # If p is the new nearest neighbors, update (nbr, q_to_nbr).
                 if q_to_p < q_to_nbr:
                     nbr, q_to_nbr = p, q_to_p
@@ -195,9 +198,10 @@ class GreedyTree:
         Produce a minimal collection of bunches that covers the range and is
         contained in the slack range.
         """
+        dist = self.M.dist
         H = self.heap()
         for child in H:
-            distance_to_center = child.point.dist(center)
+            distance_to_center = dist(child.point, center)
             maxdistance = distance_to_center + child.radius()
             mindistance = distance_to_center - child.radius()
             if maxdistance <= radius + slack:
@@ -229,8 +233,9 @@ class GreedyTree:
             yield from bunch
 
     def range_simple(self, center, radius):
+        dist = self.M.dist
         H = self.heap()
-        viable = lambda b: center.dist(b.point) <= b.radius() + radius
+        viable = lambda b: dist(center, b.point) <= b.radius() + radius
 
         for bunch in H:
             newbunch = bunch.pop()
@@ -244,11 +249,12 @@ class GreedyTree:
 
 
     def knn(self, k, q):
+        dist = self.M.dist
         H = self.heap()
         # nbr, q_to_nbr = self.root, q.dist(self.root.point)
         knndist = float('inf')
         KNN = KNNHeap(k)
-        KNN.insert(self.root, q.dist(self.root.point) + self.root.radius)
+        KNN.insert(self.root, dist(q, self.root.point) + self.root.radius)
 
         for bunch in H:
             # Inside Split
@@ -262,13 +268,14 @@ class GreedyTree:
 
 
     def farthest(self, q):
+        dist = self.M.dist
         H = self.heap()
-        viable = lambda b, d: q.dist(b.point) + b.radius() > d
+        viable = lambda b, d: dist(q, b.point) + b.radius() > d
 
-        farthest, dist_to_farthest = self.root.point, q.dist(self.root.point)
+        farthest, dist_to_farthest = self.root.point, dist(q, self.root.point)
         for bunch in H:
             newbunch = bunch.pop()
-            dist_to_newbunch = q.dist(newbunch.point)
+            dist_to_newbunch = dist(q, newbunch.point)
             if dist_to_newbunch > dist_to_farthest:
                 dist_to_farthest = dist_to_newbunch
                 farthest = newbunch.point

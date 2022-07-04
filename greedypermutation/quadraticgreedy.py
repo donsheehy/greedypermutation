@@ -1,7 +1,5 @@
 from email.errors import NonPrintableDefect
 from collections import defaultdict
-# from typing import DefaultDict
-
 
 def greedy(M, seed = None, tree = False, gettransportplan=False, mass=None):
     """

@@ -1,120 +1,124 @@
 from collections import defaultdict
 from typing import DefaultDict
 from ds2.graph import Graph
+from metricspaces import metric_class
 from greedypermutation.maxheap import MaxHeap
 
-def Cell(M):
-    class MetricCell:
-        def __init__(self, center):
-            """
-            Create a new cell with the given `center`.
+@metric_class
+class Cell:
+    def __init__(self, center):
+        """
+        Create a new cell with the given `center`.
 
-            A new cell only contains a single point, its center.
-            """
-            self.points = {center}
-            self.center = center
-            self.radius = 0
-            #self.dist = M.dist
+        A new cell only contains a single point, its center.
+        """
+        self.points = {center}
+        self.center = center
+        self.radius = 0
 
-        def addpoint(self, p):
-            """
-            Add the point `p` to the cell.
-            """
-            self.points.add(p)
+    def addpoint(self, p):
+        """
+        Add the point `p` to the cell.
+        """
+        self.points.add(p)
+        d = self.dist(p)
+        if d > self.radius:
+            self.radius = d
+            self.farthest = p
+
+    def dist(self, point):
+        """
+        Return the distance between the center of the cell and `point`.
+        Note, this allows the cell to be treated almost like a point.
+        """
+        return self.metric.dist(self.center, point)
+
+    def comparedist(self, point, other, alpha):
+        """
+        Return True iff `point` is closer to the center of this cell
+        than to the center of the `other` cell. `alpha` is the moveconstant.
+        """
+        return self.metric.comparedist(point, self.center, other.center, alpha=alpha)
+
+    def updateradius(self):
+        """
+        Set the radius of the cell to be the farthest distance from a point
+        to the center.
+
+        Also, store the farthest point.
+        """
+        max_dist = 0
+        max_point = None
+        for p in self.points:
             d = self.dist(p)
-            if d > self.radius:
-                self.radius = d
-                self.farthest = p
+            if d > max_dist:
+                max_dist = d
+                max_point = p
+        self.radius = max_dist
+        self.farthest = max_point
 
-        def dist(self, point):
-            """
-            Return the distance between the center of the cell and `point`.
-            Note, this allows the cell to be treated almost like a point.
-            """
-            return M.dist(self.center, point)
+        # self.radius = max((self.dist(p) for p in self.points), default = 0)
 
-        def comparedist(self, point, other, alpha):
-            """
-            Return True iff `point` is closer to the center of this cell
-            than to the center of the `other` cell. `alpha` is the moveconstant.
-            """
-            return M.comparedist(point, self.center, other.center, alpha=alpha)
+    def pop(self):
+        """
+        Return the farthest point in the cell.
 
-        def updateradius(self):
-            """
-            Set the radius of the cell to be the farthest distance from a point
-            to the center.
+        Returns `None` if there there are no points other than the center.
+        """
+        # return self.farthest
+        if len(self) == 1:
+            return None
+        p = max(self.points, key = self.dist)
 
-            Also, store the farthest point.
-            """
-            max_dist = 0
-            max_point = None
-            for p in self.points:
-                d = self.dist(p)
-                if d > max_dist:
-                    max_dist = d
-                    max_point = p
-            self.radius = max_dist
-            self.farthest = max_point
-
-            # self.radius = max((self.dist(p) for p in self.points), default = 0)
-
-        def pop(self):
-            """
-            Return the farthest point in the cell.
-
-            Returns `None` if there there are no points other than the center.
-            """
-            # return self.farthest
-            if len(self) == 1:
-                return None
-            p = max(self.points, key = self.dist)
-
-            # The following line seemed important.  Maybe it isn't.
-            # Rebalance handles this point.
-            # self.points.remove(p)
+        # The following line seemed important.  Maybe it isn't.
+        # Rebalance handles this point.
+        # self.points.remove(p)
 
 
-            # This is linear time!  We should maybe use a heap here.
-            # However, the pop is followed by an update that will iterate over all
-            # the points anyway.
-            # For knn sampling, the pop might not require such an iteration.
-            self.updateradius()
-            return p
+        # This is linear time!  We should maybe use a heap here.
+        # However, the pop is followed by an update that will iterate over all
+        # the points anyway.
+        # For knn sampling, the pop might not require such an iteration.
+        self.updateradius()
+        return p
 
-        def __len__(self):
-            """
-            Return the total number of points in the cell, including the center.
-            """
-            # Sid: Might be better to use `NeighborGraph.cellmass(cell)`
-            #  to account for multiplicity
-            return len(self.points)
+    def __len__(self):
+        """
+        Return the total number of points in the cell, including the center.
+        """
+        # Sid: Might be better to use `NeighborGraph.cellmass(cell)`
+        #  to account for multiplicity
+        return len(self.points)
 
-        def __iter__(self):
-            """
-            Return an iterator over the points in the cell.
-            """
-            return iter(self.points)
+    def __iter__(self):
+        """
+        Return an iterator over the points in the cell.
+        """
+        return iter(self.points)
 
-        def __contains__(self, point):
-            """
-            Return True if and only if `point` is in the cell.
-            """
-            return point in self.points
+    def __contains__(self, point):
+        """
+        Return True if and only if `point` is in the cell.
+        """
+        return point in self.points
 
-        def __lt__(self, other):
-            """
-            Cells are ordered by their radii.
-            """
-            return self.radius > other.radius
+    def __lt__(self, other):
+        """
+        Cells are ordered by their radii.
+        """
+        return self.radius > other.radius
 
-        def __repr__(self):
-            return str(self.center)
-    return MetricCell
+    def __repr__(self):
+        return str(self.center)
 
 class NeighborGraph(Graph):
-    # Initialize it as an empty graph.
-    def __init__(self, M, root = None, nbrconstant = 1, moveconstant = 1, gettransportplan = False, mass= None):
+    def __init__(self,
+                 M,
+                 root = None,
+                 nbrconstant = 1,
+                 moveconstant = 1,
+                 gettransportplan = False,
+                 mass= None):
         """
         Initialize a new NeighborGraph.
 
