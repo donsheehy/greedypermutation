@@ -97,11 +97,11 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertEqual(len(G), 1)
         p = G.heap.findmax()
         self.assertEqual(p.center, a)
-        self.assertEqual(p.pop(), c)
+        self.assertEqual(p.farthest, c)
         G.addcell(c, p)
         self.assertEqual(len(G), 2)
         p = G.heap.findmax()
-        self.assertEqual(p.pop(), b)
+        self.assertEqual(p.farthest, b)
         G.addcell(b, p)
         V = {v.center : v for v in G.vertices()}
         self.assertEqual(set(V), {a,b,c})
@@ -112,7 +112,7 @@ class TestNeighborGraph(unittest.TestCase):
 
         # Before adding aa.
         self.assertTrue(bb in V[b])
-        self.assertEqual(V[a].pop(), aa)
+        self.assertEqual(V[a].farthest, aa)
         G.addcell(aa, V[a])
         V = {v.center:v for v in G.vertices()}
         # After adding aa.

@@ -13,6 +13,5 @@ class TestKNNSample(unittest.TestCase):
         print(len(output), output)
         self.assertTrue(len(output) >= len(S) / k)
 
-
 if __name__ == '__main__':
     unittest.main()

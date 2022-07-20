@@ -57,31 +57,6 @@ class Cell:
         self.radius = max_dist
         self.farthest = max_point
 
-        # self.radius = max((self.dist(p) for p in self.points), default = 0)
-
-    def pop(self):
-        """
-        Return the farthest point in the cell.
-
-        Returns `None` if there there are no points other than the center.
-        """
-        # return self.farthest
-        if len(self) == 1:
-            return None
-        p = max(self.points, key = self.dist)
-
-        # The following line seemed important.  Maybe it isn't.
-        # Rebalance handles this point.
-        # self.points.remove(p)
-
-
-        # This is linear time!  We should maybe use a heap here.
-        # However, the pop is followed by an update that will iterate over all
-        # the points anyway.
-        # For knn sampling, the pop might not require such an iteration.
-        self.updateradius()
-        return p
-
     def __len__(self):
         """
         Return the total number of points in the cell, including the center.
@@ -234,12 +209,6 @@ class NeighborGraph(Graph):
 
         # If self.gettransportplan=False this method returns an empty transportplan
         return newcell, transportplan
-
-    def pop(self):
-        cell = self.heap.findmax()
-        point = cell.pop
-        self.heap.changepriority(cell)
-        return point
 
     def rebalance(self, a, b):
         """

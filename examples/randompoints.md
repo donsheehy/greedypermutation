@@ -11,12 +11,15 @@ H = 200
 N = 100
 
 seed(0)
-P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
-    {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
+def randompoint(xx,yy):
+    return Point(randrange(*xx), randrange(*yy))
+
+P = MetricSpace({randompoint((5, W//2),(5,H-5)) for i in range(N)} | \
+{randompoint((W//2, W-5),(5,H-5)) for i in range(5*N)})
 
 G = list(greedy(P))
 
-M = {Point(p.x, p.y, 4) for p in knnsample(P, 25)}
+M = {Point(p.x, p.y, 5) for p in knnsample(P, 25)}
 ```
 
 ## Greedy Sampling

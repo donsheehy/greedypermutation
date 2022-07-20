@@ -50,7 +50,7 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
 
     for i in range(1, len(M)):
         cell = H.findmax()
-        point = cell.pop()
+        point = cell.farthest
         newcell, transportplan = G.addcell(point, cell)
         index[newcell] = i
         yield point, index[cell], transportplan
