@@ -152,7 +152,9 @@ class NeighborGraph(Graph):
         # Add the new cell as the one vertex of the graph.
         self.addvertex(root_cell)
         self.addedge(root_cell, root_cell)
-        self.heap = MaxHeap([root_cell], key = lambda c: c.radius)
+
+        # The heap has been moved to GreedyNeighborGraph.
+        # self.heap = MaxHeap([root_cell], key = lambda c: c.radius)
 
     def iscloseenoughto(self, p, q):
         """
@@ -194,7 +196,9 @@ class NeighborGraph(Graph):
             if localtransport != 0 and self.gettransportplan:
                 transportplan[newcenter] += localtransport
                 transportplan[nbr.center] -= localtransport
-            self.heap.changepriority(nbr)
+
+            # The heap update has been delegated to the GreedyNeighborGraph.
+            # self.heap.changepriority(nbr)
 
         # Add neighbors to the new cell.
         for newnbr in self.nbrs_of_nbrs(parent):
@@ -205,7 +209,8 @@ class NeighborGraph(Graph):
         for nbr in set(self.nbrs(parent)):
             self.prunenbrs(nbr)
 
-        self.heap.insert(newcell)
+        # The following update has moved to the GreedyNeighborGraph
+        # self.heap.insert(newcell)
 
         # If self.gettransportplan=False this method returns an empty transportplan
         return newcell, transportplan
@@ -253,3 +258,33 @@ class NeighborGraph(Graph):
         Better to use this than `len(cell)`.
         """
         return sum(self.mass[p] for p in cell)
+
+
+class GreedyNeighborGraph(NeighborGraph):
+    def __init__(self,
+                 M,
+                 root = None,
+                 nbrconstant = 1,
+                 moveconstant = 1,
+                 gettransportplan = False,
+                 mass= None):
+        super().__init__(M, root, nbrconstant, moveconstant, gettransportplan,
+                         mass)
+
+        # The root cell should be the only vertex in the graph.
+        root_cell = next(iter(self._nbrs))
+        self.heap = MaxHeap([root_cell], key = lambda c: c.radius)
+
+    def addcell(self, newcenter, parent):
+        newcell, transportplan = super().addcell(newcenter, parent)
+        # Add `newcell` to the heap.
+        self.heap.insert(newcell)
+
+        return newcell, transportplan
+
+    def rebalance(self, a, b):
+        mass_to_move = super().rebalance(a, b)
+        # Update the heap priority for `b`.
+        self.heap.changepriority(b)
+
+        return mass_to_move

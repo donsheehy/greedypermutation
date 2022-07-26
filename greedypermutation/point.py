@@ -1,6 +1,10 @@
 class Point:
-    """A simple class to describe points in Euclidean space with float
+    """
+    A simple class to describe points in Euclidean space with float
     coordinates.
+
+    This class implements the point protocol from the metricspaces class.
+    It is mostly intended for simple examples and tests.
     """
 
     def __init__(self, coords):

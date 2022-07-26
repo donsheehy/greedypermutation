@@ -1,5 +1,6 @@
 import unittest
 from greedypermutation import Point, Cell, NeighborGraph
+from greedypermutation.neighborgraph import GreedyNeighborGraph
 from metricspaces import MetricSpace
 
 class L_inf(tuple):
@@ -80,6 +81,20 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertEqual(len(A), 101)
 
 
+    def testcellmass(self):
+        P = [(i,i) for i in range(10)]
+        M = MetricSpace(P, pointclass=L_inf)
+        masslist = list(range(2,12))
+        G = NeighborGraph(M, gettransportplan=True, mass=masslist)
+        root_cell = next(iter(G._nbrs))
+        self.assertEqual(G.cellmass(root_cell), 65)
+        new_cell, update_plan = G.addcell((9,9), root_cell)
+        self.assertEqual(G.cellmass(root_cell), 20)
+        self.assertEqual(G.cellmass(new_cell), 45)
+        print(update_plan)
+
+
+class TestGreedyNeighborGraph(unittest.TestCase):
     def testneighborsofneighborscondition(self):
         """ This somewhat long test was written to expose a bug where
         neighbors of the neighbor graph were not properly discovered.
@@ -93,7 +108,7 @@ class TestNeighborGraph(unittest.TestCase):
         c = L_inf([22, 20 , 21, 11, 0, 3])
         cc = L_inf([ 19, 17, 18, 8, 3, 0])
         P = [a,aa,b,bb,c,cc]
-        G = NeighborGraph(MetricSpace(P))
+        G = GreedyNeighborGraph(MetricSpace(P))
         self.assertEqual(len(G), 1)
         p = G.heap.findmax()
         self.assertEqual(p.center, a)
@@ -121,18 +136,6 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertTrue(bb.dist(cc) < bb.dist(aa))
         # That means that we should have an edge from c to aa.
         self.assertTrue(V[aa] in G.nbrs(V[c]))
-
-    def testcellmass(self):
-        P = [(i,i) for i in range(10)]
-        M = MetricSpace(P, pointclass=L_inf)
-        masslist = list(range(2,12))
-        G = NeighborGraph(M, gettransportplan=True, mass=masslist)
-        root_cell = next(iter(G._nbrs))
-        self.assertEqual(G.cellmass(root_cell), 65)
-        new_cell, update_plan = G.addcell((9,9), root_cell)
-        self.assertEqual(G.cellmass(root_cell), 20)
-        self.assertEqual(G.cellmass(new_cell), 45)
-        print(update_plan)
 
 if __name__ == '__main__':
     unittest.main()

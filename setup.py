@@ -20,11 +20,12 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=['ds2',
+                      'metricspaces',
                       'Click',
                      ],
-    entry_points='''
-        [console_scripts]
-        greedypermutation=greedypermutation.cli:cli
-    ''',
-
+    entry_points={
+        'console_scripts': [
+            'greedypermutation=greedypermutation.cli:cli',
+        ],
+    },
 )

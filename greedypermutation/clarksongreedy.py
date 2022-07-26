@@ -1,4 +1,4 @@
-from greedypermutation.neighborgraph import Cell, NeighborGraph
+from greedypermutation.neighborgraph import Cell, GreedyNeighborGraph
 
 def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettransportplan=False, mass=None):
     """
@@ -38,7 +38,7 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
     if not M:
         return
     # If no seed is provided, use the first point.
-    G = NeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan, mass)
+    G = GreedyNeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan, mass)
     H = G.heap
     root = H.findmax()
 
