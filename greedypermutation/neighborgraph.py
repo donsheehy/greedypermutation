@@ -138,7 +138,7 @@ class NeighborGraph(Graph):
         self.gettransportplan = gettransportplan
 
         # Make a cell to start the graph.  Use the first point as the root
-        # if none is give.
+        # if none is given.
         P = iter(M)
         root_center = root or next(P)
         root_cell = self.Vertex(root_center)

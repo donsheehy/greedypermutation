@@ -123,6 +123,16 @@ class GreedyTests:
         self.assertEqual(ch[P[4]], set())
         self.assertEqual(ch[P[5]], {P[4]})
 
+    # The following test is disabled for now.  In the future, we'd like this
+    # to work.
+    def Xtestduplicatepoints(self):
+        greedy = self.implementation.greedy
+        P = [Point([c]) for c in [0, 1, 3, 1, 20]]
+        M = MetricSpace(P)
+        # M = MetricSpace([[0], [1], [3], [1], [20]], pointclass = Point)
+        L = list(greedy(M))
+        self.assertEqual(len(M), 4)
+
 def _test(impl):
     class GreedyTestCase(unittest.TestCase, GreedyTests):
         implementation = impl
