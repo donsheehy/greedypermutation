@@ -18,6 +18,6 @@ def sample(P, delta, distance = 'sqeuclidean'):
     for _ in P:
         output.append(P[j])
         j = D.argmax()
-        D = np.minimum(S[j], D)
         if D[j] < delta:
             return output
+        D = np.minimum(S[j], D)
