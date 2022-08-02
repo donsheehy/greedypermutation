@@ -29,6 +29,14 @@ class Ball:
     def isleaf(self):
         return self.left is None
 
+    def intersects(self, center, radius):
+        return self.dist(center) - self.radius <= radius
+
+    def contained_in(self, center, radius):
+        return self.dist(center) +  self.radius <= radius
+
+
+
     def tree_greedy(M):
         gp = greedy(M, pointtree=True)
         return Ball.tree(gp)
@@ -55,17 +63,17 @@ class Ball:
     def farthest(self, q):
         """Find the distance to the farthest point to `q`."""
         if self.isleaf():
-            return self.center.dist(q)
+            return self.dist(q)
         else:
-            viable = [self]
+            H = [self]
             best = 0
-            while viable:
-                ball = viable.pop()
-                best = max(best, ball.center.dist(q))
+            while H:
+                ball = H.pop()
+                best = max(best, ball.dist(q))
                 if not ball.isleaf() and \
-                    ball.center.dist(q) + ball.radius > best:
-                    viable.append(ball.left)
-                    viable.append(ball.right)
+                    ball.dist(q) + ball.radius > best:
+                    H.append(ball.left)
+                    H.append(ball.right)
             return best
 
     def update(self):
@@ -111,17 +119,37 @@ class Ball:
         """
         Return the point in the ball tree that is closest to the query.
         """
-        nbr, nbr_dist = self, self.dist(query)
+        return self.ann(query, 1)
+
+    def ann(self, query, approx = 1):
+        """
+        Return the point in the ball tree that is closest to the query.
+        """
+        nbr, radius = self, self.dist(query)
         H = self.heap()
         for ball in H:
             current_dist = ball.dist(query)
-            if current_dist < nbr_dist:
-                nbr, nbr_dist = ball, current_dist
-            viable = lambda b: b and b.dist(query) - b.radius < nbr_dist
-            if viable(ball.left):
-                H.insert(ball.left)
-            if viable(ball.right):
-                H.insert(ball.right)
+            if current_dist < radius:
+                nbr, radius = ball, current_dist
+            if not ball.isleaf():
+                if ball.left.intersect(query, radius / approx):
+                    H.insert(ball.left)
+                if ball.right.intersects(query, radius / approx):
+                    H.insert(ball.right)
+        return nbr.center
+
+    def farthest_point(self, query):
+        nbr, radius = self, self.dist(query)
+        H = self.heap()
+        for ball in H:
+            current_dist = ball.dist(query)
+            if current_dist > radius:
+                nbr, radius = ball, current_dist
+            if not ball.isleaf():
+                if not ball.left.contained_in(query, radius):
+                    H.insert(ball.left)
+                if not ball.right.contained_in(query, radius):
+                    H.insert(ball.right)
         return nbr.center
 
     def _range_search(self, center, radius, slack = 0):
@@ -131,14 +159,14 @@ class Ball:
         """
         H = self.heap()
         for ball in H:
-            if ball.dist(center) + ball.radius <= radius + slack:
+            if ball.contained_in(center, radius + slack):
                 yield ball
             else:
-                viable = lambda b: b and b.dist(center) - b.radius <= radius
-                if viable(ball.left):
-                    H.insert(ball.left)
-                if viable(ball.right):
-                    H.insert(ball.right)
+                if not ball.isleaf():
+                    if ball.left.intersects(center, radius):
+                        H.insert(ball.left)
+                    if ball.right.intersects(center, radius):
+                        H.insert(ball.right)
 
     def range_search(self, center, radius, slack=0):
         """
@@ -153,7 +181,8 @@ class Ball:
         """
         Return the number of points in `ball(center, radius)`.
         """
-        return sum(len(ball) for ball in self._range_search(center, radius, slack))
+        return sum(len(ball) \
+            for ball in self._range_search(center, radius, slack))
 
     def approx_range_search(self, center, radius, approx):
         """
