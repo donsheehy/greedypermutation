@@ -49,7 +49,6 @@ class Ball:
         root.update()
         return root
 
-
     def farthest(self, q):
         """Find the distance to the farthest point to `q`."""
         if self.isleaf():
@@ -109,6 +108,3 @@ class Ball:
             if right and right.center.dist(query) - right.radius < nbr_dist:
                 H.insert(right)
         return nbr
-
-    def knn(self, query, k):
-        pass

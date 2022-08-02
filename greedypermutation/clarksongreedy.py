@@ -46,11 +46,8 @@ def greedy(M,
 
 def _greedy(M, G):
     """
-    Return an iterator that yields `(point, index)` pairs, where `point`
-    is the next point in a greedy permutation and `index` is the index of they
-    nearest predecessor.
-
-    The optional `seed` parameter indicates the point that should appear first.
+    Given a `MetricSpace` `M` and a `GreedyNeighborGraph` `G`, iterate over
+    `(point, cell, index, transportplan)` tuples for greedy permutation of `M`.
     """
     H = G.heap
     root = H.findmax()
