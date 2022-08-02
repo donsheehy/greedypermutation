@@ -55,6 +55,97 @@ class TestBallTree(unittest.TestCase):
         self.assertEqual(balltree.left.right.center, M[1])
         self.assertEqual(balltree.left.right.radius, 0)
 
+    def test_len(self):
+        M = MetricSpace([10, 4, 15, 17], pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        """
+        The tree should have the following structure.
+        10
+            10
+                10 (leaf)
+                 4 (leaf)
+            17
+                17 (leaf)
+                15 (leaf)
+        """
+        self.assertEqual(len(balltree), 4)
+        self.assertEqual(len(balltree.left), 2)
+        self.assertEqual(len(balltree.right), 2)
+        self.assertEqual(len(balltree.right.left), 1)
+        self.assertEqual(len(balltree.right.right), 1)
+
+
+    def test_iter(self):
+        M = MetricSpace([10, 4, 15, 17], pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        """
+        The tree should have the following structure.
+        10
+            10
+                10 (leaf)
+                 4 (leaf)
+            17
+                17 (leaf)
+                15 (leaf)
+        """
+        self.assertEqual(set(M), set(balltree))
+        self.assertEqual({M[0],M[1]}, set(balltree.left))
+        self.assertEqual({M[2],M[3]}, set(balltree.right))
+        self.assertEqual({M[2]}, set(balltree.right.right))
+
+    def test_range(self):
+        M = MetricSpace([10, 4, 15, 17], pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        """
+        The tree should have the following structure.
+        10
+            10
+                10 (leaf)
+                 4 (leaf)
+            17
+                17 (leaf)
+                15 (leaf)
+        """
+        self.assertEqual(set(M), set(balltree.range_search(R1(9), 8)))
+        self.assertEqual({M[0], M[2]}, set(balltree.range_search(R1(12),3)))
+
+    def test_range_with_slack(self):
+        M = MetricSpace([10, 4, 15, 17], pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        """
+        The tree should have the following structure.
+        10
+            10
+                10 (leaf)
+                 4 (leaf)
+            17
+                17 (leaf)
+                15 (leaf)
+        """
+        self.assertEqual(set(M), set(balltree.range_search(R1(9), 8, 0.5)))
+        self.assertEqual({M[0], M[2], M[3]},
+                         set(balltree.range_search(R1(13),3,3)))
+
+
+    def test_range_count(self):
+        M = MetricSpace([10, 4, 15, 17], pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        """
+        The tree should have the following structure.
+        10
+            10
+                10 (leaf)
+                 4 (leaf)
+            17
+                17 (leaf)
+                15 (leaf)
+        """
+        self.assertEqual(4, balltree.range_count(R1(9), 8))
+        self.assertEqual(2, balltree.range_count(R1(12),3))
+        self.assertEqual(0, balltree.range_count(R1(6), 1))
+        self.assertEqual(3, balltree.range_count(R1(12),7))
+
+
 
 if __name__ == '__main__':
     unittest.main()

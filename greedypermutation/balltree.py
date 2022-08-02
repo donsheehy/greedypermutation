@@ -23,6 +23,9 @@ class Ball:
         self.left = None
         self.right = None
 
+    def dist(self, other):
+        return self.center.dist(other)
+
     def isleaf(self):
         return self.left is None
 
@@ -78,10 +81,24 @@ class Ball:
             self.right.update()
             self.radius = max(self.left.radius,
                               self.right.farthest(self.center))
-            self._len = 1 + len(self.left) + len(self.right)
+            self._len = len(self.left) + len(self.right)
 
     def __len__(self):
         return self._len
+
+    def __iter__(self):
+        """
+        Iterate over the points.
+
+        Note that the current immplementation is simple, but not as efficient
+        asymptotically as the non-recursive approach.  This is an issue with
+        recursive iterators.
+        """
+        if self.isleaf():
+            yield self.center
+        else:
+            yield from self.left
+            yield from self.right
 
     def heap(self):
         """
@@ -94,17 +111,68 @@ class Ball:
         """
         Return the point in the ball tree that is closest to the query.
         """
-        nbr = self.center
-        nbr_dist = nbr.dist(query)
+        nbr, nbr_dist = self, self.dist(query)
         H = self.heap()
         for ball in H:
-            current_dist = ball.center.dist(query)
+            current_dist = ball.dist(query)
             if current_dist < nbr_dist:
-                nbr = ball.center
-                nbr_dist = current_dist
-            left, right = ball.left, ball.right
-            if left and left.center.dist(query) - left.radius < nbr_dist:
-                H.insert(left)
-            if right and right.center.dist(query) - right.radius < nbr_dist:
-                H.insert(right)
-        return nbr
+                nbr, nbr_dist = ball, current_dist
+            viable = lambda b: b and b.dist(query) - b.radius < nbr_dist
+            if viable(ball.left):
+                H.insert(ball.left)
+            if viable(ball.right):
+                H.insert(ball.right)
+        return nbr.center
+
+    def _range_search(self, center, radius, slack = 0):
+        """
+        Iterate over the maximal balls contained in
+        `ball(center, radius + slack)`.
+        """
+        H = self.heap()
+        for ball in H:
+            if ball.dist(center) + ball.radius <= radius + slack:
+                yield ball
+            else:
+                viable = lambda b: b and b.dist(center) - b.radius <= radius
+                if viable(ball.left):
+                    H.insert(ball.left)
+                if viable(ball.right):
+                    H.insert(ball.right)
+
+    def range_search(self, center, radius, slack=0):
+        """
+        Iterate over the points in `ball(center, radius)`.
+        The output may include points contained in the slightly larger ball:
+        `ball(center, radius + slack)`.
+        """
+        for ball in self._range_search(center, radius, slack):
+            yield from ball
+
+    def range_count(self, center, radius, slack=0):
+        """
+        Return the number of points in `ball(center, radius)`.
+        """
+        return sum(len(ball) for ball in self._range_search(center, radius, slack))
+
+    def approx_range_search(self, center, radius, approx):
+        """
+        Iterate over the points `ball(center, radius)`.
+        The output may include points contained in the slightly larger ball:
+        `ball(center, radius * approx)`.
+
+        This is the multiplicative approximate range search.
+        The standard range search allows for additive approximation.
+        """
+        yield from self.range_search(center, radius, (approx - 1) * radius)
+
+    def approx_range_count(self, center, radius, approx):
+        """
+        Return the number of points in `ball(center, radius)`.
+        The output may include points contained in the slightly larger ball:
+        `ball(center, radius * approx)`.
+
+        This is the multiplicative approximate range count.
+        The standard range count allows for additive approximation.
+        """
+        return self.range_count(center, radius, (approx - 1) * radius)
