@@ -1,6 +1,13 @@
 from greedypermutation.neighborgraph import Cell, GreedyNeighborGraph
 
-def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettransportplan=False, mass=None):
+def greedy(M,
+           seed = None,
+           nbrconstant = 1,
+           moveconstant=1,
+           tree = False,
+           pointtree = False,
+           gettransportplan=False,
+           mass=None):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
@@ -12,22 +19,32 @@ def greedy(M, seed = None, nbrconstant = 1, moveconstant=1, tree = False, gettra
     point will have a parent that is a `1/alpha` approximate nearest neighbor.  The
     resulting greedy permutation will be a `1/alpha` approximation.
 
+    The `pointtree` parameter indicates if the predecessor is yielded with each
+    point.
+
+    The `tree` parameter indicates if the index of the predecessor is yielded
+    with each point.
+
     The `gettransportplan` parameter sets the corresponding flag in NeighborGraph which
     when set returns a dictionary of mass moved in each step of the greedy permutation.
     """
-    if tree and gettransportplan:
-        yield from _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass)
-    elif tree:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
-            yield p, i
-    elif gettransportplan:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
-            yield p, t
-    else:
-        for p, i, t in _greedy(M, seed, nbrconstant, moveconstant, gettransportplan, mass):
-            yield p
+    G = GreedyNeighborGraph(M,
+                            seed or next(iter(M)),
+                            nbrconstant,
+                            moveconstant,
+                            gettransportplan,
+                            mass)
+    for p, c, i, t in _greedy(M, G):
+        output = [p]
+        if pointtree:
+            output.append(c.center if c else None)
+        if tree:
+            output.append(i)
+        if gettransportplan:
+            output.append(t)
+        yield output[0] if len(output) == 1 else tuple(output)
 
-def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=False, mass=None):
+def _greedy(M, G):
     """
     Return an iterator that yields `(point, index)` pairs, where `point`
     is the next point in a greedy permutation and `index` is the index of they
@@ -35,15 +52,11 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
 
     The optional `seed` parameter indicates the point that should appear first.
     """
-    if not M:
-        return
-    # If no seed is provided, use the first point.
-    G = GreedyNeighborGraph(M, seed or next(iter(M)), nbrconstant, moveconstant, gettransportplan, mass)
     H = G.heap
     root = H.findmax()
 
     # Yield the first point.
-    yield root.center, None, {root.center: G.cellmass(root)}
+    yield root.center, None, None, {root.center: G.cellmass(root)}
 
     # Store the indices of the previous points.
     index = {root : 0}
@@ -53,4 +66,4 @@ def _greedy(M, seed = None, nbrconstant = 1, moveconstant=1, gettransportplan=Fa
         point = cell.farthest
         newcell, transportplan = G.addcell(point, cell)
         index[newcell] = i
-        yield point, index[cell], transportplan
+        yield point, cell, index[cell], transportplan

@@ -16,8 +16,6 @@ margin = 40
 seed(0)
 P = MetricSpace({Point(randrange(margin, W//2), randrange(margin,H-margin)) for i in range(N)} | \
     {Point(randrange(W//2, W-margin), randrange(margin,H-margin)) for i in range(5 * N)})
-
-T = GreedyTree(P)
 ```
 
 ```python {cmd continue}
