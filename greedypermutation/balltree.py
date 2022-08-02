@@ -35,8 +35,6 @@ class Ball:
     def contained_in(self, center, radius):
         return self.dist(center) +  self.radius <= radius
 
-
-
     def tree_greedy(M):
         gp = greedy(M, pointtree=True)
         return Ball.tree(gp)
