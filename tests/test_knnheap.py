@@ -1,20 +1,13 @@
 from greedypermutation.knnheap import KNNHeap
-from greedypermutation.greedytree import Bunch
+from greedypermutation.balltree import Ball
 import unittest
 
-
 class TestKNNHeap(unittest.TestCase):
-    def setup(self):
-        print("running a test")
-
-    def testinit(self):
-        H = KNNHeap(3)
+    def test_init(self):
+        H = KNNHeap(3,3)
 
     def testinsert_simple(self):
-        H = KNNHeap(5)
-
-        # B = Bunch()
-        # H.insert()
+        H = KNNHeap(5, 2)
 
 if __name__ == '__main__':
     unittest.main()

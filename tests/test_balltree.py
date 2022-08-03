@@ -146,6 +146,9 @@ class TestBallTree(unittest.TestCase):
         self.assertEqual(3, balltree.range_count(R1(12),7))
 
 
+    def tetknn(self):
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

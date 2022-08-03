@@ -1,6 +1,9 @@
 from ds2.priorityqueue import PriorityQueue
 from metricspaces import MetricSpace
 from greedypermutation.clarksongreedy import greedy
+from greedypermutation.maxheap import MaxHeap
+from greedypermutation.knnheap import KNNHeap
+
 
 """
 This module contains an implementation of a ball tree.  It will eventually
@@ -203,3 +206,34 @@ class Ball:
         The standard range count allows for additive approximation.
         """
         return self.range_count(center, radius, (approx - 1) * radius)
+
+    def _knn(self, k, query, approx = 0):
+        N = KNNHeap(query, k)
+        N.insert(self, self.dist(query) + self.radius)
+        H = self.heap()
+
+        # The following line will change for approx knn
+        close_enough = approx
+
+        for ball in H:
+            if ball.radius <= close_enough * N.radius:
+                # close_enough >= 0 implies that every leaf should reach here.
+                return N
+            if ball in N:
+                N.refine(ball)
+                if ball.left.intersects(query, N.radius):
+                    H.insert(ball.left)
+                if ball.right.intersects(query, N.radius):
+                    H.insert(ball.right)
+            else:
+                if ball.left.intersects(query, N.radius):
+                    H.insert(ball.left)
+                    N.insert(ball.left)
+                if ball.right.intersects(query, N.radius):
+                    H.insert(ball.right)
+                    N.insert(ball.right)
+
+    def knn(self, k, query, approx = 0):
+        N = self._knn(k, query, approx)
+        for ball in N:
+            yield from ball

@@ -17,6 +17,8 @@ P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} 
     {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
 
 T = Ball.tree_greedy(P)
+
+# print([str(p) for p in P])
 ```
 
 To illustrate the search operations, we will use the following point set $P$.
@@ -166,14 +168,16 @@ print("count = ", count)
 ## $k$th Nearest Neighbor
 
 ```python {cmd continue="setup" output=html}
-q = Point(478, 92, 3)
-knn = T.knn(7, q)
-r = max(q.dist(nn) for nn in knn)
+q = Point(210, 91, 2)
+k = 7
+knn = list(T._knn(k, q))
+# print(f"{len(knn)} points found, searched for {k}.")
+r = max(nn.dist(q) for nn in knn)
 
-with svg_plus_pdf(W, H, 'greedytree02') as canvas:
+with svg_plus_pdf(W, H, 'knn_search') as canvas:
     Point(*q, r).draw(canvas)
-    VT.draw(canvas)
-    [Point(*x.point, 4).draw(canvas) for x in R]
+    [Point(*p).draw(canvas) for p in P]
+    [Point(*x.center, 4).draw(canvas) for x in knn]
     q.draw(canvas)
 ```
 
