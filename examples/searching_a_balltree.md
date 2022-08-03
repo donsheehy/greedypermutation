@@ -168,18 +168,43 @@ print("count = ", count)
 ## $k$th Nearest Neighbor
 
 ```python3 {cmd continue="setup" output=html}
-q = Point(210, 91, 2)
-k = 7
+q = Point(400, 51, 2)
+k = 20
 knn = list(T.knn(k, q))
+knn2 = list(T.knn(k, q, 2))
 # print(f"{len(knn)} points found, searched for {k}.")
 r = max(nn.dist(q) for nn in knn)
+r2 = max(nn.dist(q) for nn in knn2)
 
 with svg_plus_pdf(W, H, 'knn_search') as canvas:
+    Point(*q, r2).draw(canvas)
     Point(*q, r).draw(canvas)
     [Point(*p).draw(canvas) for p in P]
     [Point(*x, 4).draw(canvas) for x in knn]
+    [Point(*x, 3).draw(canvas) for x in knn2]
     q.draw(canvas)
 ```
+
+## Approxiamte $k$th Nearest Neighbor
+
+```python3 {cmd continue="setup" output=html}
+q = Point(400, 51, 2)
+k = 20
+knn = list(T.knn(k, q))
+knn2 = list(T.knn(k, q, 2))
+# print(f"{len(knn)} points found, searched for {k}.")
+r = max(nn.dist(q) for nn in knn)
+r2 = max(nn.dist(q) for nn in knn2)
+
+with svg_plus_pdf(W, H, 'knn_search') as canvas:
+    Point(*q, r2).draw(canvas)
+    Point(*q, r).draw(canvas)
+    [Point(*p).draw(canvas) for p in P]
+    [Point(*x, 4).draw(canvas) for x in knn]
+    [Point(*x, 3).draw(canvas) for x in knn2]
+    q.draw(canvas)
+```
+
 
 
 ## Farthest Point

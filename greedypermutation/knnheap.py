@@ -1,6 +1,7 @@
-from ds2.priorityqueue import PriorityQueue
+from greedypermutation.maxheap import MaxHeap
 
-class KNNHeap(PriorityQueue):
+
+class KNNHeap(MaxHeap):
     """
     The KNNHeap stores a collection of balls (max)heap ordered by an upper bound on
     their distance to a given query point.
@@ -16,8 +17,7 @@ class KNNHeap(PriorityQueue):
 
     @property
     def radius(self):
-        # Manually negating the priority as it comes out.
-        return -(self._entries[0].priority)
+        return self.priority(self.findmax())
 
     @property
     def top_weight(self):
@@ -27,15 +27,8 @@ class KNNHeap(PriorityQueue):
         """
         Remove the given ball and return its upper_bound.
         """
-        # The following is a bit of a hack.
-        L = self._entries
-        index = self._itemmap[ball]
-        # Manually negating the priority as it comes out.
-        upper_bound = -(L[index].priority)
-        self._swap(index,-1)
-        del self._itemmap[ball]
-        L.pop()
-        self._downheap(index)
+        upper_bound = self.priority(ball)
+        super().remove(ball)
         self.weight -= len(ball)
         return upper_bound
 
@@ -50,15 +43,8 @@ class KNNHeap(PriorityQueue):
     def insert(self, ball, upper_bound = None):
         if upper_bound is None:
             upper_bound = ball.dist(self.query) + ball.radius
-        # if self.weight < self.k or upper_bound < self.radius:
-            # Manually negating priorities (for now).
-        super().insert(ball, - upper_bound)
+        super().insert(ball, upper_bound)
         self.weight += len(ball)
-        # self.tighten()
-
-    def removemax(self):
-        # The underlying priority queue is a min heap.
-        return self.removemin()
 
     def tighten(self):
         while self.weight - self.top_weight >= self.k:

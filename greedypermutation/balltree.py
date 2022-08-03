@@ -231,6 +231,9 @@ class Ball:
                 H.insert(ball.right)
 
     def knn(self, k, query, approx = 1):
+        """
+        Iterate over the k nearest points to the give query.
+        """
         assert(approx >= 1)
         N = self._knn(k, query, approx)
         for ball in N:
