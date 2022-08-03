@@ -21,7 +21,7 @@ class KNNHeap(PriorityQueue):
 
     @property
     def top_weight(self):
-        return len(self._entries[0].item)
+        return len(self.findmin())
 
     def remove(self, ball):
         """
@@ -32,8 +32,10 @@ class KNNHeap(PriorityQueue):
         index = self._itemmap[ball]
         # Manually negating the priority as it comes out.
         upper_bound = -(L[index].priority)
-        L[index] = L[-1]
+        self._swap(index,-1)
+        del self._itemmap[ball]
         L.pop()
+        self._downheap(index)
         self.weight -= len(ball)
         return upper_bound
 
@@ -43,21 +45,22 @@ class KNNHeap(PriorityQueue):
             right, left = ball.right, ball.left
             self.insert(left, min(ub, left.dist(self.query) + left.radius))
             self.insert(right, min(ub, right.dist(self.query) + right.radius))
+        self.tighten()
 
     def insert(self, ball, upper_bound = None):
         if upper_bound is None:
             upper_bound = ball.dist(self.query) + ball.radius
-        if self.weight < self.k or upper_bound < self.radius:
+        # if self.weight < self.k or upper_bound < self.radius:
             # Manually negating priorities (for now).
-            super().insert(ball, - upper_bound)
-            self.weight += len(ball)
-            self._tighten()
+        super().insert(ball, - upper_bound)
+        self.weight += len(ball)
+        # self.tighten()
 
     def removemax(self):
         # The underlying priority queue is a min heap.
         return self.removemin()
 
-    def _tighten(self):
+    def tighten(self):
         while self.weight - self.top_weight >= self.k:
             self.weight -= self.top_weight
             self.removemax()

@@ -133,7 +133,7 @@ class Ball:
             if current_dist < radius:
                 nbr, radius = ball, current_dist
             if not ball.isleaf():
-                if ball.left.intersect(query, radius / approx):
+                if ball.left.intersects(query, radius / approx):
                     H.insert(ball.left)
                 if ball.right.intersects(query, radius / approx):
                     H.insert(ball.right)
@@ -207,13 +207,13 @@ class Ball:
         """
         return self.range_count(center, radius, (approx - 1) * radius)
 
-    def _knn(self, k, query, approx = 0):
+    def _knn(self, k, query, approx):
         N = KNNHeap(query, k)
         N.insert(self, self.dist(query) + self.radius)
         H = self.heap()
 
         # The following line will change for approx knn
-        close_enough = approx
+        close_enough = (approx - 1) / 2
 
         for ball in H:
             if ball.radius <= close_enough * N.radius:
@@ -221,19 +221,17 @@ class Ball:
                 return N
             if ball in N:
                 N.refine(ball)
-                if ball.left.intersects(query, N.radius):
-                    H.insert(ball.left)
-                if ball.right.intersects(query, N.radius):
-                    H.insert(ball.right)
             else:
-                if ball.left.intersects(query, N.radius):
-                    H.insert(ball.left)
-                    N.insert(ball.left)
-                if ball.right.intersects(query, N.radius):
-                    H.insert(ball.right)
-                    N.insert(ball.right)
+                N.insert(ball.left)
+                N.insert(ball.right)
+                N.tighten()
+            if ball.left.intersects(query, N.radius):
+                H.insert(ball.left)
+            if ball.right.intersects(query, N.radius):
+                H.insert(ball.right)
 
-    def knn(self, k, query, approx = 0):
+    def knn(self, k, query, approx = 1):
+        assert(approx >= 1)
         N = self._knn(k, query, approx)
         for ball in N:
             yield from ball
