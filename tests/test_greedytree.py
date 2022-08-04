@@ -1,14 +1,16 @@
+import unittest
 from greedypermutation import GreedyTree
 from greedypermutation.greedytree import Node, Bunch
 from metricspaces import MetricSpace, R1
-import unittest
 
-def ell_1(a,b):
+
+def ell_1(a, b):
     return abs(a-b)
+
 
 class TestGreedyTree(unittest.TestCase):
     def testinit(self):
-        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist = ell_1)
+        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist=ell_1)
         T = GreedyTree(M, 0)
         # It should have 7 points
         self.assertEqual(len(T), len(M))
@@ -33,7 +35,7 @@ class TestGreedyTree(unittest.TestCase):
         self.assertEqual(onehundred.children[0].point, 81)
 
     def testinit_different_seed(self):
-        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist = ell_1)
+        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist=ell_1)
         T = GreedyTree(M, 49)
         # It should have 7 points
         self.assertEqual(len(T), len(M))
@@ -63,7 +65,7 @@ class TestGreedyTree(unittest.TestCase):
         self.assertEqual(zero.children[0].point, 12)
 
     def testNN(self):
-        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist = ell_1)
+        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist=ell_1)
         T = GreedyTree(M)
         # self.P = [0, 100, 49, 25, 60, 12, 81]
         self.assertEqual(T.nn(11), 12)
@@ -72,7 +74,7 @@ class TestGreedyTree(unittest.TestCase):
         self.assertEqual(T.nn(75), 81)
 
     def testANN_eps_equals_zero(self):
-        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist = ell_1)
+        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist=ell_1)
         T = GreedyTree(M)
         self.assertEqual(T.ann(11), 12)
         self.assertEqual(T.ann(5), 0)
@@ -80,7 +82,7 @@ class TestGreedyTree(unittest.TestCase):
         self.assertEqual(T.ann(75), 81)
 
     def testnodeiter(self):
-        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist = ell_1)
+        M = MetricSpace([0, 100, 49, 25, 60, 12, 81], dist=ell_1)
         T = GreedyTree(M, next(iter(M)))
         self.assertEqual(set(T.root), set(M))
 

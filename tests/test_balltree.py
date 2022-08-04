@@ -74,7 +74,6 @@ class TestBallTree(unittest.TestCase):
         self.assertEqual(len(balltree.right.left), 1)
         self.assertEqual(len(balltree.right.right), 1)
 
-
     def test_iter(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
         balltree = Ball.tree_greedy(M)
@@ -89,8 +88,8 @@ class TestBallTree(unittest.TestCase):
                 15 (leaf)
         """
         self.assertEqual(set(M), set(balltree))
-        self.assertEqual({M[0],M[1]}, set(balltree.left))
-        self.assertEqual({M[2],M[3]}, set(balltree.right))
+        self.assertEqual({M[0], M[1]}, set(balltree.left))
+        self.assertEqual({M[2], M[3]}, set(balltree.right))
         self.assertEqual({M[2]}, set(balltree.right.right))
 
     def test_range(self):
@@ -107,7 +106,7 @@ class TestBallTree(unittest.TestCase):
                 15 (leaf)
         """
         self.assertEqual(set(M), set(balltree.range_search(R1(9), 8)))
-        self.assertEqual({M[0], M[2]}, set(balltree.range_search(R1(12),3)))
+        self.assertEqual({M[0], M[2]}, set(balltree.range_search(R1(12), 3)))
 
     def test_range_with_slack(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
@@ -124,8 +123,7 @@ class TestBallTree(unittest.TestCase):
         """
         self.assertEqual(set(M), set(balltree.range_search(R1(9), 8, 0.5)))
         self.assertEqual({M[0], M[2], M[3]},
-                         set(balltree.range_search(R1(13),3,3)))
-
+                         set(balltree.range_search(R1(13), 3, 3)))
 
     def test_range_count(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
@@ -141,15 +139,15 @@ class TestBallTree(unittest.TestCase):
                 15 (leaf)
         """
         self.assertEqual(4, balltree.range_count(R1(9), 8))
-        self.assertEqual(2, balltree.range_count(R1(12),3))
+        self.assertEqual(2, balltree.range_count(R1(12), 3))
         self.assertEqual(0, balltree.range_count(R1(6), 1))
-        self.assertEqual(3, balltree.range_count(R1(12),7))
+        self.assertEqual(3, balltree.range_count(R1(12), 7))
 
     def test_knn(self):
         M = MetricSpace(range(100), pointclass=R1)
         balltree = Ball.tree_greedy(M)
-        self.assertEqual(set(range(5,10)), set(balltree.knn(5, R1(7))))
-        self.assertEqual(set(range(18,28)), set(balltree.knn(10, R1(22.2))))
+        self.assertEqual(set(range(5, 10)), set(balltree.knn(5, R1(7))))
+        self.assertEqual(set(range(18, 28)), set(balltree.knn(10, R1(22.2))))
 
     def test_knn_dist(self):
         M = MetricSpace(range(100), pointclass=R1)

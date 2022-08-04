@@ -1,7 +1,8 @@
 import unittest
 import os
 from click.testing import CliRunner
-from  greedypermutation.cli import cli
+from greedypermutation.cli import cli
+
 
 class TestCLI(unittest.TestCase):
     def testgreedy(self):
@@ -45,11 +46,11 @@ class TestCLI(unittest.TestCase):
         with runner.isolated_filesystem():
             with open('pointfile', 'w') as f:
                 f.write(POINTS)
-            result = runner.invoke(cli, ['pointfile', '--notree', '--algorithm', 'quadratic'])
+            result = runner.invoke(
+                cli, ['pointfile', '--notree', '--algorithm', 'quadratic'])
             self.assertEqual(result.exit_code, 0)
             gp = result.output.split('\n')
             self.assertTrue(';' not in gp[0])
-
 
 
 POINTS = """\
