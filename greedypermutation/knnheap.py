@@ -21,7 +21,7 @@ class KNNHeap(MaxHeap):
 
     @property
     def top_weight(self):
-        return len(self.findmin())
+        return len(self.findmax())
 
     def remove(self, ball):
         """

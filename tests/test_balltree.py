@@ -145,9 +145,18 @@ class TestBallTree(unittest.TestCase):
         self.assertEqual(0, balltree.range_count(R1(6), 1))
         self.assertEqual(3, balltree.range_count(R1(12),7))
 
+    def test_knn(self):
+        M = MetricSpace(range(100), pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        self.assertEqual(set(range(5,10)), set(balltree.knn(5, R1(7))))
+        self.assertEqual(set(range(18,28)), set(balltree.knn(10, R1(22.2))))
 
-    def tetknn(self):
-        pass
+    def test_knn_dist(self):
+        M = MetricSpace(range(100), pointclass=R1)
+        balltree = Ball.tree_greedy(M)
+        self.assertEqual(2, balltree.knn_dist(5, R1(7)))
+        self.assertEqual(3, balltree.knn_dist(6, R1(7)))
+        self.assertEqual(4.5, balltree.knn_dist(10, R1(22.5)))
 
 
 if __name__ == '__main__':

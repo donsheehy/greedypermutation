@@ -1,7 +1,6 @@
 from collections import defaultdict
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
-# from greedypermutation.knnheap import KNNHeap
 from metricspaces import metric_class
 
 class Bunch:
@@ -246,26 +245,6 @@ class GreedyTree:
                     H.insert(bunch)
                 if viable(newbunch):
                     H.insert(newbunch)
-
-
-    # def knn(self, k, q):
-    #     dist = self.M.dist
-    #     H = self.heap()
-    #     # nbr, q_to_nbr = self.root, q.dist(self.root.point)
-    #     knndist = float('inf')
-    #     KNN = KNNHeap(k)
-    #     KNN.insert(self.root, dist(q, self.root.point) + self.root.radius)
-    #
-    #     for bunch in H:
-    #         # Inside Split
-    #         if bunch in KNN:
-    #             newbunch = bunch.pop()
-    #             bunch_radius = min(oldradius, bunch.radius())
-    #             KNN.changepriority(bunch, )
-    #         # else:
-    #
-    #     return list(KNN)
-
 
     def farthest(self, q):
         dist = self.M.dist

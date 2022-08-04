@@ -208,17 +208,17 @@ class Ball:
         return self.range_count(center, radius, (approx - 1) * radius)
 
     def _knn(self, k, query, approx):
+        assert(approx >= 1)
         N = KNNHeap(query, k)
         N.insert(self, self.dist(query) + self.radius)
         H = self.heap()
 
-        # The following line will change for approx knn
         close_enough = (approx - 1) / 2
 
         for ball in H:
             if ball.radius <= close_enough * N.radius:
                 # close_enough >= 0 implies that every leaf should reach here.
-                return N
+                return N, H
             if ball in N:
                 N.refine(ball)
             else:
@@ -230,11 +230,18 @@ class Ball:
             if ball.right.intersects(query, N.radius):
                 H.insert(ball.right)
 
+    def knn_dist(self, k, query, approx = 1):
+        N, _ = self._knn(k, query, approx)
+        return N.radius
+
     def knn(self, k, query, approx = 1):
         """
         Iterate over the k nearest points to the give query.
+
+        For an approximation, the output will be a set of at least k points in
+        the ball of radius `approx` times the distance to the true k nearest
+        neighbors.
         """
-        assert(approx >= 1)
-        N = self._knn(k, query, approx)
+        N, _  = self._knn(k, query, approx)
         for ball in N:
             yield from ball

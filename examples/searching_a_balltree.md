@@ -168,36 +168,45 @@ print("count = ", count)
 ## $k$th Nearest Neighbor
 
 ```python3 {cmd continue="setup" output=html}
-q = Point(400, 51, 2)
-k = 20
+q = Point(400, 91, 2)
+k = 12
 knn = list(T.knn(k, q))
 # print(f"{len(knn)} points found, searched for {k}.")
 r = max(nn.dist(q) for nn in knn)
 
 with svg_plus_pdf(W, H, 'knn_search') as canvas:
-    Point(*q, r2).draw(canvas)
     Point(*q, r).draw(canvas)
-    [Point(*p).draw(canvas) for p in P]
     [Point(*x, 4).draw(canvas) for x in knn]
+    [Point(*p).draw(canvas) for p in P]
     q.draw(canvas)
 ```
 
-## Approxiamte $k$th Nearest Neighbor
+## Approximate $k$th Nearest Neighbor
 
 ```python3 {cmd continue="setup" output=html}
-q = Point(400, 51, 2)
-k = 20
+q = Point(412, 51, 2)
+k = 15
+approx = 1.5
+close_enough = (approx-1)/2
 knn = list(T.knn(k, q))
-knn2 = list(T.knn(k, q, 2))
-# print(f"{len(knn)} points found, searched for {k}.")
-r = max(nn.dist(q) for nn in knn)
-r2 = max(nn.dist(q) for nn in knn2)
+knn2 = list(T.knn(k, q, approx))
+N, viable = T._knn(k, q, approx)
+# print(f"{len(knn2)} points found, searched for {k}.")
+viable = list(viable)
+r = T.knn_dist(k,q)
+r2 = T.knn_dist(k,q, approx)
+stopping_radius = close_enough * N.radius
+for ball in viable:
+    assert(ball.radius < stopping_radius)
 
 with svg_plus_pdf(W, H, 'knn_search') as canvas:
-    Point(*q, r2).draw(canvas)
+    Point(*q, N.radius).draw(canvas)
     Point(*q, r).draw(canvas)
+    # [Point(*ball.center, ball.radius).draw(canvas) for ball in viable]
+    # [Point(*ball.center, ball.radius).draw(canvas) for ball in N]
+    # Point(*knn[19], stopping_radius * r).draw(canvas)
     [Point(*p).draw(canvas) for p in P]
-    [Point(*x, 4).draw(canvas) for x in knn]
+    # [Point(*x, 4).draw(canvas) for x in knn]
     [Point(*x, 3).draw(canvas) for x in knn2]
     q.draw(canvas)
 ```
