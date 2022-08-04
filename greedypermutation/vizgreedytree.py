@@ -2,6 +2,7 @@ from ds2viz.element import Group, Line
 from greedypermutation.maxheap import MaxHeap
 from greedypermutation.vizpoint import VizPoint
 
+
 class VizGreedyTree(Group):
     def __init__(self, T):
         super().__init__()

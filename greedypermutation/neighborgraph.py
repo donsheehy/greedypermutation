@@ -4,6 +4,7 @@ from ds2.graph import Graph
 from metricspaces import metric_class
 from greedypermutation.maxheap import MaxHeap
 
+
 @metric_class
 class Cell:
     def __init__(self, center):
@@ -38,7 +39,10 @@ class Cell:
         Return True iff `point` is closer to the center of this cell
         than to the center of the `other` cell. `alpha` is the moveconstant.
         """
-        return self.metric.comparedist(point, self.center, other.center, alpha=alpha)
+        return self.metric.comparedist(point,
+                                       self.center,
+                                       other.center,
+                                       alpha=alpha)
 
     def updateradius(self):
         """
@@ -86,14 +90,15 @@ class Cell:
     def __repr__(self):
         return str(self.center)
 
+
 class NeighborGraph(Graph):
     def __init__(self,
                  M,
-                 root = None,
-                 nbrconstant = 1,
-                 moveconstant = 1,
-                 gettransportplan = False,
-                 mass= None):
+                 root=None,
+                 nbrconstant=1,
+                 moveconstant=1,
+                 gettransportplan=False,
+                 mass=None):
         """
         Initialize a new NeighborGraph.
 
@@ -133,8 +138,8 @@ class NeighborGraph(Graph):
         self.nbrconstant = nbrconstant
         self.moveconstant = moveconstant
 
-        # self.gettransportplan is a flag which determines whether the transportation
-        # plan is to be computed or not
+        # self.gettransportplan is a flag which determines whether the
+        # transportation plan is to be computed or not.
         self.gettransportplan = gettransportplan
 
         # Make a cell to start the graph.  Use the first point as the root
@@ -160,13 +165,13 @@ class NeighborGraph(Graph):
         """
         Return True iff the cells `p` and `q` are close enough to be neighbors.
         """
-        return q.dist(p.center) <= p.radius + q.radius + \
-                      self.nbrconstant * max(p.radius, q.radius)
+        return q.dist(p.center) <= p.radius + q.radius +\
+            self.nbrconstant * max(p.radius, q.radius)
 
     def addcell(self, newcenter, parent):
         """
-        Add a new cell centered at `newcenter` and also compute the mass moved by
-        this change to the neighbor graph.
+        Add a new cell centered at `newcenter` and also compute the mass moved
+        by this change to the neighbor graph.
 
         The `parent` is a sufficiently close cell that is already in the
         graph.
@@ -175,13 +180,12 @@ class NeighborGraph(Graph):
         the new cell if it is closer.
 
         If self.gettransportplan=True this method also returns a dictionary
-        of the number of points gained and lost by every cell (indexed by center)
-        in this change to the neighbor graph.
+        of the number of points gained and lost by every cell (indexed by
+        center) in this change to the neighbor graph.
         """
         # Create the new cell.
         newcell = self.Vertex(newcenter)
 
-        #if gettransportplan:
         # Create transportation plan for adding this cell
         transportplan = DefaultDict(int)
 
@@ -192,7 +196,8 @@ class NeighborGraph(Graph):
         # Rebalance the new cell.
         for nbr in self.nbrs(parent):
             localtransport = self.rebalance(newcell, nbr)
-            # Add change caused by this rebalance to transportation plan if requested
+            # Add change caused by this rebalance to transportation plan if
+            # requested.
             if localtransport != 0 and self.gettransportplan:
                 transportplan[newcenter] += localtransport
                 transportplan[nbr.center] -= localtransport
@@ -212,7 +217,8 @@ class NeighborGraph(Graph):
         # The following update has moved to the GreedyNeighborGraph
         # self.heap.insert(newcell)
 
-        # If self.gettransportplan=False this method returns an empty transportplan
+        # If self.gettransportplan=False this method returns an empty
+        # transportplan
         return newcell, transportplan
 
     def rebalance(self, a, b):
@@ -222,9 +228,8 @@ class NeighborGraph(Graph):
         Move points from the cell `b` to the cell `a` if they are
         sufficiently closer to `a.center`.
         """
-        # points_to_move = {p for p in b.points
-        #                     if a.dist(p) < self.moveconstant * b.dist(p)}
-        points_to_move = {p for p in b.points if a.comparedist(p, b, self.moveconstant)}
+        points_to_move =\
+            {p for p in b.points if a.comparedist(p, b, self.moveconstant)}
         b.points -= points_to_move
         mass_to_move = 0
         for p in points_to_move:
@@ -245,12 +250,12 @@ class NeighborGraph(Graph):
         """
         nbrs_to_delete = set()
         for v in self.nbrs(u):
-            if not self.iscloseenoughto(u,v):
+            if not self.iscloseenoughto(u, v):
                 nbrs_to_delete.add(v)
 
         # Prune the excess edges.
         for v in nbrs_to_delete:
-            self.removeedge(u,v)
+            self.removeedge(u, v)
 
     def cellmass(self, cell):
         """
@@ -263,17 +268,17 @@ class NeighborGraph(Graph):
 class GreedyNeighborGraph(NeighborGraph):
     def __init__(self,
                  M,
-                 root = None,
-                 nbrconstant = 1,
-                 moveconstant = 1,
-                 gettransportplan = False,
-                 mass= None):
+                 root=None,
+                 nbrconstant=1,
+                 moveconstant=1,
+                 gettransportplan=False,
+                 mass=None):
         super().__init__(M, root, nbrconstant, moveconstant, gettransportplan,
                          mass)
 
         # The root cell should be the only vertex in the graph.
         root_cell = next(iter(self._nbrs))
-        self.heap = MaxHeap([root_cell], key = lambda c: c.radius)
+        self.heap = MaxHeap([root_cell], key=lambda c: c.radius)
 
     def addcell(self, newcenter, parent):
         newcell, transportplan = super().addcell(newcenter, parent)

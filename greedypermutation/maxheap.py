@@ -1,8 +1,9 @@
 from ds2.priorityqueue import PriorityQueue
 
+
 class MaxHeap(PriorityQueue):
-    def __init__(self, items = (), key = lambda x: x):
-        super().__init__(items, key = lambda x: - key(x))
+    def __init__(self, items=(), key=lambda x: x):
+        super().__init__(items, key=lambda x: -key(x))
 
     def insert(self, item, priority=None):
         if priority is not None:

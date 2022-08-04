@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.spatial.distance import cdist
 
-def greedy(P, distance = 'sqeuclidean'):
+
+def greedy(P, distance='sqeuclidean'):
     S = cdist(P, P, distance)
     D = S[0]
     j = 0
@@ -10,7 +11,8 @@ def greedy(P, distance = 'sqeuclidean'):
         j = D.argmax()
         D = np.minimum(S[j], D)
 
-def sample(P, delta, distance = 'sqeuclidean'):
+
+def sample(P, delta, distance='sqeuclidean'):
     S = cdist(P, P, distance)
     D = S[0]
     j = 0

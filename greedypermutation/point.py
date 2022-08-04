@@ -21,7 +21,7 @@ class Point:
         If the dimensions don't match the distance is computed in projection
         down to the common subspace.
         """
-        return (sum((a-b)**2 for (a,b) in zip(self, other))) ** (0.5)
+        return (sum((a - b)**2 for (a, b) in zip(self, other))) ** (0.5)
 
     def __getitem__(self, index):
         return self._p[index]

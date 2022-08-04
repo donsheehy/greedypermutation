@@ -3,6 +3,7 @@ from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
 from metricspaces import metric_class
 
+
 class Bunch:
     """
     A `Bunch` is a point with a `radius` and a `weight`.
@@ -49,6 +50,7 @@ class Bunch:
         for i in range(self.index, len(self.node.children)):
             yield from self.node.children[i]
 
+
 @metric_class
 class Node:
     """
@@ -75,7 +77,7 @@ class Node:
             c.update()
             self.weight = 1 + sum(c.weight for c in self.children)
             self.radii.append(max(self.radii[-1],
-                                   c.farthest_descendant(self.point)
+                                  c.farthest_descendant(self.point)
                                   ))
         self.radii.reverse()
 
@@ -118,7 +120,7 @@ class GreedyTree:
     a point is its nearest predecessor in the ordering.
     """
 
-    def __init__(self, M, seed = None, scaling = float('inf')):
+    def __init__(self, M, seed=None, scaling=float('inf')):
         """
         Initialize a new greedy tree on the input metric space `M`.
         """
@@ -128,7 +130,11 @@ class GreedyTree:
         self.M = M
         alpha = 1 - (1/scaling)
         NodeClass = Node(M)
-        for p, i in greedy(M, seed, tree = True, nbrconstant= alpha, moveconstant= alpha):
+        for p, i in greedy(M,
+                           seed,
+                           tree=True,
+                           nbrconstant=alpha,
+                           moveconstant=alpha):
             newnode = NodeClass(p)
             P.append(newnode)
             if i is not None:
@@ -141,11 +147,11 @@ class GreedyTree:
         Return a max heap over bunches ordered by radius initialized with
         `root`.
         """
-        H = MaxHeap(key = Bunch.radius)
+        H = MaxHeap(key=Bunch.radius)
         H.insert(Bunch(self.root))
         return H
 
-    def ann(self, q, eps = 1):
+    def ann(self, q, eps=1):
         """
         Return a eps-approximate nearest neighbor to q.
         """
@@ -169,7 +175,7 @@ class GreedyTree:
                 if maxradius < close_enough * q_to_p:
                     return nbr.point
                 H.insert(p)
-                H.insert(child) # Put the child back in the heap.
+                H.insert(child)  # Put the child back in the heap.
         return nbr.point
 
     def nn(self, q):
@@ -189,10 +195,10 @@ class GreedyTree:
                 if q_to_p < q_to_nbr:
                     nbr, q_to_nbr = p, q_to_p
                 H.insert(p)
-                H.insert(child) # Put the child back in the heap.
+                H.insert(child)  # Put the child back in the heap.
         return nbr.point
 
-    def _range(self, center, radius, slack = 0):
+    def _range(self, center, radius, slack=0):
         """
         Produce a minimal collection of bunches that covers the range and is
         contained in the slack range.
@@ -211,7 +217,7 @@ class GreedyTree:
                     H.insert(child)
                     H.insert(p)
 
-    def rangecount(self, center, radius, slack = 0):
+    def rangecount(self, center, radius, slack=0):
         """
         Count the points in the ball with the given `center` and `radius`.
 
@@ -221,7 +227,7 @@ class GreedyTree:
         bunches = self._range(center, radius, slack)
         return sum(bunch.weight for bunch in bunches)
 
-    def range(self, center, radius, slack = 0):
+    def range(self, center, radius, slack=0):
         """
         Iterate over the points in `ball(center, radius)`.
 
@@ -234,7 +240,9 @@ class GreedyTree:
     def range_simple(self, center, radius):
         dist = self.M.dist
         H = self.heap()
-        viable = lambda b: dist(center, b.point) <= b.radius() + radius
+
+        def viable(b):
+            return dist(center, b.point) <= b.radius() + radius
 
         for bunch in H:
             newbunch = bunch.pop()
@@ -249,7 +257,9 @@ class GreedyTree:
     def farthest(self, q):
         dist = self.M.dist
         H = self.heap()
-        viable = lambda b, d: dist(q, b.point) + b.radius() > d
+
+        def viable(b, d):
+            return dist(q, b.point) + b.radius() > d
 
         farthest, dist_to_farthest = self.root.point, dist(q, self.root.point)
         for bunch in H:
@@ -264,7 +274,7 @@ class GreedyTree:
                 H.insert(bunch)
         return farthest, dist_to_farthest
 
-    def __iter__(self, greedy = True):
+    def __iter__(self, greedy=True):
         if greedy:
             H = self.heap()
             yield self.root.point, None

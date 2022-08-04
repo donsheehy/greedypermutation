@@ -13,6 +13,7 @@ In total, it has exactly 2n-1 nodes because every non-leaf node has two
 children.
 """
 
+
 class Ball:
     """
     A Ball has a center, a radius, a numer of points that it contains, and a
@@ -36,7 +37,7 @@ class Ball:
         return self.dist(center) - self.radius <= radius
 
     def contained_in(self, center, radius):
-        return self.dist(center) +  self.radius <= radius
+        return self.dist(center) + self.radius <= radius
 
     def tree_greedy(M):
         gp = greedy(M, pointtree=True)
@@ -53,7 +54,7 @@ class Ball:
         agp_iterator = iter(agp)
         seed, _ = next(agp_iterator)
         root = Ball(seed)
-        leaf = {seed:root}
+        leaf = {seed: root}
         for p, q in agp_iterator:
             node = leaf[q]
             leaf[q] = node.left = Ball(q)
@@ -72,7 +73,7 @@ class Ball:
                 ball = H.pop()
                 best = max(best, ball.dist(q))
                 if not ball.isleaf() and \
-                    ball.dist(q) + ball.radius > best:
+                        ball.dist(q) + ball.radius > best:
                     H.append(ball.left)
                     H.append(ball.right)
             return best
@@ -122,7 +123,7 @@ class Ball:
         """
         return self.ann(query, 1)
 
-    def ann(self, query, approx = 1):
+    def ann(self, query, approx=1):
         """
         Return the point in the ball tree that is closest to the query.
         """
@@ -153,7 +154,7 @@ class Ball:
                     H.insert(ball.right)
         return nbr.center
 
-    def _range_search(self, center, radius, slack = 0):
+    def _range_search(self, center, radius, slack=0):
         """
         Iterate over the maximal balls contained in
         `ball(center, radius + slack)`.
@@ -182,8 +183,9 @@ class Ball:
         """
         Return the number of points in `ball(center, radius)`.
         """
-        return sum(len(ball) \
-            for ball in self._range_search(center, radius, slack))
+        return sum(
+            len(ball) for ball in self._range_search(center, radius, slack)
+            )
 
     def approx_range_search(self, center, radius, approx):
         """
@@ -208,7 +210,7 @@ class Ball:
         return self.range_count(center, radius, (approx - 1) * radius)
 
     def _knn(self, k, query, approx):
-        assert(approx >= 1)
+        assert approx >= 1
         N = KNNHeap(query, k)
         N.insert(self, self.dist(query) + self.radius)
         H = self.heap()
@@ -230,11 +232,11 @@ class Ball:
             if ball.right.intersects(query, N.radius):
                 H.insert(ball.right)
 
-    def knn_dist(self, k, query, approx = 1):
+    def knn_dist(self, k, query, approx=1):
         N, _ = self._knn(k, query, approx)
         return N.radius
 
-    def knn(self, k, query, approx = 1):
+    def knn(self, k, query, approx=1):
         """
         Iterate over the k nearest points to the give query.
 
@@ -242,6 +244,6 @@ class Ball:
         the ball of radius `approx` times the distance to the true k nearest
         neighbors.
         """
-        N, _  = self._knn(k, query, approx)
+        N, _ = self._knn(k, query, approx)
         for ball in N:
             yield from ball

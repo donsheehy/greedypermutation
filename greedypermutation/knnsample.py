@@ -1,7 +1,8 @@
 from collections import defaultdict
 from greedypermutation.neighborgraph import GreedyNeighborGraph
 
-def knnsample(M, k, seed = None):
+
+def knnsample(M, k, seed=None):
     # If no seed is provided, use the first point.
     G = GreedyNeighborGraph(M, seed, 2, 1)
     markednbrs = defaultdict(set)
@@ -21,13 +22,15 @@ def knnsample(M, k, seed = None):
 
         radius = 2 * M.dist(point, cell.center)
 
-        nearbypts = {q for nbr in G.nbrs(cell)
-                       for q in nbr
-                       if M.dist(q, point) <= radius
+        nearbypts = {
+                     q for nbr in G.nbrs(cell)
+                     for q in nbr
+                     if M.dist(q, point) <= radius
                     }
 
-        nearbymarkedpts = {q for q in markednbrs.get(point, ())
-                             if M.dist(q, point) <= radius
+        nearbymarkedpts = {
+                           q for q in markednbrs.get(point, ())
+                           if M.dist(q, point) <= radius
                           }
 
         # Check if the distance to k points in M is at least twice the
@@ -48,7 +51,8 @@ def knnsample(M, k, seed = None):
             G.addcell(point, cell)
             yield point
 
-def knnsample_brute_force(M,k):
+
+def knnsample_brute_force(M, k):
     """
     A brute force implementation of the knnsampling algorithm.
 
@@ -57,7 +61,6 @@ def knnsample_brute_force(M,k):
     seed = M[0]
     S = [seed]
     yield seed
-    # endwhile = False
     d_Mk = {p: p.dist(sorted(M, key=p.dist)[k]) for p in M}
     d_S1 = {p: p.dist(seed) for p in M}
     not_done_yet = True
