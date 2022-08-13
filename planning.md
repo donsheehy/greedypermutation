@@ -1,6 +1,6 @@
 # greedypermutation Planning
 
-## The `point` class should instead use the one in MetricSpaces
+## The `point` class should instead use the one in [MetricSpaces](https://github.com/donsheehy/metricspaces)
 
 This would also allow us to use other Lp distances.
 
