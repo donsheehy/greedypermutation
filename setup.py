@@ -30,7 +30,8 @@ setuptools.setup(
                 'sphinxcontrib-bibtex',
                 'sphinx-click',
                 'pytest',
-                'pytest-pep8',
+                'pycodestyle',
+                'autopep8',
                 'pytest-cov',
                ],
         'viz': [
