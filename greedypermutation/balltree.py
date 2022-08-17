@@ -215,7 +215,7 @@ class Ball:
         N.insert(self, self.dist(query) + self.radius)
         H = self.heap()
 
-        close_enough = (approx - 1) / 2
+        close_enough = (approx - 1) / 4
 
         for ball in H:
             if ball.radius <= close_enough * N.radius:
