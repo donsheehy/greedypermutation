@@ -220,6 +220,8 @@ class Ball:
         for ball in H:
             if ball.radius <= close_enough * N.radius:
                 # close_enough >= 0 implies that every leaf should reach here.
+                # Make sure to put this ball back in H.
+                H.insert(ball)
                 return N, H
             if ball in N:
                 N.refine(ball)
@@ -244,6 +246,8 @@ class Ball:
         the ball of radius `approx` times the distance to the true k nearest
         neighbors.
         """
-        N, _ = self._knn(k, query, approx)
-        for ball in N:
-            yield from ball
+        N, H = self._knn(k, query, approx)
+        R = N.radius
+        for ball in H:
+            if ball.intersects(query,R):
+                yield from ball
