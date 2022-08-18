@@ -1,11 +1,12 @@
 import unittest
 from metricspaces import MetricSpace, R1
-from greedypermutation.balltree import Ball
+from greedypermutation.balltree import Ball, greedy_tree
 
 
 class TestBallTree(unittest.TestCase):
     def test_init_empty(self):
-        B = Ball(3)
+        BallTree = Ball(MetricSpace())
+        B = BallTree(3)
         self.assertEqual(B.center, 3)
         self.assertEqual(B.radius, 0)
         self.assertEqual(len(B), 1)
@@ -25,7 +26,8 @@ class TestBallTree(unittest.TestCase):
                     17 (leaf)
             5 (leaf)
         """
-        balltree = Ball.tree(T)
+        BallTree = Ball(MetricSpace())
+        balltree = BallTree.tree(T)
         self.assertEqual(balltree.radius, 7)
         self.assertEqual(balltree.left.center, P[0])
         self.assertEqual(balltree.right.center, P[1])
@@ -35,7 +37,8 @@ class TestBallTree(unittest.TestCase):
 
     def test_greedytree(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -57,7 +60,8 @@ class TestBallTree(unittest.TestCase):
 
     def test_len(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -76,7 +80,7 @@ class TestBallTree(unittest.TestCase):
 
     def test_iter(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -94,7 +98,7 @@ class TestBallTree(unittest.TestCase):
 
     def test_range(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -110,7 +114,7 @@ class TestBallTree(unittest.TestCase):
 
     def test_range_with_slack(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -127,7 +131,7 @@ class TestBallTree(unittest.TestCase):
 
     def test_range_count(self):
         M = MetricSpace([10, 4, 15, 17], pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         """
         The tree should have the following structure.
         10
@@ -145,13 +149,13 @@ class TestBallTree(unittest.TestCase):
 
     def test_knn(self):
         M = MetricSpace(range(100), pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         self.assertEqual(set(range(5, 10)), set(balltree.knn(5, R1(7))))
         self.assertEqual(set(range(18, 28)), set(balltree.knn(10, R1(22.2))))
 
     def test_knn_dist(self):
         M = MetricSpace(range(100), pointclass=R1)
-        balltree = Ball.tree_greedy(M)
+        balltree = greedy_tree(M)
         self.assertEqual(2, balltree.knn_dist(5, R1(7)))
         self.assertEqual(3, balltree.knn_dist(6, R1(7)))
         self.assertEqual(4.5, balltree.knn_dist(10, R1(22.5)))

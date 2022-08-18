@@ -1,5 +1,5 @@
 from ds2.priorityqueue import PriorityQueue
-from metricspaces import MetricSpace
+from metricspaces import MetricSpace, metric_class
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
 from greedypermutation.knnheap import KNNHeap
@@ -13,7 +13,22 @@ In total, it has exactly 2n-1 nodes because every non-leaf node has two
 children.
 """
 
+def greedy_tree(M):
+    BallTree = Ball(M)
+    gp = greedy(M, pointtree=True)
+    seed, _ = next(gp)
+    root = BallTree(seed)
+    leaf = {seed: root}
+    for p, q in gp:
+        node = leaf[q]
+        leaf[q] = node.left = BallTree(q)
+        leaf[p] = node.right = BallTree(p)
+    root.update()
+    return root
 
+
+
+@metric_class
 class Ball:
     """
     A Ball has a center, a radius, a numer of points that it contains, and a
@@ -28,7 +43,7 @@ class Ball:
         self.right = None
 
     def dist(self, other):
-        return self.center.dist(other)
+        return self.metric.dist(self.center, other)
 
     def isleaf(self):
         return self.left is None
@@ -43,7 +58,8 @@ class Ball:
         gp = greedy(M, pointtree=True)
         return Ball.tree(gp)
 
-    def tree(agp):
+    @classmethod
+    def tree(cls, agp):
         """
         Initialize a binary greedy tree given an augmented
         greedy permutation `agp`.
@@ -53,12 +69,13 @@ class Ball:
         """
         agp_iterator = iter(agp)
         seed, _ = next(agp_iterator)
-        root = Ball(seed)
+        BallTree = Ball(cls.metric)
+        root = BallTree(seed)
         leaf = {seed: root}
         for p, q in agp_iterator:
             node = leaf[q]
-            leaf[q] = node.left = Ball(q)
-            leaf[p] = node.right = Ball(p)
+            leaf[q] = node.left = BallTree(q)
+            leaf[p] = node.right = BallTree(p)
         root.update()
         return root
 
