@@ -3,7 +3,6 @@ from greedypermutation import GreedyTree
 from greedypermutation.greedytree import Node, Bunch
 from metricspaces import MetricSpace, R1
 
-
 def ell_1(a, b):
     return abs(a-b)
 

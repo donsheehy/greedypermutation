@@ -4,6 +4,12 @@ from greedypermutation.maxheap import MaxHeap
 from metricspaces import metric_class
 
 
+"""
+This is the original GreedyTree implementation.
+This is currently deprecated in favor of the balltree-based implementation.
+Please use `greedypermutation.balltree.greedy_tree` instead.
+"""
+
 class Bunch:
     """
     A `Bunch` is a point with a `radius` and a `weight`.
