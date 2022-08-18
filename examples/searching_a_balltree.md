@@ -2,7 +2,7 @@
 
 ```python {cmd id="setup" hide}
 from random import randrange, seed
-from greedypermutation.balltree import Ball
+from greedypermutation.balltree import greedy_tree
 from metricspaces import MetricSpace
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
@@ -16,9 +16,7 @@ seed(0)
 P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
     {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
 
-T = Ball.tree_greedy(P)
-
-# print([str(p) for p in P])
+T = greedy_tree(P)
 ```
 
 To illustrate the search operations, we will use the following point set $P$.
@@ -218,7 +216,7 @@ with svg_plus_pdf(W, H, 'knn_search') as canvas:
 ```python {cmd continue="setup"}
 q = Point(138, 92)
 farthest = T.farthest_point(q)
-# dist_to_farthest = q.dist(farthest)
+dist_to_farthest = q.dist(farthest)
 ```
 
 ```python {cmd continue output=html hide}
