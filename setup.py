@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="greedypermutation",
-    version="0.5.1",
+    version="0.5.2",
     author="Donald R. Sheehy",
     author_email="don.r.sheehy@gmail.com",
     description="A package for computing greedy permutations",
