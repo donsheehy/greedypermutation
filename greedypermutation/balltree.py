@@ -147,14 +147,15 @@ class Ball:
         nbr, radius = self, self.dist(query)
         H = self.heap()
         for ball in H:
-            current_dist = ball.dist(query)
-            if current_dist < radius:
-                nbr, radius = ball, current_dist
             if not ball.isleaf():
-                if ball.left.intersects(query, radius / approx):
-                    H.insert(ball.left)
-                if ball.right.intersects(query, radius / approx):
-                    H.insert(ball.right)
+                left, right = ball.left, ball.right
+                current_dist = right.dist(query)
+                if current_dist < radius:
+                    nbr, radius = right, current_dist
+                if left.intersects(query, radius / approx):
+                    H.insert(left)
+                if right.intersects(query, radius / approx):
+                    H.insert(right)
         return nbr.center
 
     def farthest_point(self, query):
