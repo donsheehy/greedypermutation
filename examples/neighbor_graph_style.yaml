@@ -1,0 +1,36 @@
+neighbor_graph:
+  cell_edge: 'cell_edge'
+  graph_point: 'graph_point'
+  graph_vertex: 'graph_vertex'
+  neighbor_edge: 'neighbor_edge'
+  convex_hull: 'convex_hull'
+
+cell_edge:
+  stroke_width: 1
+  stroke: [0.7, 0.7, 0.7]
+
+graph_point:
+  radius: 4
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 1
+
+graph_vertex:
+  radius: 4
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 1
+
+convex_hull:
+  fill: null
+  stroke_width: 3
+  stroke: [0.04,0.538,0.467]
+
+label:
+  fontfamily: 'monospace'
+  fontsize: '90pt'
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 0
+  font_weight: 'normal'
+

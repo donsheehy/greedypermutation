@@ -3,6 +3,8 @@ from typing import DefaultDict
 from ds2.graph import Graph
 from metricspaces import metric_class
 from greedypermutation.maxheap import MaxHeap
+import math as Math
+from random import randrange, seed
 
 
 @metric_class
