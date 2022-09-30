@@ -4,6 +4,7 @@ neighbor_graph:
   graph_vertex: 'graph_vertex'
   neighbor_edge: 'neighbor_edge'
   convex_hull: 'convex_hull'
+  #label: 'label'
 
 cell_edge:
   stroke_width: 1
@@ -27,8 +28,8 @@ convex_hull:
   stroke: [0.04,0.538,0.467]
 
 label:
-  fontfamily: 'monospace'
-  fontsize: '90pt'
+  fontfamily: 'Helvetica'
+  fontsize: 5
   fill: [0,0,0]
   stroke: [0,0,0]
   stroke_width: 0
