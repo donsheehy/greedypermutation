@@ -1,32 +1,41 @@
+# VizNeighborGraph object style; Object style should map from 
+# element name to element styles ex. element_name: 'element_style'.
 neighbor_graph:
   cell_edge: 'cell_edge'
   graph_point: 'graph_point'
   graph_vertex: 'graph_vertex'
   neighbor_edge: 'neighbor_edge'
   convex_hull: 'convex_hull'
-  #label: 'label'
+  # Label is commented out to prevent drawing labels.
+  # label: 'label'
 
+# The following are all element styles:
+# VizNeighborGraph cell edge element style
 cell_edge:
   stroke_width: 1
   stroke: [0.7, 0.7, 0.7]
 
+# VizNeighborGraph graph point element style
 graph_point:
   radius: 4
   fill: [0,0,0]
   stroke: [0,0,0]
   stroke_width: 1
 
+# VizNeighborGraph vertex lines element style
 graph_vertex:
   radius: 4
   fill: [0,0,0]
   stroke: [0,0,0]
   stroke_width: 1
 
+# VizNeighborGraph convex hull element style
 convex_hull:
   fill: null
   stroke_width: 3
-  stroke: [0.04,0.538,0.467]
+  stroke: [1,0,0]
 
+# VizNeighborGraph label element style; currently not working.
 label:
   fontfamily: 'Helvetica'
   fontsize: 5
