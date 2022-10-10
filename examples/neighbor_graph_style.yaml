@@ -6,8 +6,6 @@ neighbor_graph:
   graph_vertex: 'graph_vertex'
   neighbor_edge: 'neighbor_edge'
   convex_hull: 'convex_hull'
-  # Label is commented out to prevent drawing labels.
-  # label: 'label'
 
 # The following are all element styles:
 # VizNeighborGraph cell edge element style
@@ -34,13 +32,4 @@ convex_hull:
   fill: null
   stroke_width: 3
   stroke: [1,0,0]
-
-# VizNeighborGraph label element style; currently not working.
-label:
-  fontfamily: 'Helvetica'
-  fontsize: 5
-  fill: [0,0,0]
-  stroke: [0,0,0]
-  stroke_width: 0
-  font_weight: 'normal'
 

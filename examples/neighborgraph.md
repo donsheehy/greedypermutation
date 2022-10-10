@@ -43,8 +43,10 @@ canvas = Canvas(W, H, ss)
 
 # Construct a VizNeighborGraph object using the neighbor graph, the stylesheet, and the style on the style sheet
 # to designate which elements to draw.
-VizNeighborGraph(neighbor_graph, 'neighbor_graph', StyleSheet.fromyaml('neighbor_graph_style.yaml')).draw(canvas)
+ng = VizNeighborGraph(neighbor_graph, 'neighbor_graph', StyleSheet.fromyaml('neighbor_graph_style.yaml'))
 
+# Can now align all elements as a group.
+ng.draw(canvas)
 # Print the canvas as an SVG.
 print(canvas.svgout())
 ```
