@@ -1,5 +1,5 @@
 from greedypermutation.neighborgraph import Cell, GreedyNeighborGraph
-from greedypermutation import GreedyTree
+from greedypermutation.balltree import greedy_tree
 
 
 def onehopgreedy(M, seed=None, tree=False):
@@ -25,7 +25,7 @@ def _onehopgreedy(M, seed=None, alpha=1/3):
     The optional `seed` parameter indicates the point that should appear first.
     """
     # If no seed is provided, use the first point.
-    T = GreedyTree(M)
+    T = greedy_tree(M)
     G = GreedyNeighborGraph(M, seed or next(iter(M)))
     H = G.heap
     root = H.findmax()
@@ -50,7 +50,7 @@ def _onehopgreedy(M, seed=None, alpha=1/3):
         def rangesample(qn):
             q, n = qn
             # TODO: replace with rangecount ?
-            return len(list(T.range(q, ra, ra/10)))
+            return len(list(T.range_search(q, ra, ra/10)))
 
         point, parent = max(potentials, key=rangesample)
         newcell, transportplan = G.addcell(point, parent)

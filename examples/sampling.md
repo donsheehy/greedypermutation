@@ -2,12 +2,10 @@
 
 ```python {cmd id="setup" hide}
 from random import randrange, seed
-from greedypermutation import GreedyTree
 from metricspaces import MetricSpace
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
 from greedypermutation.vizpoint import VizPoint as Point
-from greedypermutation.vizgreedytree import VizGreedyTree
 
 W = 800
 H = 400

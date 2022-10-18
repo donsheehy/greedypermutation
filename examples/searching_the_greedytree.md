@@ -2,12 +2,11 @@
 
 ```python {cmd id="setup" hide}
 from random import randrange, seed
-from greedypermutation import GreedyTree
+from greedypermutation.balltree import greedy_tree
 from metricspaces import MetricSpace
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
 from greedypermutation.vizpoint import VizPoint as Point
-from greedypermutation.vizgreedytree import VizGreedyTree
 
 W = 600
 H = 200
@@ -17,7 +16,7 @@ seed(0)
 P = MetricSpace({Point(randrange(5, W//2), randrange(5,H-5)) for i in range(N)} | \
     {Point(randrange(W//2, W-5), randrange(5,H-5)) for i in range(5 * N)})
 
-T = GreedyTree(P)
+T = greedy_tree(P)
 ```
 
 To illustrate the search operations, we will use the following point set $P$.
@@ -31,10 +30,10 @@ with svg_plus_pdf(W, H, 'points') as canvas:
 The greedy tree $T$ on the point set $P$ is depicted below.
 
 ```python {cmd continue="setup" output=html hide}
-VT = VizGreedyTree(T)
 
 with svg_plus_pdf(W, H, 'greedytree') as canvas:
-    VT.draw(canvas)
+    # VT.draw(canvas)
+    pass
 ```
 
 ## Nearest Neighbor Search
@@ -81,7 +80,7 @@ with svg_plus_pdf(W, H, 'ann_search') as canvas:
 ```python {cmd continue="setup"}
 q = Point(308, 82)
 radius = 50
-R = T.range_simple(q, radius)
+R = T.range_search(q, radius)
 ```
 
 ```python {cmd continue output=html hide}
@@ -105,7 +104,7 @@ The main reason for the slack parameter is in range counting, but it is availabl
 q = Point(308, 82)
 radius = 50
 slack = 20
-R = T.range(q, radius, slack)
+R = T.range_search(q, radius, slack)
 ```
 
 ```python {cmd continue output=html hide}
@@ -130,7 +129,7 @@ However, for expensive metrics, one may not want to compute those distances.
 ```python {cmd continue="setup"}
 q = Point(308, 82)
 radius = 50
-count = T.rangecount(q, radius)
+count = T.range_count(q, radius)
 ```
 
 ```python {cmd continue output=html hide}
@@ -140,7 +139,7 @@ with svg_plus_pdf(W, H, 'range_search_with_slack') as canvas:
     Point(*q, radius).draw(canvas)
     # Draw the points.
     [Point(*p).draw(canvas) for p in P]
-    R = T.range(q, radius)
+    R = T.range_search(q, radius)
     [Point(*p, 2).draw(canvas) for p in R]
     # Draw q.
     Point(*q, 3).draw(canvas)    
@@ -152,7 +151,7 @@ print("count = ", count)
 q = Point(308, 82)
 radius = 50
 slack = 20
-count = T.rangecount(q, radius, slack)
+count = T.range_count(q, radius, slack)
 ```
 
 ```python {cmd continue output=html hide}
@@ -162,7 +161,7 @@ with svg_plus_pdf(W, H, 'range_search_with_slack') as canvas:
     Point(*q, radius).draw(canvas)
     # Draw the points.
     [Point(*p).draw(canvas) for p in P]
-    R = T.range(q, radius, slack)
+    R = T.range_search(q, radius, slack)
     [Point(*p, 2).draw(canvas) for p in R]
     # Draw q.
     Point(*q, 3).draw(canvas)    
@@ -178,12 +177,12 @@ print("count = ", count)
 ```python {cmd continue="setup" output=html}
 q = Point(478, 92, 3)
 knn = T.knn(7, q)
-r = max(q.dist(nn) for nn in knn)
+r = T.knn_dist(7, q)
 
 with svg_plus_pdf(W, H, 'greedytree02') as canvas:
     Point(*q, r).draw(canvas)
-    VT.draw(canvas)
-    [Point(*x.point, 4).draw(canvas) for x in R]
+    [Point(*p).draw(canvas) for p in P]
+    [Point(*p, 2).draw(canvas) for p in knn]
     q.draw(canvas)
 ```
 
@@ -192,7 +191,8 @@ with svg_plus_pdf(W, H, 'greedytree02') as canvas:
 
 ```python {cmd continue="setup"}
 q = Point(138, 92)
-farthest, dist_to_farthest = T.farthest(q)
+farthest = T.farthest_point(q)
+dist_to_farthest = q.dist(farthest)
 ```
 
 ```python {cmd continue output=html hide}

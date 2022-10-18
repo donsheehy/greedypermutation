@@ -110,7 +110,7 @@ print('<br/><hr/>radius = ', radius)
 ```
 
 
-```python {cmd continue="setup"}
+```python {cmd continue="setup", matplotlib}
 import matplotlib.pyplot as plt
 import numpy as np
 
