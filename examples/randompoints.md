@@ -4,7 +4,7 @@ from ds2viz.canvas import svg_plus_pdf
 from metricspaces import MetricSpace
 from greedypermutation.knnsample import knnsample
 from greedypermutation.clarksongreedy import greedy
-from greedypermutation.vizpoint import VizPoint as Point
+from ds2viz.geometry import VizPoint as Point
 
 W = 600
 H = 200

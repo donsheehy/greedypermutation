@@ -14,7 +14,7 @@ draw methods.
 from ds2viz.styles import *
 from ds2viz.default_styles import default_styles
 from ds2viz.element import *
-from ds2viz.geometry.convexhull import convexhull
+from ds2viz.geometry import convexhull
 
 class VizNeighborGraph(Group):
 
@@ -49,13 +49,13 @@ class VizNeighborGraph(Group):
     self.N = neighbor_graph
     self.stylesheet = stylesheet
     self.style = next(self.stylesheet[style])
+    
+    self._vertices()
+    self._edges()
+    self._hull()
+    self._points()
 
-    self.__points()
-    self.__vertices()
-    self.__edges()
-    self.__hull()
-
-  def __points(self):
+  def _points(self):
     """
     A private method used to draw points to the canvas if the 'graph_point'
     entry is specified in the stylesheet attribute.
@@ -74,7 +74,7 @@ class VizNeighborGraph(Group):
           self.addelement(C)
           # canvas.circle(point, 2,  point_style)
 
-  def __vertices(self):
+  def _vertices(self):
     """
     A private method used to draw lines between the center of a NeighborGraph cell
     and each vertex in contained in the cell of the NeighborGraph to the canvas if 
@@ -87,7 +87,7 @@ class VizNeighborGraph(Group):
           self.addelement(Line(point, cell.center, 'graph_vertex', self.stylesheet))
           #canvas.line(point, cell.center, vertex_style)
 
-  def __edges(self):
+  def _edges(self):
     """
     A private method used to draw edges between NeighborGraph cells if the 'graph_edge'
     entry is specified in the stylesheet attribute.
@@ -99,7 +99,7 @@ class VizNeighborGraph(Group):
             u,v = e
             self.addelement(Line(u.center, v.center, 'cell_edge', self.stylesheet))
           
-  def __hull(self):
+  def _hull(self):
     """
     A private method used to draw the convex hull around each edge of the 
     NeighborGraph cells if the 'convex_hull' entry is specified in the stylesheet attribute.

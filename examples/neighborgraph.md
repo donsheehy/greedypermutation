@@ -15,7 +15,7 @@ from metricspaces import MetricSpace
 from greedypermutation import Cell, NeighborGraph
 from greedypermutation.neighborgraph import GreedyNeighborGraph
 from greedypermutation.vizneighborgraph import VizNeighborGraph
-from greedypermutation.vizpoint import VizPoint as Point
+from ds2viz.geometry import VizPoint as Point
 
 # Canvas dimension (W x H)
 W = 500
@@ -44,7 +44,7 @@ canvas = Canvas(W, H, ss)
 # Construct a VizNeighborGraph object using the neighbor graph, the stylesheet, and the style on the style sheet
 # to designate which elements to draw.
 ng = VizNeighborGraph(neighbor_graph, 'neighbor_graph', StyleSheet.fromyaml('neighbor_graph_style.yaml'))
-
+# ng.align((10, 10))
 # Can now align all elements as a group.
 ng.draw(canvas)
 # Print the canvas as an SVG.

@@ -6,7 +6,7 @@ from greedypermutation.balltree import greedy_tree
 from metricspaces import MetricSpace
 from ds2viz.canvas import svg_plus_pdf
 from ds2viz.element import Line, Group
-from greedypermutation.vizpoint import VizPoint as Point
+from ds2viz.geometry import VizPoint as Point
 
 W = 600
 H = 200
