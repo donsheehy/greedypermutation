@@ -57,8 +57,7 @@ class VizNeighborGraph(Group):
 
   def _points(self):
     """
-    A private method used to draw points to the canvas if the 'graph_point'
-    entry is specified in the stylesheet attribute.
+    A private method used to add points to the neighbor graph group.
     """
     point_style = self.style.get('graph_point')
     if point_style is not None:
@@ -76,9 +75,8 @@ class VizNeighborGraph(Group):
 
   def _vertices(self):
     """
-    A private method used to draw lines between the center of a NeighborGraph cell
-    and each vertex in contained in the cell of the NeighborGraph to the canvas if 
-    the 'graph_vertex' entry is specified in the stylesheet attribute.
+    A private method used to lines between the graph vertex and 
+    the contained points to the neighbor graph group.
     """
     vertex_style = self.style.get('graph_vertex')
     if vertex_style is not None:
@@ -89,8 +87,7 @@ class VizNeighborGraph(Group):
 
   def _edges(self):
     """
-    A private method used to draw edges between NeighborGraph cells if the 'graph_edge'
-    entry is specified in the stylesheet attribute.
+    A private method used to add edges between graph vertices to the neighbor graph group.
     """
     edge_style = self.style.get('cell_edge')
     if edge_style is not None:
@@ -101,15 +98,12 @@ class VizNeighborGraph(Group):
           
   def _hull(self):
     """
-    A private method used to draw the convex hull around each edge of the 
-    NeighborGraph cells if the 'convex_hull' entry is specified in the stylesheet attribute.
+    A private method used to add a convex hull to the neighbor graph group.
     """
-    # !!! Interesting behavior with the style lookup.  The group super class does not
-    # do a lookup on the stylesheet to ensure the style exists.  So doing the stylecheck
-    # in this class is the only way to ensure the style exists in order to render each element.
     hull_style = self.style.get('convex_hull')
     if hull_style is not None:
       for v in self.N.vertices():
-        hull_points = convexhull(v.points)
-        for i in range(len(hull_points)):
-          self.addelement(Line(hull_points[i-1], hull_points[i], 'convex_hull', self.stylesheet))
+        self.addelement(Polygon(convexhull(v.points), 'convex_hull', self.stylesheet))
+        # hull_points = convexhull(v.points)
+        # for i in range(len(hull_points)):
+        #   self.addelement(Line(hull_points[i-1], hull_points[i], 'convex_hull', self.stylesheet))

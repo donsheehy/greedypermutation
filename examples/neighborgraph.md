@@ -26,7 +26,24 @@ N = 500
 num_cells = 12
 
 # Import the example stylesheet.
-ss = StyleSheet.fromyaml('neighbor_graph_style.yaml')
+ss1 = StyleSheet.fromyaml('neighbor_graph_style.yaml')
+
+ss2 = StyleSheet.fromstring(
+"""
+neighbor_graph:
+  cell_edge: 'cell_edge'
+  graph_point: 'graph_point'
+
+cell_edge:
+  stroke_width: 1
+  stroke: [0.7, 0.7, 0.7]
+
+graph_point:
+  radius: 4
+  fill: [0,0,0]
+  stroke: [0,0,0]
+  stroke_width: 1
+""")
 
 # Initialize metric space.
 metric_space = MetricSpace({Point(randrange(W), randrange(H)) for i in range(N)})
@@ -39,14 +56,19 @@ for i in range(num_cells):
   neighbor_graph.addcell(point, cell)
 
 # Initialize the canvas.
-canvas = Canvas(W, H, ss)
+canvas1 = Canvas(W, H, ss1)
+canvas2 = Canvas(W, H, ss2)
+
 
 # Construct a VizNeighborGraph object using the neighbor graph, the stylesheet, and the style on the style sheet
 # to designate which elements to draw.
-ng = VizNeighborGraph(neighbor_graph, 'neighbor_graph', StyleSheet.fromyaml('neighbor_graph_style.yaml'))
+ng1 = VizNeighborGraph(neighbor_graph, 'neighbor_graph', ss1)
+ng2 = VizNeighborGraph(neighbor_graph, 'neighbor_graph', ss2)
 # ng.align((10, 10))
 # Can now align all elements as a group.
-ng.draw(canvas)
+ng1.draw(canvas1)
+ng2.draw(canvas2)
 # Print the canvas as an SVG.
-print(canvas.svgout())
+print(canvas1.svgout())
+print(canvas2.svgout())
 ```
