@@ -1,0 +1,389 @@
+<!DOCTYPE html><html><head>
+      <title>greedytree</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\paulm\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.6.5\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h3 class="mume-header" id="vizgreedytree">VizGreedyTree</h3>
+
+<div class="code-chunk" data-id="setup" data-cmd="python"><div class="input-div"><pre data-role="codeBlock" data-info="python {code_chunk_offset=0, cmd id=&quot;setup&quot;}" class="language-python"><span class="token keyword keyword-from">from</span> random <span class="token keyword keyword-import">import</span> randrange<span class="token punctuation">,</span> seed
+<span class="token keyword keyword-from">from</span> metricspaces <span class="token keyword keyword-import">import</span> MetricSpace
+<span class="token keyword keyword-from">from</span> ds2viz<span class="token punctuation">.</span>styles <span class="token keyword keyword-import">import</span> <span class="token operator">*</span>
+<span class="token keyword keyword-from">from</span> ds2viz<span class="token punctuation">.</span>datastructures <span class="token keyword keyword-import">import</span> VizBST
+<span class="token keyword keyword-from">from</span> ds2viz<span class="token punctuation">.</span>canvas <span class="token keyword keyword-import">import</span> svg_plus_pdf<span class="token punctuation">,</span> Canvas
+<span class="token keyword keyword-from">from</span> ds2viz<span class="token punctuation">.</span>geometry <span class="token keyword keyword-import">import</span> VizPoint <span class="token keyword keyword-as">as</span> Point
+<span class="token keyword keyword-from">from</span> greedypermutation<span class="token punctuation">.</span>balltree <span class="token keyword keyword-import">import</span> greedy_tree
+<span class="token keyword keyword-from">from</span> greedypermutation<span class="token punctuation">.</span>vizgreedytree <span class="token keyword keyword-import">import</span> VizGreedyTree<span class="token punctuation">,</span> VizBSTGreedy
+<span class="token keyword keyword-from">from</span> greedypermutation<span class="token punctuation">.</span>vizneighborgraph <span class="token keyword keyword-import">import</span> VizNeighborGraph
+<span class="token keyword keyword-from">from</span> greedypermutation<span class="token punctuation">.</span>neighborgraph <span class="token keyword keyword-import">import</span> GreedyNeighborGraph
+<span class="token keyword keyword-from">from</span> ds2viz<span class="token punctuation">.</span>datastructures <span class="token keyword keyword-import">import</span> VizBST
+<span class="token comment"># Canvas dimension (W x H)</span>
+W <span class="token operator">=</span> <span class="token number">1000</span>
+H <span class="token operator">=</span> <span class="token number">1000</span>
+
+<span class="token comment"># Number of points.</span>
+N <span class="token operator">=</span> <span class="token number">20</span>
+num_cells <span class="token operator">=</span> <span class="token number">10</span>
+
+ss <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span>fromstring<span class="token punctuation">(</span>
+  <span class="token triple-quoted-string string">&quot;&quot;&quot;
+  greedy_tree:
+    ball: &apos;ball&apos;
+    left: &apos;left&apos;
+    right: &apos;right&apos;
+    construction_node: &apos;construction_node&apos;
+    construction_edge: &apos;construction_edge&apos;
+
+  construction_node:
+    stroke: [0,0,0]
+    stroke_width: 3
+    fill: [1,1,1]
+  
+  construction_edge:
+    stroke_width: 2
+    stroke: [0, 0, 0]
+
+  ball:
+    stroke:  [0.7, 0.7, 0.7]
+    stroke_width: 3
+    fill: null
+
+  left:
+    stroke: [0,1,0]
+    stroke_width: 1
+  
+  right:
+    stroke: [1,0,0]
+    stroke_width: 1
+
+  neighbor_graph:
+    graph_point: &apos;graph_point&apos;
+
+  cell_edge:
+    stroke_width: 1
+    stroke: [0.7, 0.7, 0.7]
+
+  graph_point:
+    radius: 4
+    fill: [0,0,0]
+    stroke: [0,0,0]
+    stroke_width: 1
+  &quot;&quot;&quot;</span>
+<span class="token punctuation">)</span>
+
+metric_space <span class="token operator">=</span> MetricSpace<span class="token punctuation">(</span><span class="token punctuation">{</span>Point<span class="token punctuation">(</span>randrange<span class="token punctuation">(</span>W<span class="token operator">*</span><span class="token number">0.15</span><span class="token punctuation">,</span> W<span class="token operator">*</span><span class="token number">0.85</span><span class="token punctuation">)</span><span class="token punctuation">,</span> randrange<span class="token punctuation">(</span>W<span class="token operator">*</span><span class="token number">0.15</span><span class="token punctuation">,</span> W<span class="token operator">*</span><span class="token number">0.85</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword keyword-for">for</span> i <span class="token keyword keyword-in">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>N<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+
+neighbor_graph <span class="token operator">=</span> GreedyNeighborGraph<span class="token punctuation">(</span>metric_space<span class="token punctuation">)</span>
+
+<span class="token keyword keyword-for">for</span> i <span class="token keyword keyword-in">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>num_cells<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  cell <span class="token operator">=</span> neighbor_graph<span class="token punctuation">.</span>heap<span class="token punctuation">.</span>findmax<span class="token punctuation">(</span><span class="token punctuation">)</span>
+  point <span class="token operator">=</span> cell<span class="token punctuation">.</span>farthest
+  neighbor_graph<span class="token punctuation">.</span>addcell<span class="token punctuation">(</span>point<span class="token punctuation">,</span> cell<span class="token punctuation">)</span>
+
+
+tree <span class="token operator">=</span> greedy_tree<span class="token punctuation">(</span>metric_space<span class="token punctuation">)</span>
+canvas1 <span class="token operator">=</span> Canvas<span class="token punctuation">(</span>W<span class="token punctuation">,</span> H<span class="token punctuation">,</span> ss<span class="token punctuation">)</span>
+canvas2 <span class="token operator">=</span> Canvas<span class="token punctuation">(</span>W<span class="token punctuation">,</span> H<span class="token punctuation">)</span>
+
+
+vt <span class="token operator">=</span> VizGreedyTree<span class="token punctuation">(</span>tree<span class="token punctuation">,</span> <span class="token string">&apos;greedy_tree&apos;</span><span class="token punctuation">,</span> ss<span class="token punctuation">)</span>
+vtBST <span class="token operator">=</span> VizBSTGreedy<span class="token punctuation">(</span>tree<span class="token punctuation">)</span>
+ng2 <span class="token operator">=</span> VizNeighborGraph<span class="token punctuation">(</span>neighbor_graph<span class="token punctuation">,</span> <span class="token string">&apos;neighbor_graph&apos;</span><span class="token punctuation">,</span> ss<span class="token punctuation">)</span>
+vt<span class="token punctuation">.</span>draw<span class="token punctuation">(</span>canvas1<span class="token punctuation">)</span>
+ng2<span class="token punctuation">.</span>draw<span class="token punctuation">(</span>canvas1<span class="token punctuation">)</span>
+vtBST<span class="token punctuation">.</span>draw<span class="token punctuation">(</span>canvas2<span class="token punctuation">)</span>
+
+<span class="token keyword keyword-print">print</span><span class="token punctuation">(</span>canvas1<span class="token punctuation">.</span>svgout<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword keyword-print">print</span><span class="token punctuation">(</span>canvas2<span class="token punctuation">.</span>svgout<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"><pre class="language-text">C:\Users\paulm\git\dev\gp-bld\greedypermutation\examples\i6gf8q46j_code_chunk.py:66: DeprecationWarning: non-integer arguments to randrange() have been deprecated since Python 3.10 and will be removed in a subsequent version
+  metric_space = MetricSpace({Point(randrange(W*0.15, W*0.85), randrange(W*0.15, W*0.85)) for i in range(N)})
+<svg baseProfile="full" height="1000" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xlink="http://www.w3.org/1999/xlink"><defs/><circle cx="380.0" cy="708.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="380.0" cy="708.0" fill="none" r="97.29337079164233" stroke="#b2b2b2" stroke-width="3"/><circle cx="401.0" cy="613.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="401.0" cy="613.0" fill="none" r="2.8284271247461903" stroke="#b2b2b2" stroke-width="3"/><circle cx="399.0" cy="615.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="380.0" cy="708.0" fill="none" r="148.32734070291963" stroke="#b2b2b2" stroke-width="3"/><circle cx="520.0" cy="659.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="380.0" cy="708.0" fill="none" r="268.00186566514793" stroke="#b2b2b2" stroke-width="3"/><circle cx="211.0" cy="500.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="211.0" cy="500.0" fill="none" r="186.90371852908652" stroke="#b2b2b2" stroke-width="3"/><circle cx="154.0" cy="678.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="380.0" cy="708.0" fill="none" r="636.1965105217098" stroke="#b2b2b2" stroke-width="3"/><circle cx="691.0" cy="153.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="691.0" cy="153.0" fill="none" r="82.15229759416349" stroke="#b2b2b2" stroke-width="3"/><circle cx="648.0" cy="223.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="648.0" cy="223.0" fill="none" r="37.107950630558946" stroke="#b2b2b2" stroke-width="3"/><circle cx="684.0" cy="214.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="691.0" cy="153.0" fill="none" r="572.0113635234881" stroke="#b2b2b2" stroke-width="3"/><circle cx="823.0" cy="532.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="823.0" cy="532.0" fill="none" r="64.00781202322104" stroke="#b2b2b2" stroke-width="3"/><circle cx="759.0" cy="533.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="823.0" cy="532.0" fill="none" r="253.81095327034254" stroke="#b2b2b2" stroke-width="3"/><circle cx="657.0" cy="724.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="657.0" cy="724.0" fill="none" r="96.18731725128839" stroke="#b2b2b2" stroke-width="3"/><circle cx="753.0" cy="718.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="691.0" cy="153.0" fill="none" r="572.0113635234881" stroke="#b2b2b2" stroke-width="3"/><circle cx="219.0" cy="169.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="219.0" cy="169.0" fill="none" r="232.31013753170566" stroke="#b2b2b2" stroke-width="3"/><circle cx="451.0" cy="157.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="451.0" cy="157.0" fill="none" r="153.73353570382747" stroke="#b2b2b2" stroke-width="3"/><circle cx="336.0" cy="157.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="336.0" cy="157.0" fill="none" r="40.85339643163099" stroke="#b2b2b2" stroke-width="3"/><circle cx="298.0" cy="172.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="336.0" cy="157.0" fill="none" r="86.68333173107735" stroke="#b2b2b2" stroke-width="3"/><circle cx="391.0" cy="224.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="451.0" cy="157.0" fill="none" r="239.83536019528063" stroke="#b2b2b2" stroke-width="3"/><circle cx="362.0" cy="328.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="362.0" cy="328.0" fill="none" r="75.1065909225016" stroke="#b2b2b2" stroke-width="3"/><circle cx="287.0" cy="332.0" fill="none" r="0" stroke="#b2b2b2" stroke-width="3"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="10" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L380.000000 708.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L380.000000 708.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L380.000000 708.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L380.000000 708.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L380.000000 708.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="380.0" cy="708.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L401.000000 613.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="401.0" cy="613.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M401.000000 613.000000 L401.000000 613.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="401.0" cy="613.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M401.000000 613.000000 L399.000000 615.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="399.0" cy="615.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L520.000000 659.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="520.0" cy="659.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L211.000000 500.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="211.0" cy="500.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M211.000000 500.000000 L211.000000 500.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="211.0" cy="500.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M211.000000 500.000000 L154.000000 678.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="154.0" cy="678.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M380.000000 708.000000 L691.000000 153.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="691.0" cy="153.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L691.000000 153.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="691.0" cy="153.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L691.000000 153.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="691.0" cy="153.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L691.000000 153.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="691.0" cy="153.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L648.000000 223.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="648.0" cy="223.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M648.000000 223.000000 L648.000000 223.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="648.0" cy="223.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M648.000000 223.000000 L684.000000 214.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="684.0" cy="214.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L823.000000 532.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="823.0" cy="532.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M823.000000 532.000000 L823.000000 532.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="823.0" cy="532.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M823.000000 532.000000 L823.000000 532.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="823.0" cy="532.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M823.000000 532.000000 L759.000000 533.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="759.0" cy="533.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M823.000000 532.000000 L657.000000 724.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="657.0" cy="724.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M657.000000 724.000000 L657.000000 724.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="657.0" cy="724.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M657.000000 724.000000 L753.000000 718.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="753.0" cy="718.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M691.000000 153.000000 L219.000000 169.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="219.0" cy="169.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M219.000000 169.000000 L219.000000 169.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="219.0" cy="169.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M219.000000 169.000000 L451.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="451.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M451.000000 157.000000 L451.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="451.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M451.000000 157.000000 L451.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="451.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M451.000000 157.000000 L336.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="336.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M336.000000 157.000000 L336.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="336.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M336.000000 157.000000 L336.000000 157.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="336.0" cy="157.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M336.000000 157.000000 L298.000000 172.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="298.0" cy="172.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M336.000000 157.000000 L391.000000 224.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="391.0" cy="224.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M451.000000 157.000000 L362.000000 328.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="362.0" cy="328.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M362.000000 328.000000 L362.000000 328.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="362.0" cy="328.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><path d="M362.000000 328.000000 L287.000000 332.000000" fill="#000000" stroke="#000000" stroke-width="2"/><circle cx="287.0" cy="332.0" fill="#ffffff" r="5" stroke="#000000" stroke-width="3"/><circle cx="211.0" cy="500.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="219.0" cy="169.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="380.0" cy="708.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="362.0" cy="328.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="657.0" cy="724.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="336.0" cy="157.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="691.0" cy="153.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="154.0" cy="678.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="451.0" cy="157.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="823.0" cy="532.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="520.0" cy="659.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="211.0" cy="500.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="219.0" cy="169.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="380.0" cy="708.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="401.0" cy="613.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="399.0" cy="615.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="287.0" cy="332.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="362.0" cy="328.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="657.0" cy="724.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="753.0" cy="718.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="298.0" cy="172.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="336.0" cy="157.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="391.0" cy="224.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="648.0" cy="223.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="691.0" cy="153.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="684.0" cy="214.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="154.0" cy="678.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="451.0" cy="157.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="759.0" cy="533.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="823.0" cy="532.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/><circle cx="520.0" cy="659.0" fill="#000000" r="2" stroke="#000000" stroke-width="1"/></svg>
+<svg baseProfile="full" height="1000" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xlink="http://www.w3.org/1999/xlink"><defs/><path d="M621.000000 27.000000 L405.000000 81.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M405.000000 81.000000 L297.000000 135.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M297.000000 135.000000 L81.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M81.000000 189.000000 L27.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="27.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="27.0" y="243.0">0</text><path d="M81.000000 189.000000 L189.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M189.000000 243.000000 L135.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="135.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="135.0" y="297.0">0</text><path d="M189.000000 243.000000 L243.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="243.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="243.0" y="297.0">0</text><circle cx="189.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="189.0" y="243.0">2.828</text><circle cx="81.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="81.0" y="189.0">97.293</text><path d="M297.000000 135.000000 L351.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="351.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="351.0" y="189.0">0</text><circle cx="297.0" cy="135.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="297.0" y="135.0">148.327</text><path d="M405.000000 81.000000 L513.000000 135.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M513.000000 135.000000 L459.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="459.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="459.0" y="189.0">0</text><path d="M513.000000 135.000000 L567.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="567.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="567.0" y="189.0">0</text><circle cx="513.0" cy="135.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="513.0" y="135.0">186.904</text><circle cx="405.0" cy="81.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="405.0" y="81.0">268.002</text><path d="M621.000000 27.000000 L1377.000000 81.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1377.000000 81.000000 L945.000000 135.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M945.000000 135.000000 L729.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M729.000000 189.000000 L675.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="675.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="675.0" y="243.0">0</text><path d="M729.000000 189.000000 L837.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M837.000000 243.000000 L783.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="783.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="783.0" y="297.0">0</text><path d="M837.000000 243.000000 L891.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="891.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="891.0" y="297.0">0</text><circle cx="837.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="837.0" y="243.0">37.108</text><circle cx="729.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="729.0" y="189.0">82.152</text><path d="M945.000000 135.000000 L1161.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1161.000000 189.000000 L1053.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1053.000000 243.000000 L999.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="999.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="999.0" y="297.0">0</text><path d="M1053.000000 243.000000 L1107.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1107.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1107.0" y="297.0">0</text><circle cx="1053.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1053.0" y="243.0">64.008</text><path d="M1161.000000 189.000000 L1269.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1269.000000 243.000000 L1215.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1215.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1215.0" y="297.0">0</text><path d="M1269.000000 243.000000 L1323.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1323.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1323.0" y="297.0">0</text><circle cx="1269.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1269.0" y="243.0">96.187</text><circle cx="1161.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1161.0" y="189.0">253.811</text><circle cx="945.0" cy="135.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="945.0" y="135.0">572.011</text><path d="M1377.000000 81.000000 L1485.000000 135.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1485.000000 135.000000 L1431.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1431.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1431.0" y="189.0">0</text><path d="M1485.000000 135.000000 L1917.000000 189.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1917.000000 189.000000 L1593.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1593.000000 243.000000 L1539.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1539.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1539.0" y="297.0">0</text><path d="M1593.000000 243.000000 L1809.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1809.000000 297.000000 L1701.000000 351.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M1701.000000 351.000000 L1647.000000 405.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1647.0" cy="405.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1647.0" y="405.0">0</text><path d="M1701.000000 351.000000 L1755.000000 405.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1755.0" cy="405.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1755.0" y="405.0">0</text><circle cx="1701.0" cy="351.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1701.0" y="351.0">40.853</text><path d="M1809.000000 297.000000 L1863.000000 351.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1863.0" cy="351.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1863.0" y="351.0">0</text><circle cx="1809.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1809.0" y="297.0">86.683</text><circle cx="1593.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1593.0" y="243.0">153.734</text><path d="M1917.000000 189.000000 L2025.000000 243.000000" fill="none" stroke="#000000" stroke-width="2"/><path d="M2025.000000 243.000000 L1971.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="1971.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1971.0" y="297.0">0</text><path d="M2025.000000 243.000000 L2079.000000 297.000000" fill="none" stroke="#000000" stroke-width="2"/><circle cx="2079.0" cy="297.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="2079.0" y="297.0">0</text><circle cx="2025.0" cy="243.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="2025.0" y="243.0">75.107</text><circle cx="1917.0" cy="189.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1917.0" y="189.0">239.835</text><circle cx="1485.0" cy="135.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1485.0" y="135.0">232.31</text><circle cx="1377.0" cy="81.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="1377.0" y="81.0">572.011</text><circle cx="621.0" cy="27.0" fill="#ffffff" r="22" stroke="#000000" stroke-width="2"/><text dominant-baseline="central" fill="#000000" font-family="monospace" font-size="24" font-weight="normal" stroke="#000000" text-anchor="middle" x="621.0" y="27.0">636.197</text></svg>
+</pre></div></div>
+      </div>
+      <div class="md-sidebar-toc"><ul>
+<li><a href="#vizgreedytree">VizGreedyTree</a></li>
+</ul>
+</div>
+      <a id="sidebar-toc-btn">&#x2261;</a>
+    
+    
+    
+    
+    
+    
+    
+    
+<script>
+
+var sidebarTOCBtn = document.getElementById('sidebar-toc-btn')
+sidebarTOCBtn.addEventListener('click', function(event) {
+  event.stopPropagation()
+  if (document.body.hasAttribute('html-show-sidebar-toc')) {
+    document.body.removeAttribute('html-show-sidebar-toc')
+  } else {
+    document.body.setAttribute('html-show-sidebar-toc', true)
+  }
+})
+</script>
+      
+  
+    </body></html>
