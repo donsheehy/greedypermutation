@@ -33,15 +33,17 @@ class VizGreedyTreeGraph(Group):
         root: BallTreeNode
             The root node of the greedy_tree attribute.
         """
-        if root is None:
-            return
+        ball_style = self.style.get('ball')
+        if ball_style is not None:
+            if root is None:
+                return
 
-        C = Circle(root.radius, None, 'ball', self.stylesheet)            
-        C.align('center', root.center)
-        self.addelement(C)
+            C = Circle(root.radius, None, 'ball', self.stylesheet)            
+            C.align('center', root.center)
+            self.addelement(C)
 
-        self._ball_radii(root.left)
-        self._ball_radii(root.right)
+            self._ball_radii(root.left)
+            self._ball_radii(root.right)
     
     def _overlay_tree(self, root, prev):
         """
@@ -56,22 +58,24 @@ class VizGreedyTreeGraph(Group):
         prev: BallTreeNode
             The previous node visited in the traversal to draw a connecting line from.
         """
-        if root is None:
-            return
+        construction_style = self.style.get('construction_node')
+        if construction_style is not None:
+            if root is None:
+                return
 
-        if root == prev:
-            R = Circle(10, None, 'construction_node', self.stylesheet)
-            R.align('center', root.center)
-            self.addelement(R)
+            if root == prev:
+                R = Circle(10, None, 'construction_node', self.stylesheet)
+                R.align('center', root.center)
+                self.addelement(R)
 
-        C = Circle(5, None, 'construction_node', self.stylesheet)
-        C.align('center', root.center)
-        L = Line(prev.center, root.center, 'construction_edge', self.stylesheet)
-        self.addelement(L)
-        self.addelement(C)
+            C = Circle(5, None, 'construction_node', self.stylesheet)
+            C.align('center', root.center)
+            L = Line(prev.center, root.center, 'construction_edge', self.stylesheet)
+            self.addelement(L)
+            self.addelement(C)
 
-        self._overlay_tree(root.left, root)
-        self._overlay_tree(root.right, root)
+            self._overlay_tree(root.left, root)
+            self._overlay_tree(root.right, root)
     
 
 class VizGreedyTreeBST(Group):
