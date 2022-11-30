@@ -75,6 +75,21 @@ class VizGreedyTreeGraph(Group):
     
 
 class VizGreedyTreeBST(Group):
+    """
+    This is a utility class used to draw a ball tree as a binary tree representing each ball as a node
+    on the binary tree.  The VizGreedyTreeBST is itself a recursive structure with the left and right children
+    of the root node being of type VizGreedyTreeBST.
+    Attributes:
+    ----------
+    position: tuple
+        the position/offset of this binary tree.
+    lefttree: VizGreedyTreeBST
+        the left child of this node in this binary tree.
+    righttree: VizGreedyTreeBST
+        the right child of this node in this binary tree.
+    root: VizGreedyTreeBST 
+        the root node of this binary tree.
+    """
     def __init__(self, n, position = (0,0)):
         super().__init__()
         self.position = position
