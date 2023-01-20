@@ -270,14 +270,14 @@ class Ball:
             if ball.intersects(query,R):
                 yield from ball
 
-    def _repr(self, s='', tabs=0):
+    def _str(self, s='', tabs=0):
       if self is not None:
         s += tabs*'|\t' + str(self.center) + '\n'
         if not self.isleaf():
-            s = self.left._repr(s, tabs=tabs+1)
-            s = self.right._repr(s, tabs=tabs+1)
+            s = self.left._str(s, tabs=tabs+1)
+            s = self.right._str(s, tabs=tabs+1)
         s += tabs*'|\t' + '\n'
       return s
 
-    def __repr__(self):
-        return self._repr()
+    def __str__(self):
+        return self._str()
