@@ -48,6 +48,7 @@ class Ball:
     def isleaf(self):
         return self.left is None
 
+
     def intersects(self, center, radius):
         return self.dist(center) - self.radius <= radius
 
@@ -281,3 +282,5 @@ class Ball:
 
     def __str__(self):
         return self._str()
+
+
