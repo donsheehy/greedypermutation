@@ -13,9 +13,9 @@ In total, it has exactly 2n-1 nodes because every non-leaf node has two
 children.
 """
 
-def greedy_tree(M, seed=None):
+def greedy_tree(M, seed=None, nbrconstant=1, moveconstant=1):
     BallTree = Ball(M)
-    gp = greedy(M, seed, pointtree=True)
+    gp = greedy(M, seed, pointtree=True, nbrconstant=nbrconstant, moveconstant=moveconstant)
     seed, _ = next(gp)
     root = BallTree(seed)
     leaf = {seed: root}
