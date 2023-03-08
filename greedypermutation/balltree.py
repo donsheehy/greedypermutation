@@ -13,9 +13,9 @@ In total, it has exactly 2n-1 nodes because every non-leaf node has two
 children.
 """
 
-def greedy_tree(M, seed=None):
+def greedy_tree(M, seed=None, nbrconstant=1, moveconstant=1):
     BallTree = Ball(M)
-    gp = greedy(M, seed, pointtree=True)
+    gp = greedy(M, seed, pointtree=True, nbrconstant=nbrconstant, moveconstant=moveconstant)
     seed, _ = next(gp)
     root = BallTree(seed)
     leaf = {seed: root}
@@ -47,6 +47,7 @@ class Ball:
 
     def isleaf(self):
         return self.left is None
+
 
     def intersects(self, center, radius):
         return self.dist(center) - self.radius <= radius
@@ -269,3 +270,17 @@ class Ball:
         for ball in H:
             if ball.intersects(query,R):
                 yield from ball
+
+    def _str(self, s='', tabs=0):
+      if self is not None:
+        s += tabs*'|\t' + str(self.center) + '\n'
+        if not self.isleaf():
+            s = self.left._str(s, tabs=tabs+1)
+            s = self.right._str(s, tabs=tabs+1)
+        s += tabs*'|\t' + '\n'
+      return s
+
+    def __str__(self):
+        return self._str()
+
+

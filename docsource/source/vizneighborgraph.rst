@@ -1,16 +1,16 @@
 Neighbor Graph Visualizer
 ===============
 
-`vizneighborgraph.py` is a utility for visualizing Neighbor Graphs utilizing `ds2viz`.  The neighbor graph visualizer is represented as a class, `VizNeighborGraph`.  A `VizNeighborGraph` inherits from `Element` in `ds2viz`  This class has the initializer:
+`vizneighborgraph.py` is a utility for visualizing Neighbor Graphs utilizing `ds2viz`.  The neighbor graph visualizer is represented as a class, `VizNeighborGraph`.  A `VizNeighborGraph` inherits from `Group` in `ds2viz`  This class has the initializer:
 
 - `__init__(self, neighbor_graph, style, stylesheet)` This initializer accepts a NeighborGraph object from `greedypermutation`, a specified style as a string, and a `.yaml` stylesheet.  The `style` parameter is used to look up the parameterized style in the stylesheet.  Each parameter is set to a new class attribute with the same identifier and value as the parameter.
 
 Additionally, `VizNeighborGraph` has six methods used to draw elements of the `NeighborGraph` object to a `Canvas` object.  To draw elements, call the `super().draw()` method to draw a `VizNeighborGraph`.  Specifying which elements of the `NeighborGraph` are drawn to the canvas is handled by the stylesheet attribute.
 
-- `__points(self)` This method is used to draw the points of the NeighborGraph to the canvas.  To specify drawing points to the canvas, the 'graph_point' name should be used to wrap the style specifications of NeighborGraph points.
-- `__vertices(self)` This method is used to draw lines from the center of one `NeighborGraph` cell to the center of cells vertices.  To specify drawing vertices to the canvas, the `graph_vertex` name should be used to wrap the style specifications of `NeighborGraph` vertices.
-- `__edges(self)` This method is used to draw the edges of the `NeighborGraph` object to the canvas.  Edges are drawn as the point in the center of a `NeighborGraph` cell.  To specify drawing edges to the canvas, the `graph_edge` name should be used to wrap the style specifications of Neighbor Graph edges.
-- `__hull(self)` This method is used to draw a convex hull around a `NeighborGraph` cell.  The convex hull is drawn as a polygon around the outermost points of the `NeighborGraph` cell.  The task of computing the convex hull is delegated to the `ConvexHull` class part of `ds2viz`.  To specify drawing a convex hull to the canvas, the `convex_hull` name should be used to wrap the style specifications of the Neighbor Graph hull.
+- `_points(self)` This method is used to draw the points of the NeighborGraph to the canvas.  To specify drawing points to the canvas, the 'graph_point' name should be used to wrap the style specifications of NeighborGraph points.
+- `_vertices(self)` This method is used to draw lines from the center of one `NeighborGraph` cell to the center of cells vertices.  To specify drawing vertices to the canvas, the `graph_vertex` name should be used to wrap the style specifications of `NeighborGraph` vertices.
+- `_edges(self)` This method is used to draw the edges of the `NeighborGraph` object to the canvas.  Edges are drawn as the point in the center of a `NeighborGraph` cell.  To specify drawing edges to the canvas, the `graph_edge` name should be used to wrap the style specifications of Neighbor Graph edges.
+- `_hull(self)` This method is used to draw a convex hull around a `NeighborGraph` cell.  The convex hull is drawn as a polygon around the outermost points of the `NeighborGraph` cell.  The task of computing the convex hull is delegated to the `ConvexHull` class part of `ds2viz`.  To specify drawing a convex hull to the canvas, the `convex_hull` name should be used to wrap the style specifications of the Neighbor Graph hull.
 
 Visualizer Styles
 ===============
