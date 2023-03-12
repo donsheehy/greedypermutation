@@ -50,9 +50,10 @@ class VizNeighborGraph(Group):
     self.stylesheet = stylesheet
     self.style = next(self.stylesheet[style])
     
+    self._ball()
+    self._hull()
     self._vertices()
     self._edges()
-    self._hull()
     self._points()
 
   def _points(self):
@@ -61,40 +62,47 @@ class VizNeighborGraph(Group):
     """
     point_style = self.style.get('graph_point')
     if point_style is not None:
-      for vertex in self.N.vertices():
-        C = Circle(2, None, 'graph_point', self.stylesheet)
-        C.align('center', vertex.center)
-        self.addelement(C)
-        # canvas.circle(vertex.center, 2, point_style)
+      point_style_dict = next(self.stylesheet[point_style])
+      point_radius = 2 if point_style_dict.get('radius') is None else point_style_dict['radius']
       for cell in self.N.vertices():
         for point in cell.points:
-          C = Circle(2, None, 'graph_point', self.stylesheet)
+          C = Circle(point_radius, None, point_style, self.stylesheet)
           C.align('center', point)
           self.addelement(C)
           # canvas.circle(point, 2,  point_style)
+    
+    vertex_style = self.style.get('graph_vertex')
+    if vertex_style is not None:
+      vertex_style_dict = next(self.stylesheet[vertex_style])
+      vertex_radius = 2 if vertex_style_dict.get('radius') is None else vertex_style_dict['radius']
+      for vertex in self.N.vertices():
+        C = Circle(vertex_radius, None, vertex_style, self.stylesheet)
+        C.align('center', vertex.center)
+        self.addelement(C)
+        # canvas.circle(vertex.center, 2, point_style)
 
   def _vertices(self):
     """
     A private method used to lines between the graph vertex and 
     the contained points to the neighbor graph group.
     """
-    vertex_style = self.style.get('graph_vertex')
-    if vertex_style is not None:
+    edge_style = self.style.get('cell_edge')
+    if edge_style is not None:
       for cell in self.N.vertices():
         for point in cell.points:
-          self.addelement(Line(point, cell.center, 'graph_vertex', self.stylesheet))
+          self.addelement(Line(point, cell.center, edge_style, self.stylesheet))
           #canvas.line(point, cell.center, vertex_style)
 
   def _edges(self):
     """
     A private method used to add edges between graph vertices to the neighbor graph group.
     """
-    edge_style = self.style.get('cell_edge')
+    edge_style = self.style.get('neighbor_edge')
     if edge_style is not None:
       for e in self.N.edges():
           if len(e) == 2:
             u,v = e
-            self.addelement(Line(u.center, v.center, 'cell_edge', self.stylesheet))
+            self.addelement(Line(u.center, v.center, edge_style, self.stylesheet))
           
   def _hull(self):
     """
@@ -103,7 +111,18 @@ class VizNeighborGraph(Group):
     hull_style = self.style.get('convex_hull')
     if hull_style is not None:
       for v in self.N.vertices():
-        self.addelement(Polygon(convexhull(v.points), 'convex_hull', self.stylesheet))
+        self.addelement(Polygon(convexhull(v.points), hull_style, self.stylesheet))
         # hull_points = convexhull(v.points)
         # for i in range(len(hull_points)):
         #   self.addelement(Line(hull_points[i-1], hull_points[i], 'convex_hull', self.stylesheet))
+
+  def _ball(self):
+    """
+    A private method to draw a ball covering a cell.
+    """
+    ball_style = self.style.get('cell_ball')
+    if ball_style is not None:
+      for vertex in self.N.vertices():
+        C = Circle(vertex.radius, None, ball_style, self.stylesheet)
+        C.align('center', vertex.center)
+        self.addelement(C)
