@@ -284,3 +284,7 @@ class Ball:
         return self._str()
 
 
+    def height(self):
+        if self.isleaf():
+            return 1
+        return 1 + max(self.left.height(), self.right.height())
