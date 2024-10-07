@@ -20,11 +20,11 @@ def clarkson_fvm(
         inp_trees, nbr_const, move_const, tidy_const, bucket_size
     )
     leaf = {}
+    out_tree = None
     for p, pred in _sites(inp_trees, nbr_graph):
         logging.info(
             f"Next point is {(p.x, p.y)} with predecessor {None if pred is None else (pred.x, pred.y)}."
         )
-        logging.info(f"Leaves: {[str(l) for l in leaf]}")
         if pred is None:
             BallTree = Ball(MetricSpace([p]))
             out_tree = BallTree(p)
@@ -33,8 +33,11 @@ def clarkson_fvm(
             left_leaf, right_leaf = BallTree(pred), BallTree(p)
             leaf[pred].left, leaf[pred].right = left_leaf, right_leaf
             leaf[pred], leaf[p] = left_leaf, right_leaf
-
+        logging.info(f"Leaves: {[str(l) for l in leaf]}")
+        logging.info(out_tree)
+        
     logging.info(f"Leaves: {[str(l) for l in leaf]}")
+    logging.info(out_tree)
     # Compute node radii
     out_tree.update()
     return out_tree
