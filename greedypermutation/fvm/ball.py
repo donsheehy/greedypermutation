@@ -1,8 +1,8 @@
-import logging
 from ds2.priorityqueue import PriorityQueue
 from metricspaces import metric_class
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
+
 
 @metric_class
 class Ball:

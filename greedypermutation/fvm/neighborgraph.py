@@ -3,6 +3,7 @@ from ds2.graph import Graph
 from metricspaces import metric_class, MetricSpace
 from greedypermutation.maxheap import MaxHeap
 
+
 @metric_class
 class Cell:
     def __init__(self, x):
@@ -11,7 +12,7 @@ class Cell:
         """
         # SID: tidying requires that points be stored in a heap.
         # SID: Set is better than heap. Need to implement get max.
-        logging.info(
+        logging.debug(
             f"Creating cell with center {(x.center.x, x.center.y)} and {len(x)} points."
         )
         self.center = x.center
@@ -23,7 +24,7 @@ class Cell:
         """
         Tidies the cell and updates the radius.
         """
-        logging.info(
+        logging.debug(
             f"Tidying cell with center {self.center} and {len(self.points)} nodes."
         )
         self.update_farthest()
@@ -32,7 +33,7 @@ class Cell:
             self.split_node(x)
             self.update_farthest()
             x = self.farthest
-        logging.info(
+        logging.debug(
             f"Tidy cell with center {self.center} has {len(self.points)} nodes containing {sum(len(x) for x in self.points)} points and outradius {self.outradius}."
         )
 
@@ -74,7 +75,6 @@ class Cell:
         """
         Check if `x` can move to new cell `other`.
         """
-        # logging.info(f"Move if {other.dist(x.center)} + {x.radius} <= {self.dist(x.center)} - {x.radius}")
         return (
             alpha * (other.dist(x.center) + x.radius) < self.dist(x.center) - x.radius
         )
@@ -83,7 +83,6 @@ class Cell:
         """
         Check if `x` can stay.
         """
-        # logging.info(f"Stay if {other.dist(x.center)} - {x.radius} <= {self.dist(x.center)} + {x.radius}")
         return (
             beta * (other.dist(x.center) - x.radius) >= self.dist(x.center) + x.radius
         )
@@ -235,7 +234,7 @@ class NeighborGraph(Graph):
                     to_split.add(p)
             points_to_check = set()
 
-        logging.info(
+        logging.debug(
             f"Moving {len(to_move)} points from cell with center {b.center} to cell {a.center}."
         )
         b.points -= to_move
@@ -285,9 +284,9 @@ class GreedyNeighborGraph(NeighborGraph):
         self.heap = MaxHeap([root_cell], key=lambda c: c.outradius)
 
     def addcell(self, newcenter, parent):
-        logging.info(f"Adding cell with center {newcenter} and parent {parent.center}.")
+        logging.debug(f"Adding cell with center {newcenter} and parent {parent.center}.")
         newcell = super().addcell(newcenter, parent)
-        logging.info(f"Cell inserted succesfully, outradius {newcell.outradius}.")
+        logging.debug(f"Cell inserted succesfully, outradius {newcell.outradius}.")
         # Add `newcell` to the heap.
         self.heap.insert(newcell)
 
