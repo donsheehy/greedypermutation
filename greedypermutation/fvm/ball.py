@@ -4,9 +4,6 @@ from metricspaces import metric_class
 from greedypermutation.clarksongreedy import greedy
 from greedypermutation.maxheap import MaxHeap
 
-logging.basicConfig(level=logging.NOTSET)
-
-
 @metric_class
 class Ball:
     """

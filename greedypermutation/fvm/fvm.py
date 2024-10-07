@@ -3,18 +3,13 @@ from greedypermutation.fvm.ball import Ball
 from greedypermutation.fvm.neighborgraph import GreedyNeighborGraph
 from metricspaces import MetricSpace
 
-logging.basicConfig(level=logging.NOTSET)
-
 # Clarkson's algorithm on greedy tree nodes.
-
-
 def clarkson_fvm(
     inp_trees: list[Ball],
     move_const: float = 1.0,
     nbr_const: float = 1.0,
     tidy_const: float = 1.0,
     bucket_size: float = 1.0,
-    e: float = 0.0,
 ) -> Ball:
     nbr_graph = GreedyNeighborGraph(
         inp_trees, nbr_const, move_const, tidy_const, bucket_size
@@ -30,14 +25,13 @@ def clarkson_fvm(
             out_tree = BallTree(p)
             leaf[p] = out_tree
         else:
-            left_leaf, right_leaf = BallTree(pred), BallTree(p)
-            leaf[pred].left, leaf[pred].right = left_leaf, right_leaf
-            leaf[pred], leaf[p] = left_leaf, right_leaf
+            node = leaf[pred]
+            left, right = BallTree(pred), BallTree(p)
+            node.left, node.right = left, right
+            leaf[pred], leaf[p] = left, right
         logging.info(f"Leaves: {[str(l) for l in leaf]}")
         logging.info(out_tree)
         
-    logging.info(f"Leaves: {[str(l) for l in leaf]}")
-    logging.info(out_tree)
     # Compute node radii
     out_tree.update()
     return out_tree

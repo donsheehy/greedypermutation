@@ -3,8 +3,6 @@ from ds2.graph import Graph
 from metricspaces import metric_class, MetricSpace
 from greedypermutation.maxheap import MaxHeap
 
-logging.basicConfig(level=logging.NOTSET)
-
 @metric_class
 class Cell:
     def __init__(self, x):
