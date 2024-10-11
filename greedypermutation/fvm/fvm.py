@@ -17,12 +17,10 @@ def clarkson_fvm(
     leaf = {}
     out_tree = None
     for p, pred in _sites(inp_trees, nbr_graph):
-        logging.debug(
-            f"Next point is {(p.x, p.y)} with predecessor {None if pred is None else (pred.x, pred.y)}."
-        )
         if pred is None:
             BallTree = Ball(MetricSpace([p]))
             BallTree.scale = move_const / (tidy_const * bucket_size)
+            BallTree.gp = nbr_const * tidy_const * bucket_size
             out_tree = BallTree(p)
             leaf[p] = out_tree
         else:
@@ -30,11 +28,15 @@ def clarkson_fvm(
             left, right = BallTree(pred), BallTree(p)
             node.left, node.right = left, right
             leaf[pred], leaf[p] = left, right
-        logging.debug(f"Leaves: {[str(l) for l in leaf]}")
-        logging.debug(out_tree)
 
+    out_tree.count()
     # Compute node radii
-    out_tree.update()
+    if out_tree.scale > 1:
+        logging.debug("Computing approximate radii")
+        out_tree.approx_radii()
+    else:
+        logging.debug("Computing exact radii")
+        out_tree.exact_radii()
     return out_tree
 
 
@@ -43,10 +45,9 @@ def _sites(inp_trees, nbr_graph):
     root = heap.findmax()
 
     yield root.center, None
-    logging.debug("Now beginning loop.")
     for _ in range(1, sum(len(inp_tree) for inp_tree in inp_trees)):
         cell = heap.findmax()
-        logging.debug(f"Max cell: {cell.center}, {cell.outradius}")
-        node = cell.farthest
-        nbr_graph.addcell(node, cell)
-        yield node.center, cell.center
+        logging.debug(f"Max cell: {cell.center} with outradius {cell.outradius}")
+        newcenter = cell.farthest.center
+        nbr_graph.addcell(newcenter, cell)
+        yield newcenter, cell.center

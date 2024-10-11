@@ -1,3 +1,4 @@
+import logging
 from ds2.priorityqueue import PriorityQueue
 from metricspaces import metric_class
 from greedypermutation.clarksongreedy import greedy
@@ -35,27 +36,6 @@ class Ball:
         gp = greedy(M, pointtree=True)
         return Ball.tree(gp)
 
-    @classmethod
-    def tree(cls, agp):
-        """
-        Initialize a binary greedy tree given an augmented
-        greedy permutation `agp`.
-
-        The augmented greedy permutation is given as an iterable of pairs
-        of points `(p,q)` where `p` is a new point and `q` is its predecessor.
-        """
-        agp_iterator = iter(agp)
-        seed, _ = next(agp_iterator)
-        BallTree = Ball(cls.metric)
-        root = BallTree(seed)
-        leaf = {seed: root}
-        for p, q in agp_iterator:
-            node = leaf[q]
-            leaf[q] = node.left = BallTree(q)
-            leaf[p] = node.right = BallTree(p)
-        root.update()
-        return root
-
     def farthest(self, q):
         """Find the distance to the farthest point to `q`."""
         if self.isleaf():
@@ -71,19 +51,46 @@ class Ball:
                     H.append(ball.right)
             return best
 
-    def update(self):
+    def approx_radii(self):
         """
-        Recursively compute the `radius` and `len` of every ball in the tree
-        rooted at self.
+        Recursively approximate the `radius` of every ball in the tree rooted at self.
+        """
+        if not hasattr(self, "scale"):
+            raise RuntimeError("Missing scale parameter.")
+        if not hasattr(self, "gp"):
+            raise RuntimeError("Missing gp-approx parameter.")
+        if self.isleaf():
+            self.radius = 0
+        else:
+            self.left.approx_radii()
+            self.right.approx_radii()
+            # SID: To compute approximate node radii, we need scale and locally greedy parameters
+            self.radius = min(
+                max(self.left.radius, self.dist(self.right.center) + self.right.radius),
+                self.scale * self.gp * self.dist(self.right.center) / (self.scale - 1),
+            )
+
+    def exact_radii(self):
+        """
+        Recursively compute the `radius` of every ball in the tree rooted at self.
         """
         if self.isleaf():
             self.radius = 0
-            self._len = 1
         else:
-            self.left.update()
-            self.right.update()
+            self.left.exact_radii()
+            self.right.exact_radii()
             # SID: To compute approximate node radii, we need scale and locally greedy parameters
             self.radius = max(self.left.radius, self.right.farthest(self.center))
+
+    def count(self):
+        """
+        Recursively compute the count of every ball in the tree rooted at self.
+        """
+        if self.isleaf():
+            self._len = 1
+        else:
+            self.left.count()
+            self.right.count()
             self._len = len(self.left) + len(self.right)
 
     def __len__(self):

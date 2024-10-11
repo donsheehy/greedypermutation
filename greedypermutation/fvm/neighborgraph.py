@@ -2,6 +2,7 @@ import logging
 from ds2.graph import Graph
 from metricspaces import metric_class, MetricSpace
 from greedypermutation.maxheap import MaxHeap
+from greedypermutation.fvm.bucketqueue import BucketQueue
 
 
 @metric_class
@@ -12,21 +13,19 @@ class Cell:
         """
         # SID: tidying requires that points be stored in a heap.
         # SID: Set is better than heap. Need to implement get max.
-        logging.debug(
-            f"Creating cell with center {(x.center.x, x.center.y)} and {len(x)} points."
-        )
-        self.center = x.center
-        self.points = {x}
+        logging.debug(f"Creating cell with center {x}.")
+        self.center = x
+        self.points = set()
         self.outradius = 0
-        self.tidy()
+        self.farthest = None
 
     def tidy(self):
         """
         Tidies the cell and updates the radius.
         """
-        logging.debug(
-            f"Tidying cell with center {self.center} and {len(self.points)} nodes."
-        )
+        if not hasattr(self, 'tidy_param'):
+            logging.error(f"Tidying cell with center {self.center} and {len(self.points)} nodes.")
+            raise RuntimeError('Cannot tidy a cell without a tidying parameter')
         self.update_farthest()
         x = self.farthest
         while x.radius > (self.tidy_param - 1) * self.dist(x.center):
@@ -34,7 +33,7 @@ class Cell:
             self.update_farthest()
             x = self.farthest
         logging.debug(
-            f"Tidy cell with center {self.center} has {len(self.points)} nodes containing {sum(len(x) for x in self.points)} points and outradius {self.outradius}."
+            f"Tidy cell with center {self.center} has {self.num_nodes()} nodes containing {len(self)} points and outradius {self.outradius}."
         )
 
     def update_farthest(self):
@@ -52,10 +51,14 @@ class Cell:
         """
         Add the point `x` to the cell.
         """
-        # SID: Now p is a node.
-        # The node has to be tidy before updating the radius.
+        # SID: x is a node.
         self.points.add(x)
-        self.tidy()
+    
+    def removepoint(self, x):
+        if x not in self.points:
+            logging.error(f'Trying to point {x.center} from cell {self.center}.')
+            raise RuntimeError('Trying to remove non-existent point from a cell!')
+        self.points.remove(x)
 
     def dist(self, point):
         """
@@ -71,25 +74,27 @@ class Cell:
         """
         return self.metric.comparedist(point, self.center, other.center, alpha=alpha)
 
-    def move(self, x, other, alpha):
+    def move(self, x, other):
         """
         Check if `x` can move to new cell `other`.
         """
         return (
-            alpha * (other.dist(x.center) + x.radius) < self.dist(x.center) - x.radius
+            self.move_param * (other.dist(x.center) + x.radius)
+            <= self.dist(x.center) - x.radius
         )
 
-    def stay(self, x, other, beta):
+    def stay(self, x, other):
         """
         Check if `x` can stay.
         """
         return (
-            beta * (other.dist(x.center) - x.radius) >= self.dist(x.center) + x.radius
+            self.nbr_param * (other.dist(x.center) - x.radius)
+            >= self.dist(x.center) + x.radius
         )
 
     def split_before_move(self, to_split):
         """
-        Replace the points in to_split by their children.
+        Replace the nodes in `to_split` by their children.
         """
         split_nodes = set()
         for x in to_split:
@@ -103,16 +108,22 @@ class Cell:
         Replace node by its children in the same cell.
         """
         if x.isleaf():
-            raise ValueError("Splitting a leaf")
+            logging.error(
+                f"Splitting leaf with center {x.center} in cell {self.center}."
+            )
+            raise RuntimeError("Splitting a leaf")
         self.points.remove(x)
         self.points.add(x.left)
         self.points.add(x.right)
+    
+    def num_nodes(self):
+        return len(self.points)
 
     def __len__(self):
         """
         Return the total number of points in the cell, including the center.
         """
-        return len(self.points)
+        return sum(len(p) for p in self.points)
 
     def __iter__(self):
         """
@@ -137,30 +148,38 @@ class Cell:
 
 
 class NeighborGraph(Graph):
-    def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1, bucket_size=1):
+    def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1):
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
 
-        # if nbrconstant < moveconstant:
-        #     raise RuntimeError(
-        #         "The move constant must not be larger than the" "neighbor constant."
-        #     )
+        if nbr_const < move_const:
+            logging.error(f"Passed nbr constant {nbr_const} and move constant {move_const}.")
+            raise RuntimeError(
+                "The move constant must not be larger than the neighbor constant."
+            )
+
+        if move_const < tidy_const:
+            logging.error(f"Passed move constant {move_const} and tidy constant {tidy_const}.")
+            raise RuntimeError(
+                "The tidying constant must not be larger than the move constant."
+            )
         self.nbrconstant = nbr_const
         self.moveconstant = move_const
         self.tidyconstant = tidy_const
-        self.bucketsize = bucket_size
 
         # Establish a class for the cells.
         self.Vertex = Cell(MetricSpace([G[0].center]))
         self.Vertex.tidy_param = self.tidyconstant
+        self.Vertex.move_param = self.moveconstant
+        self.Vertex.nbr_param = self.nbrconstant
 
         # Make a cell to start the graph.
-        root_center = G[0]
+        root_center = G[0].center
         root_cell = self.Vertex(root_center)
 
-        for i, g in enumerate(G[1:]):
+        for g in G:
             root_cell.addpoint(g)
-
+        root_cell.tidy()
         # Add the new cell as the one vertex of the graph.
         self.addvertex(root_cell)
         self.addedge(root_cell, root_cell)
@@ -183,8 +202,6 @@ class NeighborGraph(Graph):
         The cells are rebalanced with points moving from nearby cells into
         the new cell if it is closer.
         """
-        # Remove the point from the parent.
-        parent.points.remove(newcenter)
         # Create the new cell.
         newcell = self.Vertex(newcenter)
 
@@ -197,6 +214,9 @@ class NeighborGraph(Graph):
             self.rebalance(newcell, nbr)
             # The heap update has been delegated to the GreedyNeighborGraph.
             # self.heap.changepriority(nbr)
+        
+        # Tidy the new cell after points have moved into it.
+        newcell.tidy()
 
         # Add neighbors to the new cell.
         for newnbr in self.nbrs_of_nbrs(parent):
@@ -219,24 +239,31 @@ class NeighborGraph(Graph):
         # They have to be split-on-move for merge, not for refine.
         # Maybe work out the constants so that this is taken care of in the call itself.
 
-        to_move, to_split = set(), set()
-        points_to_check = b.points
-        while points_to_check == b.points or len(to_split) > 0:
+        to_move, to_split, to_check = set(), set(), b.points
+        while to_check == b.points or len(to_split) > 0:
             if len(to_split) > 0:
-                points_to_check = b.split_before_move(to_split)
+                to_check = b.split_before_move(to_split)
                 to_split = set()
-            for p in points_to_check:
-                if b.move(p, a, self.moveconstant):
+            for p in to_check:
+                if b.move(p, a):
                     to_move.add(p)
-                elif b.stay(p, a, self.nbrconstant):
+                elif b.stay(p, a):
                     continue
                 else:
+                    if p.isleaf():
+                        logging.error(
+                            f"Splitting leaf {p.center} with radius {p.radius} when moving points from {b.center} to {a.center}."
+                        )
+                        logging.error(
+                            f"Cannot move because {self.moveconstant*(a.dist(p.center) + p.radius)} = {self.moveconstant}*({a.dist(p.center)} + {p.radius}) > {b.dist(p.center)} - {p.radius} = {b.dist(p.center) - p.radius}"
+                        )
+                        logging.error(
+                            f"Cannot stay because {self.nbrconstant*(a.dist(p.center) - p.radius)} = {self.nbrconstant}*({a.dist(p.center)} - {p.radius}) < {b.dist(p.center)} + {p.radius} = {b.dist(p.center) + p.radius}"
+                        )
+                        raise RuntimeError("Splitting a leaf!")
                     to_split.add(p)
-            points_to_check = set()
+            to_check = set()
 
-        logging.debug(
-            f"Moving {len(to_move)} points from cell with center {b.center} to cell {a.center}."
-        )
         b.points -= to_move
         for p in to_move:
             a.addpoint(p)
@@ -276,20 +303,23 @@ class GreedyNeighborGraph(NeighborGraph):
     """
 
     def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1, bucket_size=1):
-        super().__init__(G, nbr_const, move_const, tidy_const, bucket_size)
+        super().__init__(G, nbr_const, move_const, tidy_const)
 
         # The root cell should be the only vertex in the graph.
         root_cell = next(iter(self._nbrs))
         # SID: This heap will have to be a bucket queue.
-        self.heap = MaxHeap([root_cell], key=lambda c: c.outradius)
+        if bucket_size > 1:
+            self.heap = BucketQueue(
+                [root_cell], key=lambda c: c.outradius, bucket_size=bucket_size
+            )
+        else:
+            self.heap = MaxHeap([root_cell], key=lambda c: c.outradius)
 
     def addcell(self, newcenter, parent):
-        logging.debug(f"Adding cell with center {newcenter} and parent {parent.center}.")
         newcell = super().addcell(newcenter, parent)
-        logging.debug(f"Cell inserted succesfully, outradius {newcell.outradius}.")
         # Add `newcell` to the heap.
         self.heap.insert(newcell)
-
+        logging.debug(f"Inserted cell at center {newcenter}")
         return newcell
 
     def rebalance(self, a, b):

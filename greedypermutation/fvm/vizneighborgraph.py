@@ -53,9 +53,10 @@ class VizNeighborGraph(Group):
         self.stylesheet = stylesheet
         self.style = next(self.stylesheet[style])
 
+        self._cell_edges()
         self._ball()
         self._hull()
-        self._edges()
+        self._nbr_edges()
         self._points()
         self._vertices()
 
@@ -83,11 +84,7 @@ class VizNeighborGraph(Group):
                     # canvas.circle(point, 2,  point_style)
                 # canvas.circle(vertex.center, 2, point_style)
 
-    def _vertices(self):
-        """
-        A private method used to draw graph vertices and lines between a graph vertex and
-        the contained points.
-        """
+    def _cell_edges(self):
         edge_style = self.style.get("cell_edge")
         if edge_style is not None:
             for cell in self.N.vertices():
@@ -96,6 +93,11 @@ class VizNeighborGraph(Group):
                         Line(point.center, cell.center, edge_style, self.stylesheet)
                     )
 
+    def _vertices(self):
+        """
+        A private method used to draw graph vertices and lines between a graph vertex and
+        the contained points.
+        """
         vertex_style = self.style.get("graph_vertex")
         if vertex_style is not None:
             vertex_style_dict = next(self.stylesheet[vertex_style])
@@ -108,10 +110,9 @@ class VizNeighborGraph(Group):
                 C = Circle(vertex_radius, None, vertex_style, self.stylesheet)
                 C.align("center", vertex.center)
                 self.addelement(C)
-
                 # canvas.line(point, cell.center, vertex_style)
 
-    def _edges(self):
+    def _nbr_edges(self):
         """
         A private method used to add edges between graph vertices to the neighbor graph group.
         """
