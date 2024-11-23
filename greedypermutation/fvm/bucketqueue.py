@@ -25,20 +25,20 @@ class BucketQueue:
         use_backburner=False,
         num_buckets=None,
     ):
-        self.buckets = defaultdict(set)         # maps levels to buckets
-        self.levels = dict()                    # maps items to levels
+        self.buckets = defaultdict(set)  # maps levels to buckets
+        self.levels = dict()  # maps items to levels
         if bucket_size < 1:
             logging.error(f"Bucket parameter passed is {bucket_size}.")
             raise RuntimeError("Bucket size should be greater than 1.")
-        self.bucket_size = bucket_size          # should be greater than 1
+        self.bucket_size = bucket_size  # should be greater than 1
         self.key = key
-        # if use_backburner:
-        #     self.use_backburner = True
-        #     if num_buckets is None:
-        #         raise RuntimeError("Number of buckets not specified.")
-        #     self.num_buckets = num_buckets
-        # else:
-        #     self.use_backburner = False
+        if use_backburner:
+            self.use_backburner = True
+            if num_buckets is None:
+                raise RuntimeError("Number of buckets not specified.")
+            self.num_buckets = num_buckets
+        else:
+            self.use_backburner = False
         self.use_backburner = False
         for item in items:
             self.insert(item, key(item))
@@ -51,7 +51,7 @@ class BucketQueue:
         level = self.get_bucket(priority)
         # Check if item should go on the backburner
         if self.too_small(level):
-            level = 'bb'
+            level = "bb"
         # else add it to bucket on main queue
         self.levels[item] = level
         self.buckets[level].add(item)
@@ -86,12 +86,12 @@ class BucketQueue:
     def remove_bucket(self, level):
         if level in self.buckets:
             del self.buckets[level]
-    
+
     def bucket_empty(self, level):
         return len(self.buckets[level]) == 0
-    
+
     def has_buckets(self):
-        return len({x for x in self.buckets} - {'bb'}) > 0
+        return len({x for x in self.buckets} - {"bb"}) > 0
 
     def maxlevel(self):
         max_level = max(self.buckets)
@@ -103,20 +103,16 @@ class BucketQueue:
             self.pop_bb()
             return self.maxlevel()
         return max_level
-    
     def pop_bb(self):
         # pop off bb
         # add to main queue
         pass
-    
+
     def too_small(self, bucket_num):
-        return (
-            self.use_backburner
-            and self.maxlevel() - bucket_num > self.num_buckets
-        )
+        return self.use_backburner and self.maxlevel() - bucket_num > self.num_buckets
 
     def get_bucket(self, priority):
-        return floor(log2(priority+1e-8) / log2(self.bucket_size))
+        return floor(log2(priority + 1e-8) / log2(self.bucket_size))
 
     def __len__(self):
         return sum(len(bucket) for bucket in self.buckets)

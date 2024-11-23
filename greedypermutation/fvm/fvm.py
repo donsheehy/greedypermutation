@@ -1,24 +1,24 @@
 import logging
-from greedypermutation.fvm.ball import Ball
-from greedypermutation.fvm.neighborgraph import GreedyNeighborGraph
 from metricspaces import MetricSpace
+from greedypermutation.fvm.ball import Ball
+from greedypermutation.fvm.utils import TreeParameters
+from greedypermutation.fvm.neighborgraph import GreedyNeighborGraph
 
 # Clarkson's algorithm on greedy tree nodes.
 def clarkson_fvm(
     inp_trees: list[Ball],
-    move_const: float = 1.0,
-    nbr_const: float = 1.0,
-    tidy_const: float = 1.0,
-    bucket_size: float = 1.0,
+    params: TreeParameters = TreeParameters(1,1,1,1),
+    space: MetricSpace = None
 ) -> Ball:
-    nbr_graph = GreedyNeighborGraph(
-        inp_trees, nbr_const, move_const, tidy_const, bucket_size
-    )
+    move_const, nbr_const, tidy_const, bucket_size = params
+    if space is None:
+        space = MetricSpace(inp_trees[0].center)
+    nbr_graph = GreedyNeighborGraph(inp_trees, params, space)
     leaf = {}
     out_tree = None
     for p, pred in _sites(inp_trees, nbr_graph):
         if pred is None:
-            BallTree = Ball(MetricSpace([p]))
+            BallTree = Ball(space)
             BallTree.scale = move_const / (tidy_const * bucket_size)
             BallTree.gp = nbr_const * tidy_const * bucket_size
             out_tree = BallTree(p)
@@ -32,10 +32,10 @@ def clarkson_fvm(
     out_tree.count()
     # Compute node radii
     if out_tree.scale > 1:
-        logging.debug("Computing approximate radii")
+        # logging.debug("Computing approximate radii")
         out_tree.approx_radii()
     else:
-        logging.debug("Computing exact radii")
+        # logging.debug("Computing exact radii")
         out_tree.exact_radii()
     return out_tree
 

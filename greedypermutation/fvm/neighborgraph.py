@@ -2,6 +2,7 @@ import logging
 from ds2.graph import Graph
 from metricspaces import metric_class, MetricSpace
 from greedypermutation.maxheap import MaxHeap
+from greedypermutation.fvm.utils import TreeParameters
 from greedypermutation.fvm.bucketqueue import BucketQueue
 
 
@@ -11,9 +12,7 @@ class Cell:
         """
         Create a new cell with the given center `x.center`.
         """
-        # SID: tidying requires that points be stored in a heap.
-        # SID: Set is better than heap. Need to implement get max.
-        logging.debug(f"Creating cell with center {x}.")
+        # logging.debug(f"Creating cell with center {x}.")
         self.center = x
         self.points = set()
         self.outradius = 0
@@ -23,18 +22,20 @@ class Cell:
         """
         Tidies the cell and updates the radius.
         """
-        if not hasattr(self, 'tidy_param'):
-            logging.error(f"Tidying cell with center {self.center} and {len(self.points)} nodes.")
-            raise RuntimeError('Cannot tidy a cell without a tidying parameter')
+        if not hasattr(self, "tidy_param"):
+            logging.error(
+                f"Tidying cell with center {self.center} and {len(self.points)} nodes."
+            )
+            raise RuntimeError("Cannot tidy a cell without a tidying parameter")
         self.update_farthest()
         x = self.farthest
         while x.radius > (self.tidy_param - 1) * self.dist(x.center):
             self.split_node(x)
             self.update_farthest()
             x = self.farthest
-        logging.debug(
-            f"Tidy cell with center {self.center} has {self.num_nodes()} nodes containing {len(self)} points and outradius {self.outradius}."
-        )
+        # logging.debug(
+        #     f"Tidy cell with center {self.center} has {self.num_nodes()} nodes containing {len(self)} points and outradius {self.outradius}."
+        # )
 
     def update_farthest(self):
         """
@@ -53,11 +54,11 @@ class Cell:
         """
         # SID: x is a node.
         self.points.add(x)
-    
+
     def removepoint(self, x):
         if x not in self.points:
-            logging.error(f'Trying to point {x.center} from cell {self.center}.')
-            raise RuntimeError('Trying to remove non-existent point from a cell!')
+            logging.error(f"Trying to point {x.center} from cell {self.center}.")
+            raise RuntimeError("Trying to remove non-existent point from a cell!")
         self.points.remove(x)
 
     def dist(self, point):
@@ -115,7 +116,6 @@ class Cell:
         self.points.remove(x)
         self.points.add(x.left)
         self.points.add(x.right)
-    
     def num_nodes(self):
         return len(self.points)
 
@@ -148,27 +148,34 @@ class Cell:
 
 
 class NeighborGraph(Graph):
-    def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1):
+    def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1, space=None):
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
 
         if nbr_const < move_const:
-            logging.error(f"Passed nbr constant {nbr_const} and move constant {move_const}.")
+            logging.error(
+                f"Passed nbr constant {nbr_const} and move constant {move_const}."
+            )
             raise RuntimeError(
                 "The move constant must not be larger than the neighbor constant."
             )
 
         if move_const < tidy_const:
-            logging.error(f"Passed move constant {move_const} and tidy constant {tidy_const}.")
+            logging.error(
+                f"Passed move constant {move_const} and tidy constant {tidy_const}."
+            )
             raise RuntimeError(
                 "The tidying constant must not be larger than the move constant."
             )
+        
+        if space is None:
+            space = MetricSpace([G[0].center])
         self.nbrconstant = nbr_const
         self.moveconstant = move_const
         self.tidyconstant = tidy_const
 
         # Establish a class for the cells.
-        self.Vertex = Cell(MetricSpace([G[0].center]))
+        self.Vertex = Cell(space)
         self.Vertex.tidy_param = self.tidyconstant
         self.Vertex.move_param = self.moveconstant
         self.Vertex.nbr_param = self.nbrconstant
@@ -214,7 +221,6 @@ class NeighborGraph(Graph):
             self.rebalance(newcell, nbr)
             # The heap update has been delegated to the GreedyNeighborGraph.
             # self.heap.changepriority(nbr)
-        
         # Tidy the new cell after points have moved into it.
         newcell.tidy()
 
@@ -302,12 +308,12 @@ class GreedyNeighborGraph(NeighborGraph):
         _description_
     """
 
-    def __init__(self, G, nbr_const=1, move_const=1, tidy_const=1, bucket_size=1):
-        super().__init__(G, nbr_const, move_const, tidy_const)
+    def __init__(self, G, params=TreeParameters(1,1,1,1), space=None):
+        move_const, nbr_const, tidy_const, bucket_size = params
+        super().__init__(G, nbr_const, move_const, tidy_const, space)
 
         # The root cell should be the only vertex in the graph.
         root_cell = next(iter(self._nbrs))
-        # SID: This heap will have to be a bucket queue.
         if bucket_size > 1:
             self.heap = BucketQueue(
                 [root_cell], key=lambda c: c.outradius, bucket_size=bucket_size
@@ -319,7 +325,7 @@ class GreedyNeighborGraph(NeighborGraph):
         newcell = super().addcell(newcenter, parent)
         # Add `newcell` to the heap.
         self.heap.insert(newcell)
-        logging.debug(f"Inserted cell at center {newcenter}")
+        # logging.debug(f"Inserted cell at center {newcenter}")
         return newcell
 
     def rebalance(self, a, b):
