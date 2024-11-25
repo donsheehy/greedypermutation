@@ -1,72 +1,59 @@
-def dualtree_iteration(G, H, init, update, ball):
-    left, right = ball.left, ball.right
+class DualTreeSearch:
+    def __init__(self, G, H):
+        self.G = G
+        self.H = H
 
-    if ball in G.A:
-        init(ball)
-        G.add_vertices([left, right], G.A)
-        for b in G.A.pop(ball):
-            G.B[b].remove(ball)
-            G.add_edges([(left, b), (right, b)])
-        affected = {left, right}
-    else:
-        nbrhood = G.B.pop(ball)
-        G.add_vertices([left, right], G.B)
-        for a in nbrhood:
-            G.A[a].remove(ball)
-            G.add_edges([(a, left), (a, right)])
-        affected = {a for a in nbrhood}
+    def init(self, ball):
+        pass
 
-    for a in affected:
-        update(a, ball)
+    def update(self, node, ball):
+        pass
 
-    H.insert(left)
-    H.insert(right)
+    def cleanup(self, node):
+        pass
 
-# def dualtree_search(G, H, init, update, cleanup):
-#     for ball in H:
-#         if ball.isleaf():
-#             break
-#         left, right = ball.left, ball.right
+    def __call__(self):
+        for ball in self.H:
+            if ball.isleaf():
+                break
+            self.iteration(ball)
 
-#         if ball in G.A:
-#             init(ball)
-#             for b in G.A.pop(ball):
-#                 G.B[b].remove(ball)
-#                 G.add_edges([(left, b), (right, b)])
-#             affected = {left, right}
-#         else:
-#             for a in G.B.pop(ball):
-#                 G.A[a].remove(ball)
-#                 G.add_edges([(a, left), (a, right)])
-#             affected = {a for a in G.B[left]}
+        for a in self.G.A:
+            self.cleanup(a)
 
-#         for a in affected:
-#             update(a, ball)
+    def __iter__(self):
+        yield
+        for ball in self.H:
+            if ball.isleaf():
+                break
+            self.iteration(ball)
+            yield
 
-#         H.insert(left)
-#         H.insert(right)
+        for a in self.G.A:
+            self.cleanup(a)
 
-#     for a in G.A:
-#         cleanup(a)
-
-def dualtree_search(G, H, init, update, cleanup):
-    for ball in H:
-        if ball.isleaf():
-            break
-        dualtree_iteration(G, H, init, update, ball)
-
-    for a in G.A:
-        cleanup(a)
-
-def dualtree_analysis(G, H, init, update, cleanup):
-    yield
-    for ball in H:
-        if ball.isleaf():
-            break
-        dualtree_iteration(G, H, init, update, ball)
         yield
 
-    for a in G.A:
-        cleanup(a)
+    def iteration(self, ball):
+        left, right = ball.left, ball.right
 
-    yield
+        if ball in self.G.A:
+            self.init(ball)
+            self.G.add_vertices([left, right], self.G.A)
+            for b in self.G.A.pop(ball):
+                self.G.B[b].remove(ball)
+                self.G.add_edges([(left, b), (right, b)])
+            affected = {left, right}
+        else:
+            nbrhood = self.G.B.pop(ball)
+            self.G.add_vertices([left, right], self.G.B)
+            for a in nbrhood:
+                self.G.A[a].remove(ball)
+                self.G.add_edges([(a, left), (a, right)])
+            affected = {a for a in nbrhood}
+
+        for a in affected:
+            self.update(a, ball)
+
+        self.H.insert(left)
+        self.H.insert(right)

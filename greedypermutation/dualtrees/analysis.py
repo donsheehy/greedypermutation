@@ -1,12 +1,12 @@
 from random import randrange, seed
-from greedypermutation.dualtrees.allrange import all_range_analyze
-from greedypermutation.dualtrees.allknn import all_knn_analyze
+from greedypermutation.dualtrees.allrange import AllRange
+from greedypermutation.dualtrees.allknn import AllKNN
 from ds2viz.geometry import VizPoint as Point
 from collections import defaultdict
 import numpy as np
 from matplotlib import pyplot as plt
 
-fn_set = {all_range_analyze, all_knn_analyze}
+fn_set = {AllRange, AllKNN}
 
 def compute_degrees(A, B, G_A, G_B, fn, **kwargs):
     if fn not in fn_set:
@@ -24,11 +24,13 @@ def compute_degrees(A, B, G_A, G_B, fn, **kwargs):
     degree_a = defaultdict(list)
     degree_b = defaultdict(list)
 
-    for G, out in fn(G_A, G_B, **kwargs):
+    search = fn(G_A, G_B, **kwargs)
+    for output in search:
+        G = output[0]
         append_degrees(degree_a, A, G.A)
         append_degrees(degree_b, B, G.B)
     
-    return to_nparray(degree_a), to_nparray(degree_b), out
+    return to_nparray(degree_a), to_nparray(degree_b)
 
 
 def max_degree(degrees):
@@ -54,10 +56,10 @@ def avg_degree(degrees):
 
 
 def analyze(A, B, G_A, G_B, fn, **kwargs):
-    n_a = len(A)
-    n_b = len(B)
+    # n_a = len(A)
+    # n_b = len(B)
     
-    deg_a, deg_b, _ = compute_degrees(A, B, G_A, G_B, fn, **kwargs)
+    deg_a, deg_b = compute_degrees(A, B, G_A, G_B, fn, **kwargs)
 
     max_a_iter, max_a_point = max_degree(deg_a)
     max_b_iter, max_b_point = max_degree(deg_b)
@@ -103,6 +105,7 @@ if __name__ == '__main__':
     N_A = 100
     N_B = 100
     R = 300
+    K = 4
     STOP = 50
 
     seed(10)
@@ -114,7 +117,8 @@ if __name__ == '__main__':
     G_A = greedy_tree(MetricSpace(A))
     G_B = greedy_tree(MetricSpace(B))
     
-    analyze(A, B, G_A, G_B, all_range_analyze, rng=R)
+    # analyze(A, B, G_A, G_B, AllRange, r=R)
+    analyze(A, B, G_A, G_B, AllKNN, k=K)
     # deg_a, deg_b, output = compute_degrees(A, B, G_A, G_B, all_knn_analyze, k=5, epsilon=0)
 
     # print(deg_a)
