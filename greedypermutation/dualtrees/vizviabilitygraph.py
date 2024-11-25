@@ -1,7 +1,6 @@
 from ds2viz.styles import *
 from ds2viz.default_styles import default_styles
-from ds2viz.element import *
-from ds2viz.geometry import convexhull
+from ds2viz.element import Line, Circle, Group
 
 
 class VizViabilityGraph(Group):
@@ -11,35 +10,33 @@ class VizViabilityGraph(Group):
 
         super().__init__()
         self.N = viability_graph
-        self.A = self.B = []
+        # self.A = self.B = []
         self.stylesheet = stylesheet
         self.style = next(self.stylesheet[style])
 
-        # self._points('A')
-        # self._points('B')
         self._viable_edges()
         self._vertices('A')
         self._vertices('B')
 
 
-    def _points(self, part):
-        if part == 'A':
-            point_style = self.style.get("a_point")
-            points = self.A
-        else:
-            point_style = self.style.get("b_point")
-            points = self.B
-        if point_style is not None:
-            point_style_dict = next(self.stylesheet[point_style])
-            point_radius = (
-                1
-                if point_style_dict.get("radius") is None
-                else point_style_dict["radius"]
-            )
-            for p in points:
-                C = Circle(point_radius, None, point_style, self.stylesheet)
-                C.align("center", p)
-                self.addelement(C)
+    # def _points(self, part):
+    #     if part == 'A':
+    #         point_style = self.style.get("a_point")
+    #         points = self.A
+    #     else:
+    #         point_style = self.style.get("b_point")
+    #         points = self.B
+    #     if point_style is not None:
+    #         point_style_dict = next(self.stylesheet[point_style])
+    #         point_radius = (
+    #             1
+    #             if point_style_dict.get("radius") is None
+    #             else point_style_dict["radius"]
+    #         )
+    #         for p in points:
+    #             C = Circle(point_radius, None, point_style, self.stylesheet)
+    #             C.align("center", p)
+    #             self.addelement(C)
 
     def _viable_edges(self):
         edge_style = self.style.get("viable_edge")

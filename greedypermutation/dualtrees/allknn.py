@@ -1,7 +1,7 @@
 from collections import defaultdict
 from greedypermutation.maxheap import MaxHeap
 from greedypermutation.knnheap import KNNHeap
-from greedypermutation.dualtrees.traversal import DualTreeSearch
+from greedypermutation.dualtrees.dualtreesearch import DualTreeSearch
 from greedypermutation.dualtrees.viabilitygraph import ViabilityGraph
 
 
@@ -74,9 +74,9 @@ class AllKNN(DualTreeSearch):
         super().__call__()
         return self.out
     
-    def __iter__(self):
-        for _ in super().__iter__():
-            yield self.G, self.out, self.knn_heaps
+    # def __iter__(self):
+    #     for _ in super().__iter__():
+    #         yield self.G, self.out, self.knn_heaps
 
 
 if __name__ == '__main__':

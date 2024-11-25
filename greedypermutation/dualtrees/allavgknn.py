@@ -19,7 +19,8 @@ class AllAvgKNN(AllKNN):
         nbrhood = {b for b in self.G.A[a]}
         for b in nbrhood:
             if self.closeby(a, b) and self.accumulable(a, b):
-                self.acc[a] = (self.acc[a]*self.num[a] + (a.dist(b.center) - a.radius - b.radius)*len(b))/(self.num[a] + len(b))
+                lb = a.dist(b.center) - a.radius - b.radius
+                self.acc[a] = (self.acc[a]*self.num[a] + lb*len(b))/(self.num[a] + len(b))
                 self.num[a] += len(b)
                 self.G.remove_edge(a, b)
 

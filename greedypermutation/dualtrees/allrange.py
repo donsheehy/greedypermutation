@@ -1,5 +1,5 @@
 from greedypermutation.maxheap import MaxHeap
-from greedypermutation.dualtrees.traversal import DualTreeSearch
+from greedypermutation.dualtrees.dualtreesearch import DualTreeSearch
 from greedypermutation.dualtrees.viabilitygraph import ViabilityGraph
 from collections import defaultdict
 
@@ -50,9 +50,9 @@ class AllRange(DualTreeSearch):
         super().__call__()
         return self.out
     
-    def __iter__(self):
-        for _ in super().__iter__():
-            yield self.G, self.out
+    # def __iter__(self):
+    #     for _ in super().__iter__():
+    #         yield self.G, self.out
 
 if __name__ == '__main__':
     from metricspaces import MetricSpace, R1
