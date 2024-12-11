@@ -1,16 +1,16 @@
-import logging
 from ds2.priorityqueue import PriorityQueue
 from metricspaces import metric_class
-from greedypermutation.clarksongreedy import greedy
-from greedypermutation.maxheap import MaxHeap
 
 
 @metric_class
-class Ball:
+class SimpleBall:
     """
-    A Ball has a center, a radius, a numer of points that it contains, and a
-    pair of children.  This means that each ball is the root of an entire ball
-    tree.  There is no difference between a ball and a ball tree.
+    A SimpleBall has a center, a radius, a numer of points that it contains, and a
+    pair of children. This means that each ball is the root of an entire ball
+    tree. There is no difference between a ball and a ball tree.
+
+    The difference between Ball and SimpleBall is that Ball also implements
+    search methods. SimpleBall, on the other hand, computes approximate node radii.
     """
 
     def __init__(self, point):
@@ -25,16 +25,6 @@ class Ball:
 
     def isleaf(self):
         return self.left is None
-
-    def intersects(self, center, radius):
-        return self.dist(center) - self.radius <= radius
-
-    def contained_in(self, center, radius):
-        return self.dist(center) + self.radius <= radius
-
-    def tree_greedy(M):
-        gp = greedy(M, pointtree=True)
-        return Ball.tree(gp)
 
     def farthest(self, q):
         """Find the distance to the farthest point to `q`."""

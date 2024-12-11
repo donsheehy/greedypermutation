@@ -1,19 +1,25 @@
 import logging
 from metricspaces import MetricSpace
-from greedypermutation.fvm.ball import Ball
+from greedypermutation.fvm.ball import SimpleBall as Ball
 from greedypermutation.fvm.utils import TreeParameters
-from greedypermutation.fvm.neighborgraph import GreedyNeighborGraph
+from greedypermutation.fvm.fvmneighborgraph import GreedyFVMNeighborGraph
+
 
 # Clarkson's algorithm on greedy tree nodes.
-def clarkson_fvm(
+def fvm_greedy(
     inp_trees: list[Ball],
-    params: TreeParameters = TreeParameters(1,1,1,1),
-    space: MetricSpace = None
+    params: TreeParameters = TreeParameters(1, 1, 1, 1),
+    space: MetricSpace = None,
 ) -> Ball:
+    """
+    Given a MetricSpace preprocessed into a list of greedy trees, run Clarkson's algorithm on these trees.
+    This is an implementation of Clarkson's algorithm for the Finite Voronoi Method.
+    The output is a greedy tree obtained by merging the input trees.
+    """
     move_const, nbr_const, tidy_const, bucket_size = params
     if space is None:
         space = MetricSpace(inp_trees[0].center)
-    nbr_graph = GreedyNeighborGraph(inp_trees, params, space)
+    nbr_graph = GreedyFVMNeighborGraph(inp_trees, params, space)
     leaf = {}
     out_tree = None
     for p, pred in _sites(inp_trees, nbr_graph):
@@ -47,7 +53,7 @@ def _sites(inp_trees, nbr_graph):
     yield root.center, None
     for _ in range(1, sum(len(inp_tree) for inp_tree in inp_trees)):
         cell = heap.findmax()
-        logging.debug(f"Max cell: {cell.center} with outradius {cell.outradius}")
+        logging.debug(f"Max cell: {cell.center} with outradius {cell.radius}")
         newcenter = cell.farthest.center
         nbr_graph.addcell(newcenter, cell)
         yield newcenter, cell.center
