@@ -1,6 +1,6 @@
 import logging
 from metricspaces import MetricSpace
-from greedypermutation.fvm.ball import SimpleBall as Ball
+from greedypermutation.fvm.simpleball import SimpleBall as Ball
 from greedypermutation.fvm.utils import TreeParameters
 from greedypermutation.fvm.fvmneighborgraph import GreedyFVMNeighborGraph
 

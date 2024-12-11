@@ -1,5 +1,5 @@
 from greedypermutation.fvm.fvmgreedy import fvm_greedy
-from greedypermutation.fvm.ball import SimpleBall
+from greedypermutation.fvm.simpleball import SimpleBall
 from greedypermutation.fvm.utils import TreeParameters
 from metricspaces import MetricSpace
 from multiprocess import Process, Pipe
