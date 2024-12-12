@@ -1,64 +1,73 @@
 from collections import defaultdict
 from greedypermutation.dualtrees.allknn import AllKNN
 
+
 class AllAvgKNN(AllKNN):
     def __init__(self, G_A, G_B, k, e=0):
         super().__init__(G_A, G_B, k, e)
         self.out = defaultdict(float)
         self.acc = defaultdict(float)
         self.num = defaultdict(int)
-        self.acc[G_A] =self.num[G_A] = 0
+        self.acc[G_A] = self.num[G_A] = 0
 
-    def init(self, ball):
-        super().init(ball)
+    def setup_children(self, ball):
+        super().setup_children(ball)
         left, right = ball.left, ball.right
         self.acc[left] = self.acc[right] = self.acc.pop(ball)
         self.num[left] = self.num[right] = self.num.pop(ball)
-        
-    def accumulate(self, a):
+
+    def accumulate(self, a, rmax=0):
         nbrhood = {b for b in self.G.A[a]}
         for b in nbrhood:
-            if self.closeby(a, b) and self.accumulable(a, b):
+            if self.closeby(a, b, rmax) and self.accumulable(a, b):
                 lb = a.dist(b.center) - a.radius - b.radius
-                self.acc[a] = (self.acc[a]*self.num[a] + lb*len(b))/(self.num[a] + len(b))
+                self.acc[a] = (self.acc[a] * self.num[a] + lb * len(b)) / (
+                    self.num[a] + len(b)
+                )
                 self.num[a] += len(b)
                 self.G.remove_edge(a, b)
 
-    def closeby(self, a, b):
+    def closeby(self, a, b, rmax):
+        # return True
         ub = self.knn_heaps[a].radius
-        farthest = self.knn_heaps[a].findmax()
-        lb = ub - 2*farthest.radius
-        return True if a.dist(b.center) <= lb - 2*a.radius - b.radius else False
+        # farthest = self.knn_heaps[a].findmax()
+        lb = ub - 2 * rmax
+        return True if a.dist(b.center) <= lb - 2 * a.radius - b.radius else False
 
     def accumulable(self, a, b):
         if self.e == 0:
             return True if a.radius == b.radius == 0 else False
         else:
-            return True if a.dist(b.center) >= (2+self.e)/(self.e)*(a.radius + b.radius) else False
+            return (
+                True
+                if a.dist(b.center) >= (2 + self.e) / (self.e) * (a.radius + b.radius)
+                else False
+            )
 
-    def finish(self, a):
+    def finish(self, a, rmax=0):
         nbrhood = {b for b in self.G.A[a]}
-        if len(nbrhood) == 0:
-            for p in a:
-                self.out[p] = self.acc[a]
+        if len(nbrhood) != 0:
+            self.accumulate(a, rmax)
+        for p in a:
+            self.out[p] = self.acc[a]
 
     def update(self, node, ball):
         self.update_candidates(node, ball)
         self.prune(node)
-        self.accumulate(node)
+        self.accumulate(node, ball.radius)
         self.finish(node)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from metricspaces import MetricSpace, R1
     from greedypermutation.balltree import greedy_tree
 
-    A = list(range(2,15,3))
-    B = list(range(1,20,4))
+    A = list(range(2, 15, 3))
+    B = list(range(1, 20, 4))
     knn = 3
 
-    G_A = greedy_tree(MetricSpace(A, pointclass = R1))
-    G_B = greedy_tree(MetricSpace(B, pointclass = R1))
+    G_A = greedy_tree(MetricSpace(A, pointclass=R1))
+    G_B = greedy_tree(MetricSpace(B, pointclass=R1))
 
     print([a for a in A], knn)
     print([b for b in B])
@@ -66,14 +75,14 @@ if __name__ == '__main__':
     output = avgknn()
     for pt in output:
         # print(f'{pt}: {[(a.center, a.radius, len(a)) for a in output[pt]]}')
-        print(f'{pt}: dist: {output[pt]}')
+        print(f"{pt}: dist: {output[pt]}")
 
-    A = [1,2,3,6,7,8]
-    B = [1,2,3,6,7,9]
+    A = [1, 2, 3, 6, 7, 8]
+    B = [1, 2, 3, 6, 7, 9]
     knn = 4
 
-    G_A = greedy_tree(MetricSpace(A, pointclass = R1))
-    G_B = greedy_tree(MetricSpace(B, pointclass = R1))
+    G_A = greedy_tree(MetricSpace(A, pointclass=R1))
+    G_B = greedy_tree(MetricSpace(B, pointclass=R1))
 
     print([a for a in A], knn)
     print([b for b in B])
@@ -82,6 +91,6 @@ if __name__ == '__main__':
     for pt in output:
         # print(f'{pt}: {[(a.center, a.radius, len(a)) for a in output[pt]]}')
         # print(f'{pt}: dist: {output[pt][0]}, nbr: {output[pt][1]}')
-        print(f'{pt}: dist: {output[pt]}')
+        print(f"{pt}: dist: {output[pt]}")
 
     print("okay!")

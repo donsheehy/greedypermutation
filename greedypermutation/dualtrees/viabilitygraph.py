@@ -1,5 +1,5 @@
 class ViabilityGraph:
-    """ A bipartite graph with balls as vertices and edges
+    """A bipartite graph with balls as vertices and edges
     corresponding to pairs of balls that can contain
     an edge of the nearest neighbor graph.
 
@@ -19,8 +19,8 @@ class ViabilityGraph:
         return min(a.dist(b.center) - b.radius for b in self.A[a])
 
     def add_edges(self, edges):
-        for a,b in edges:
-            self.add_edge(a,b)
+        for a, b in edges:
+            self.add_edge(a, b)
 
     def add_edge(self, a, b):
         self.A.setdefault(a, set()).add(b)
@@ -29,7 +29,7 @@ class ViabilityGraph:
     def add_vertices(self, vertices, part):
         for v in vertices:
             part[v] = set()
-    
+
     def remove_edge(self, a, b):
         self.B[b].remove(a)
         self.A[a].remove(b)
@@ -46,4 +46,3 @@ class ViabilityGraph:
             for a in self.B[ball]:
                 self.A[a].remove(ball)
             return self.B.pop(ball)
-
