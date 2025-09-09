@@ -7,8 +7,7 @@ def greedy(M,
            moveconstant=1,
            tree=False,
            pointtree=False,
-           gettransportplan=False,
-           mass=None):
+           cell=None):
     """
     Return an iterator that yields the points of `M` ordered by a greedy
     permutation.
@@ -26,25 +25,18 @@ def greedy(M,
 
     The `tree` parameter indicates if the index of the predecessor is yielded
     with each point.
-
-    The `gettransportplan` parameter sets the corresponding flag in
-    `NeighborGraph` which when set returns a dictionary of mass moved in each
-    step of the greedy permutation.
     """
     G = GreedyNeighborGraph(M,
                             seed or next(iter(M)),
                             nbrconstant,
                             moveconstant,
-                            gettransportplan,
-                            mass)
-    for p, c, i, t in _greedy(M, G):
+                            cell)
+    for p, c, i in _greedy(M, G):
         output = [p]
         if pointtree:
             output.append(c.center if c else None)
         if tree:
             output.append(i)
-        if gettransportplan:
-            output.append(t)
         yield output[0] if len(output) == 1 else tuple(output)
 
 
@@ -57,7 +49,7 @@ def _greedy(M, G):
     root = H.findmax()
 
     # Yield the first point.
-    yield root.center, None, None, {root.center: G.cellmass(root)}
+    yield root.center, None, None
 
     # Store the indices of the previous points.
     index = {root: 0}
@@ -65,6 +57,6 @@ def _greedy(M, G):
     for i in range(1, len(M)):
         cell = H.findmax()
         point = cell.farthest
-        newcell, transportplan = G.addcell(point, cell)
+        newcell = G.addcell(point, cell)
         index[newcell] = i
-        yield point, cell, index[cell], transportplan
+        yield point, cell, index[cell]

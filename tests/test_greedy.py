@@ -51,35 +51,35 @@ class GreedyTests:
         self.assertEqual(next(gp), (Point([8]), 4))
         self.assertEqual(next(gp), (Point([72]), 3))
 
-    def testgreedy_transportplan(self):
-        """
-        This test determines that greedy() computes the correct transportation
-        plan.
-        """
-        greedy = self.implementation.greedy
-        M = MetricSpace([0, 9, 3, 5, 17], dist=ell_1)
-        gp = greedy(M, tree=False, gettransportplan=True)
+    # def testgreedy_transportplan(self):
+    #     """
+    #     This test determines that greedy() computes the correct transportation
+    #     plan.
+    #     """
+    #     greedy = self.implementation.greedy
+    #     M = MetricSpace([0, 9, 3, 5, 17], dist=ell_1)
+    #     gp = greedy(M, tree=False, gettransportplan=True)
 
-        self.assertEqual(next(gp), (0, {0: 5}))
-        self.assertEqual(next(gp), (17, {17: 2, 0: -2}))
-        self.assertEqual(next(gp), (9, {9: 2, 0: -1, 17: -1}))
-        self.assertEqual(next(gp), (5, {5: 2, 0: -1, 9: -1}))
-        self.assertEqual(next(gp), (3, {3: 1, 5: -1}))
+    #     self.assertEqual(next(gp), (0, {0: 5}))
+    #     self.assertEqual(next(gp), (17, {17: 2, 0: -2}))
+    #     self.assertEqual(next(gp), (9, {9: 2, 0: -1, 17: -1}))
+    #     self.assertEqual(next(gp), (5, {5: 2, 0: -1, 9: -1}))
+    #     self.assertEqual(next(gp), (3, {3: 1, 5: -1}))
 
-    def testgreedy_transportplan_mass(self):
-        """
-        This test determines that greedy() computes the correct transportation
-        plan.
-        """
-        greedy = self.implementation.greedy
-        M = MetricSpace([0, 9, 3, 5, 17], dist=ell_1)
-        gp = greedy(M, tree=False, gettransportplan=True, mass=[1, 2, 3, 4, 5])
+    # def testgreedy_transportplan_mass(self):
+    #     """
+    #     This test determines that greedy() computes the correct transportation
+    #     plan.
+    #     """
+    #     greedy = self.implementation.greedy
+    #     M = MetricSpace([0, 9, 3, 5, 17], dist=ell_1)
+    #     gp = greedy(M, tree=False, gettransportplan=True, mass=[1, 2, 3, 4, 5])
 
-        self.assertEqual(next(gp), (0, {0: 15}))
-        self.assertEqual(next(gp), (17, {17: 7, 0: -7}))
-        self.assertEqual(next(gp), (9, {9: 6, 0: -4, 17: -2}))
-        self.assertEqual(next(gp), (5, {5: 7, 0: -3, 9: -4}))
-        self.assertEqual(next(gp), (3, {3: 3, 5: -3}))
+    #     self.assertEqual(next(gp), (0, {0: 15}))
+    #     self.assertEqual(next(gp), (17, {17: 7, 0: -7}))
+    #     self.assertEqual(next(gp), (9, {9: 6, 0: -4, 17: -2}))
+    #     self.assertEqual(next(gp), (5, {5: 7, 0: -3, 9: -4}))
+    #     self.assertEqual(next(gp), (3, {3: 3, 5: -3}))
 
     def testgreedytree_bigexample(self):
         greedy = self.implementation.greedy

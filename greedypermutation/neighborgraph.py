@@ -1,10 +1,6 @@
-from collections import defaultdict
-from typing import DefaultDict
 from ds2.graph import Graph
 from metricspaces import metric_class
 from greedypermutation.maxheap import MaxHeap
-import math as Math
-from random import randrange, seed
 
 
 @metric_class
@@ -18,6 +14,7 @@ class Cell:
         self.points = {center}
         self.center = center
         self.radius = 0
+        self.farthest = center
 
     def addpoint(self, p):
         """
@@ -67,8 +64,6 @@ class Cell:
         """
         Return the total number of points in the cell, including the center.
         """
-        # Sid: Might be better to use `NeighborGraph.cellmass(cell)`
-        #  to account for multiplicity
         return len(self.points)
 
     def __iter__(self):
@@ -99,8 +94,7 @@ class NeighborGraph(Graph):
                  root=None,
                  nbrconstant=1,
                  moveconstant=1,
-                 gettransportplan=False,
-                 mass=None):
+                 cell=None):
         """
         Initialize a new NeighborGraph.
 
@@ -118,31 +112,22 @@ class NeighborGraph(Graph):
         `moveconstant <= nbrconstant`.  As a result, setting these any other
         way raises an exception.
 
-        `gettransportplan` is a flag that determines whether `addcell()`
-        computes transportation plans or not.
+        The `cell` parameter allows using different metric cell classes.
+        The default is the class `Cell` defined in this module.
         """
         # Initialize the `NeighborGraph` to be a `Graph`.
         super().__init__()
-        if mass is None:
-            mass = [1]*len(M)
-        elif len(mass) != len(M):
-            raise ValueError("`mass` must of same length as `M`")
-        self.mass = defaultdict(int)
-        for i, p in enumerate(M):
-            self.mass[p] += mass[i]
+        if not cell:
+            cell = Cell
 
         # Establish a class for the cells.
-        self.Vertex = Cell(M)
+        self.Vertex = cell(M)
 
         if nbrconstant < moveconstant:
             raise RuntimeError("The move constant must not be larger than the"
                                "neighbor constant.")
         self.nbrconstant = nbrconstant
         self.moveconstant = moveconstant
-
-        # self.gettransportplan is a flag which determines whether the
-        # transportation plan is to be computed or not.
-        self.gettransportplan = gettransportplan
 
         # Make a cell to start the graph.  Use the first point as the root
         # if none is given.
@@ -153,7 +138,7 @@ class NeighborGraph(Graph):
         # Add the points to the root cell.
         # It doesn't matter if the root point is also in the list of points.
         # It will not be added twice.
-        for i, p in enumerate(P):
+        for _, p in enumerate(P):
             root_cell.addpoint(p)
 
         # Add the new cell as the one vertex of the graph.
@@ -188,22 +173,13 @@ class NeighborGraph(Graph):
         # Create the new cell.
         newcell = self.Vertex(newcenter)
 
-        # Create transportation plan for adding this cell
-        transportplan = DefaultDict(int)
-
         # Make the cell a new vertex.
         self.addvertex(newcell)
         self.addedge(newcell, newcell)
 
         # Rebalance the new cell.
         for nbr in self.nbrs(parent):
-            localtransport = self.rebalance(newcell, nbr)
-            # Add change caused by this rebalance to transportation plan if
-            # requested.
-            if localtransport != 0 and self.gettransportplan:
-                transportplan[newcenter] += localtransport
-                transportplan[nbr.center] -= localtransport
-
+            self.rebalance(newcell, nbr)
             # The heap update has been delegated to the GreedyNeighborGraph.
             # self.heap.changepriority(nbr)
 
@@ -219,9 +195,7 @@ class NeighborGraph(Graph):
         # The following update has moved to the GreedyNeighborGraph
         # self.heap.insert(newcell)
 
-        # If self.gettransportplan=False this method returns an empty
-        # transportplan
-        return newcell, transportplan
+        return newcell
 
     def rebalance(self, a, b):
         """
@@ -233,16 +207,16 @@ class NeighborGraph(Graph):
         points_to_move =\
             {p for p in b.points if a.comparedist(p, b, self.moveconstant)}
         b.points -= points_to_move
-        mass_to_move = 0
         for p in points_to_move:
             a.addpoint(p)
-            mass_to_move += self.mass[p]
         # The radius of self (`a`) is automatically updated by addpoint.
         # The other radius needs to be manually updated.
         b.updateradius()
-        return mass_to_move
 
     def nbrs_of_nbrs(self, u):
+        """
+        Return two hop neighbors of u.
+        """
         return {b for a in self.nbrs(u) for b in self.nbrs(a)}
 
     def prunenbrs(self, u):
@@ -259,13 +233,6 @@ class NeighborGraph(Graph):
         for v in nbrs_to_delete:
             self.removeedge(u, v)
 
-    def cellmass(self, cell):
-        """
-        Method to compute the number of points with multiplicity in a cell.
-        Better to use this than `len(cell)`.
-        """
-        return sum(self.mass[p] for p in cell)
-
 
 class GreedyNeighborGraph(NeighborGraph):
     def __init__(self,
@@ -273,25 +240,21 @@ class GreedyNeighborGraph(NeighborGraph):
                  root=None,
                  nbrconstant=1,
                  moveconstant=1,
-                 gettransportplan=False,
-                 mass=None):
-        super().__init__(M, root, nbrconstant, moveconstant, gettransportplan,
-                         mass)
+                 cell=Cell):
+        super().__init__(M, root, nbrconstant, moveconstant, cell)
 
         # The root cell should be the only vertex in the graph.
         root_cell = next(iter(self._nbrs))
         self.heap = MaxHeap([root_cell], key=lambda c: c.radius)
 
     def addcell(self, newcenter, parent):
-        newcell, transportplan = super().addcell(newcenter, parent)
+        newcell = super().addcell(newcenter, parent)
         # Add `newcell` to the heap.
         self.heap.insert(newcell)
 
-        return newcell, transportplan
+        return newcell
 
     def rebalance(self, a, b):
-        mass_to_move = super().rebalance(a, b)
+        super().rebalance(a, b)
         # Update the heap priority for `b`.
         self.heap.changepriority(b)
-
-        return mass_to_move

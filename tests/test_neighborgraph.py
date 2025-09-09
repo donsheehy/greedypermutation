@@ -83,17 +83,17 @@ class TestNeighborGraph(unittest.TestCase):
         self.assertEqual(len(B), 101)
         self.assertEqual(len(A), 101)
 
-    def testcellmass(self):
-        P = [(i, i) for i in range(10)]
-        M = MetricSpace(P, pointclass=L_inf)
-        masslist = list(range(2, 12))
-        G = NeighborGraph(M, gettransportplan=True, mass=masslist)
-        root_cell = next(iter(G._nbrs))
-        self.assertEqual(G.cellmass(root_cell), 65)
-        new_cell, update_plan = G.addcell((9, 9), root_cell)
-        self.assertEqual(G.cellmass(root_cell), 20)
-        self.assertEqual(G.cellmass(new_cell), 45)
-        print(update_plan)
+    # def testcellmass(self):
+    #     P = [(i, i) for i in range(10)]
+    #     M = MetricSpace(P, pointclass=L_inf)
+    #     masslist = list(range(2, 12))
+    #     G = NeighborGraph(M, gettransportplan=True, mass=masslist)
+    #     root_cell = next(iter(G._nbrs))
+    #     self.assertEqual(G.cellmass(root_cell), 65)
+    #     new_cell, update_plan = G.addcell((9, 9), root_cell)
+    #     self.assertEqual(G.cellmass(root_cell), 20)
+    #     self.assertEqual(G.cellmass(new_cell), 45)
+    #     print(update_plan)
 
 
 class TestGreedyNeighborGraph(unittest.TestCase):
